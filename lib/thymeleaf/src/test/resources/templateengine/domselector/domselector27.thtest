@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT %one
+# ------------------------------------------------------------
+%OUTPUT
+<li>Works both in web and non-web (<i>offline</i>) environments. No hard dependency on the Servlet API.</li>

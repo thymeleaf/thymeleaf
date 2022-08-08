@@ -1,0 +1,17 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+hourOfDayField = @java.util.Calendar@HOUR_OF_DAY
+minuteField = @java.util.Calendar@MINUTE
+secondField = @java.util.Calendar@SECOND
+millisecondField = @java.util.Calendar@MILLISECOND
+# ------------------------------------------------------------
+%INPUT
+[# th:with="date = ${#calendars.createToday()}"
+   th:text="${date.get(hourOfDayField) + ' ' +
+              date.get(minuteField) + ' ' +
+              date.get(secondField) + ' ' +
+              date.get(millisecondField)}"]should all be zero[/]
+# ------------------------------------------------------------
+%OUTPUT
+0 0 0 0

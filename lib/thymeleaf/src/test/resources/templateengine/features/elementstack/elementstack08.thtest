@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 'one'
+# ------------------------------------------------------------
+%INPUT
+<p stack:model th:text="${var}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+# ----------------------------------
+# NOTE in some way we are duplicating output by having a "p" entry with stack:model and another without,
+#      but this makes sense because ModelProcessors can completely change models, so as a result of executing
+#      the stack:model this "p" could have been transformed into something completely different that should
+#      be a part of the stack anyway. So this is OK.
+# ----------------------------------
+<p stack="p stack:model th:text, p th:text">one</p>
+
+

@@ -1,0 +1,10 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%CONTEXT
+param.something = 'hello'
+# ------------------------------------------------------------
+%INPUT
+[(${param.something})]
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

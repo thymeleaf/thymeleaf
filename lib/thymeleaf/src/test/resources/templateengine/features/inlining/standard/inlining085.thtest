@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 10
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:inline="text">
+  [(${var.do()})]
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)inlining085\.thtest-001\"\ \-\ line\ 3\,\ col\ 5(.*?)

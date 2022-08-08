@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+varlist = new org.thymeleaf.templateengine.features.lazy.ListLazyContextVariable()
+# ------------------------------------------------------------
+%INPUT
+<ul>
+  <li th:each="e : ${varlist}" th:text="${e}">...</li>
+</ul>
+# ------------------------------------------------------------
+%OUTPUT
+<ul>
+  <li>one</li>
+  <li>two</li>
+  <li>three</li>
+  <li>four</li>
+  <li>five</li>
+</ul>

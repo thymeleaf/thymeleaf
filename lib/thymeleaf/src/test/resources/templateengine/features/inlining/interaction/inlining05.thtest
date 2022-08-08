@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+one = 'a value'
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  something is [[${one}]], and something is not
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>||||
+  something is "a value", and something is not
+||||</script>

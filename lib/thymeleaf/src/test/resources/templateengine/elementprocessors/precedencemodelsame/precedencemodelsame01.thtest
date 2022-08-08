@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+local = 'original!'
+# ------------------------------------------------------------
+%INPUT
+# Same dialect precedence, same processor precedence: we rely on class names
+<span precedence:modify-local-variable-model="..." th:text="${local}">...</span>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)the body of the target element has already been modified(.*?)line 1, col 1\)

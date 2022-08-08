@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragover="[['hello']]">..</div>
+<div th:ondragover="[[${null}]]">..</div>
+<div th:ondragover="[[${one}]]">..</div>
+<div th:ondragover="[[${two}]]">..</div>
+<div th:ondragover="[[${three}]]">..</div>
+<div th:ondragover="[('hello')]">..</div>
+<div th:ondragover="[(${null})]">..</div>
+<div th:ondragover="[(${one})]">..</div>
+<div th:ondragover="[(${two})]">..</div>
+<div th:ondragover="[(${three})]">..</div>
+<div th:ondragover="a${a}a[['hello']]a${a}a">..</div>
+<div th:ondragover="a${a}a[[${null}]]a${a}a">..</div>
+<div th:ondragover="a${a}a[[${one}]]a${a}a">..</div>
+<div th:ondragover="a${a}a[[${two}]]a${a}a">..</div>
+<div th:ondragover="a${a}a[[${three}]]a${a}a">..</div>
+<div th:ondragover="a${a}a[('hello')]a${a}a">..</div>
+<div th:ondragover="a${a}a[(${null})]a${a}a">..</div>
+<div th:ondragover="a${a}a[(${one})]a${a}a">..</div>
+<div th:ondragover="a${a}a[(${two})]a${a}a">..</div>
+<div th:ondragover="a${a}a[(${three})]a${a}a">..</div>
+
+<div ondragover="old" th:ondragover="[['hello']]">..</div>
+<div ondragover="old" th:ondragover="[[${null}]]">..</div>
+<div ondragover="old" th:ondragover="[[${one}]]">..</div>
+<div ondragover="old" th:ondragover="[[${two}]]">..</div>
+<div ondragover="old" th:ondragover="[[${three}]]">..</div>
+<div ondragover="old" th:ondragover="[('hello')]">..</div>
+<div ondragover="old" th:ondragover="[(${null})]">..</div>
+<div ondragover="old" th:ondragover="[(${one})]">..</div>
+<div ondragover="old" th:ondragover="[(${two})]">..</div>
+<div ondragover="old" th:ondragover="[(${three})]">..</div>
+<div ondragover="old" th:ondragover="a${a}a[['hello']]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[[${null}]]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[[${one}]]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[[${two}]]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[[${three}]]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[('hello')]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[(${null})]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[(${one})]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[(${two})]a${a}a">..</div>
+<div ondragover="old" th:ondragover="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragover="&quot;hello&quot;">..</div>
+<div ondragover="null">..</div>
+<div ondragover="2">..</div>
+<div ondragover="&quot;two&quot;">..</div>
+<div ondragover="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragover="hello">..</div>
+<div>..</div>
+<div ondragover="2">..</div>
+<div ondragover="two">..</div>
+<div ondragover="two &quot;plus&quot; one">..</div>
+<div ondragover="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragover="a${a}anulla${a}a">..</div>
+<div ondragover="a${a}a2a${a}a">..</div>
+<div ondragover="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragover="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragover="a${a}ahelloa${a}a">..</div>
+<div ondragover="a${a}aa${a}a">..</div>
+<div ondragover="a${a}a2a${a}a">..</div>
+<div ondragover="a${a}atwoa${a}a">..</div>
+<div ondragover="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div ondragover="&quot;hello&quot;">..</div>
+<div ondragover="null">..</div>
+<div ondragover="2">..</div>
+<div ondragover="&quot;two&quot;">..</div>
+<div ondragover="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragover="hello">..</div>
+<div>..</div>
+<div ondragover="2">..</div>
+<div ondragover="two">..</div>
+<div ondragover="two &quot;plus&quot; one">..</div>
+<div ondragover="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragover="a${a}anulla${a}a">..</div>
+<div ondragover="a${a}a2a${a}a">..</div>
+<div ondragover="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragover="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragover="a${a}ahelloa${a}a">..</div>
+<div ondragover="a${a}aa${a}a">..</div>
+<div ondragover="a${a}a2a${a}a">..</div>
+<div ondragover="a${a}atwoa${a}a">..</div>
+<div ondragover="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

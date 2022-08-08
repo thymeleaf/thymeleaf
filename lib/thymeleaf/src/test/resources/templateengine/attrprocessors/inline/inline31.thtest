@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+x = 2
+# ------------------------------------------------------------
+%INPUT
+<p th:inline="none">
+    This should not be replaced: [[${x}]]
+    <span th:inline="html">But this should: [[${x}]]</span>
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>
+    This should not be replaced: [[${x}]]
+    <span>But this should: 2</span>
+</p>

@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:lang="${one}">..</div>
+<div th:lang="'hello'">..</div>
+<div th:lang="${null}">..</div>
+<div th:lang="''">..</div>
+
+<div lang="old" th:lang="${one}">..</div>
+<div lang="old" th:lang="'hello'">..</div>
+<div lang="old" th:lang="${null}">..</div>
+<div lang="old" th:lang="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div lang="one!">..</div>
+<div lang="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div lang="one!">..</div>
+<div lang="hello">..</div>
+<div>..</div>
+<div>..</div>

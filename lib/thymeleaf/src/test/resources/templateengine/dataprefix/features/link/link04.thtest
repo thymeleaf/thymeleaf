@@ -1,0 +1,19 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%INPUT
+<a data-th-href="@{~/url0/url1}">go</a>
+<a data-th-href="@{~/url0/url1(param1='one',param2='two')}">go</a>
+<a data-th-href="@{~/url0/url1(param1='one and two')}">go</a>
+<a data-th-href="@{~/url0/url1(param1='one=two')}">go</a>
+<a data-th-href="@{~/url0/url1(param='one',param='two')}">go</a>
+<a data-th-href="@{~/url0/url1(param='one',name=${user['name']})}">go</a>
+<a data-th-href="@{~/url0/url1(name=#{name_is(${user['name']})})}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/url0/url1">go</a>
+<a href="/url0/url1?param1=one&amp;param2=two">go</a>
+<a href="/url0/url1?param1=one%20and%20two">go</a>
+<a href="/url0/url1?param1=one%3Dtwo">go</a>
+<a href="/url0/url1?param=one&amp;param=two">go</a>
+<a href="/url0/url1?param=one&amp;name=John%20Apricot">go</a>
+<a href="/url0/url1?name=The%20name%20is%20John%20Apricot">go</a>

@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:frameborder="${one}">..</div>
+<div th:frameborder="'hello'">..</div>
+<div th:frameborder="${null}">..</div>
+<div th:frameborder="''">..</div>
+
+<div frameborder="old" th:frameborder="${one}">..</div>
+<div frameborder="old" th:frameborder="'hello'">..</div>
+<div frameborder="old" th:frameborder="${null}">..</div>
+<div frameborder="old" th:frameborder="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div frameborder="one!">..</div>
+<div frameborder="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div frameborder="one!">..</div>
+<div frameborder="hello">..</div>
+<div>..</div>
+<div>..</div>

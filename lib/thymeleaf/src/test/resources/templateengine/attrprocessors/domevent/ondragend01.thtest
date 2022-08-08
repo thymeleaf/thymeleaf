@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragend="'hello'">..</div>
+<div th:ondragend="${null}">..</div>
+<div th:ondragend="${one}">..</div>
+<div th:ondragend="${2+3}">..</div>
+<div th:ondragend="${true}">..</div>
+<div th:ondragend="${false}">..</div>
+<div th:ondragend="*{null}">..</div>
+<div th:ondragend="*{one}">..</div>
+<div th:ondragend="*{2+3}">..</div>
+<div th:ondragend="*{true}">..</div>
+<div th:ondragend="*{false}">..</div>
+
+<div ondragend="old" th:ondragend="'hello'">..</div>
+<div ondragend="old" th:ondragend="${null}">..</div>
+<div ondragend="old" th:ondragend="${one}">..</div>
+<div ondragend="old" th:ondragend="${2+3}">..</div>
+<div ondragend="old" th:ondragend="${true}">..</div>
+<div ondragend="old" th:ondragend="${false}">..</div>
+<div ondragend="old" th:ondragend="*{null}">..</div>
+<div ondragend="old" th:ondragend="*{one}">..</div>
+<div ondragend="old" th:ondragend="*{2+3}">..</div>
+<div ondragend="old" th:ondragend="*{true}">..</div>
+<div ondragend="old" th:ondragend="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragend="hello">..</div>
+<div>..</div>
+<div ondragend="2">..</div>
+<div ondragend="5">..</div>
+<div ondragend="true">..</div>
+<div ondragend="false">..</div>
+<div>..</div>
+<div ondragend="2">..</div>
+<div ondragend="5">..</div>
+<div ondragend="true">..</div>
+<div ondragend="false">..</div>
+
+<div ondragend="hello">..</div>
+<div>..</div>
+<div ondragend="2">..</div>
+<div ondragend="5">..</div>
+<div ondragend="true">..</div>
+<div ondragend="false">..</div>
+<div>..</div>
+<div ondragend="2">..</div>
+<div ondragend="5">..</div>
+<div ondragend="true">..</div>
+<div ondragend="false">..</div>

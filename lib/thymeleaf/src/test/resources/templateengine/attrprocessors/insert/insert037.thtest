@@ -1,0 +1,58 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Local variable error</title>
+</head>
+<body>
+    <div class="container">
+
+        <p>Main include start</p>
+        <div th:insert=":: includeTemplate ('Main include')">
+        </div>
+        <p>Main include end</p>
+
+    </div>
+
+    <div th:remove="all">
+        Templates:
+
+        <div th:fragment="includeTemplate (value)">
+            <p>Include template value: <span th:text="${value}">Test</span></p>
+
+            <div th:insert=":: subIncludeTemplate ('Sub include')">
+            </div>
+        </div>
+
+        <div th:fragment="subIncludeTemplate (value)">
+            <p>Sub include template value: <span th:text="${value}">Test</span></p>
+        </div>
+
+    </div>
+
+</body>
+</html>
+# ------------------------------------------------------------
+%OUTPUT
+<html>
+<head>
+    <title>Local variable error</title>
+</head>
+<body>
+    <div class="container">
+
+        <p>Main include start</p>
+        <div><div>
+            <p>Include template value: <span>Main include</span></p>
+
+            <div><div>
+              <p>Sub include template value: <span>Sub include</span></p>
+            </div></div>
+        </div></div>
+        <p>Main include end</p>
+
+    </div>
+
+</body>
+</html>

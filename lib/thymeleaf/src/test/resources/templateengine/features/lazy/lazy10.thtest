@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = new org.thymeleaf.templateengine.features.lazy.LazyExpressionReturner()
+# ------------------------------------------------------------
+%INPUT
+<span th:with="a=${var.doSomething()} + ' has appeared'" th:text="${#strings.abbreviate(a,69)}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+# Lazy expressions coming from the execution of a method cannot be resolved in Thymeleaf Standard expressions,
+# So we are expecting this to actually perform an append with the toString() of the lazy expression.
+<span>org.thymeleaf.templateengine.features.lazy.LazyExpressionReturner$...</span>
+
+

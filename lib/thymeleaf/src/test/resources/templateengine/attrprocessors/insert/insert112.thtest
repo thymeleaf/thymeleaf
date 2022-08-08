@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<head th:insert="layout :: header(title=~{::title/text()})">
+    <title>Please Login</title>
+</head>
+# ------------------------------------------------------------
+%INPUT[layout]
+<head>
+<th:block th:fragment="header(title)">
+  <title th:text="|My App: ${title}|">My App</title>
+</th:block>
+</head>
+# ------------------------------------------------------------
+%OUTPUT
+<head>
+  <title>My App: Please Login</title>
+</head>

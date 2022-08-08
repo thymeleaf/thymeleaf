@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:codebase="${one}">..</div>
+<div codebase="old" th:codebase="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div codebase="one!">..</div>
+<div codebase="one!">..</div>

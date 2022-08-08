@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+Before
+<script>
+  something weird here with < and > and &&&&
+</script>
+After
+# ------------------------------------------------------------
+%OUTPUT
+Before
+<script>
+  something weird here with < and > and &&&&
+</script>
+After

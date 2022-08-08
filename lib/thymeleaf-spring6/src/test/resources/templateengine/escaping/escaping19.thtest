@@ -1,0 +1,19 @@
+%EXTENDS escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+formBean01_01.text = '\nThis and that'
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean01_01}">
+  <input type="text" th:field="*{text}" />
+  <textarea th:field="*{text}">...</textarea>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="text" id="text" name="text" value="
+This and that" />
+  <textarea id="text" name="text">
+
+This and that</textarea>
+</form>

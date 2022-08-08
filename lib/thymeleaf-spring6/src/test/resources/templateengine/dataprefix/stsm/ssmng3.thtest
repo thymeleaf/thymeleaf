@@ -1,0 +1,231 @@
+%EXTENDS stsm.common
+# ------------------------------------------------------------
+%CONTEXT
+
+seedStarter0 = new org.thymeleaf.templateengine.dataprefix.stsm.model.SeedStarter()
+seedStarter0.datePlanted = #dates.create(2013,5,3)
+seedStarter0.covered = true
+seedStarter0.type = typeWood
+seedStarter0.features = new org.thymeleaf.templateengine.dataprefix.stsm.model.Feature[] { featureFertilizer, featurePhCorrector }
+
+seedStarter0Row0 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarter0Row0.variety = varietyRepository.findById(3)
+seedStarter0Row0.seedsPerCell = 20
+
+seedStarter0Row1 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarter0Row1.variety = varietyRepository.findById(4)
+seedStarter0Row1.seedsPerCell = 15
+
+seedStarter0.rows = { seedStarter0Row0, seedStarter0Row1 }
+
+seedStarter1 = new org.thymeleaf.templateengine.dataprefix.stsm.model.SeedStarter()
+seedStarter1.datePlanted = #dates.create(2013,5,5)
+seedStarter1.covered = false
+seedStarter1.type = typePlastic
+seedStarter1.features = new org.thymeleaf.templateengine.dataprefix.stsm.model.Feature[] { }
+
+seedStarter1Row0 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarter1Row0.variety = varietyRepository.findById(2)
+seedStarter1Row0.seedsPerCell = 50
+
+seedStarter1Row1 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarter1Row1.variety = varietyRepository.findById(1)
+seedStarter1Row1.seedsPerCell = 6
+
+seedStarter1.rows = { seedStarter1Row0, seedStarter1Row1 }
+
+seedStarter2 = new org.thymeleaf.templateengine.dataprefix.stsm.model.SeedStarter()
+seedStarter2.datePlanted = #dates.create(2013,5,6)
+seedStarter2.covered = true
+seedStarter2.type = typeWood
+seedStarter2.features = new org.thymeleaf.templateengine.dataprefix.stsm.model.Feature[] { }
+
+seedStarter2Row0 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarter2Row0.variety = varietyRepository.findById(1)
+seedStarter2Row0.seedsPerCell = 1
+
+seedStarter2.rows = { seedStarter2Row0 }
+
+
+allSeedStarters = { seedStarter0, seedStarter1, seedStarter2 }
+
+
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+
+
+<html>
+
+  <head>
+    <title>Spring Thyme Seed Starter Manager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/stsm.css" />
+  </head>
+
+  <body>
+
+    <div>
+      <img src="/testing/images/stsmlogo.png" alt="Spring Thyme Seed-Starter Manager" title="Spring Thyme Seed-Starter Manager" />
+    </div>
+    
+    <div class="seedstarterlist">
+    
+      <h2>Seed Starter List</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Date planted</th>
+            <th>Covered</th>
+            <th>Type</th>
+            <th>Features</th>
+            <th>Rows</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>05/03/2013</td>
+            <td>yes</td>
+            <td>Wood</td>
+            <td>Fertilizer used, PH Corrector used</td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Thymus herba-barona</td>
+                    <td>20</td>
+                  </tr><tr>
+                    <td>2</td>
+                    <td>Thymus pseudolaginosus</td>
+                    <td>15</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>05/05/2013</td>
+            <td>no</td>
+            <td>Plastic</td>
+            <td></td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Thymus x citriodorus</td>
+                    <td>50</td>
+                  </tr><tr>
+                    <td>2</td>
+                    <td>Thymus vulgaris</td>
+                    <td>6</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>05/06/2013</td>
+            <td>yes</td>
+            <td>Wood</td>
+            <td></td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Thymus vulgaris</td>
+                    <td>1</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+
+
+    <div>
+    
+      <h2>Add new Seed Starter</h2>
+
+      <form action="/testing/seedstartermng" method="post">
+    
+        <fieldset>
+          
+          <legend>Seed Starter data</legend>
+
+          
+
+          
+          <div>
+            <label for="datePlanted">
+              <span>Date planted</span>
+              (<span>MM/dd/yyyy</span>)
+            </label>
+            <input type="text" id="datePlanted" name="datePlanted" value="05/03/2013" />
+          </div>
+          <div>
+            <label for="covered1">Covered</label>
+            <input type="checkbox" id="covered1" name="covered" value="true" /><input type="hidden" name="_covered" value="on" />
+          </div>
+          <div>
+            <label for="type">Type</label>
+            <select id="type" name="type">
+              <option value="PLASTIC" selected="selected">Plastic</option><option value="WOOD">Wood</option>
+            </select>
+          </div>
+          <div>
+            <label>Features</label>
+            <ul>
+              <li>
+                <input type="checkbox" value="SEEDSTARTER_SPECIFIC_SUBSTRATE" id="features1" name="features" /><input type="hidden" name="_features" value="on" />
+                <label for="features1">Seed starter-specific substrate</label>
+              </li>
+              <li>
+                <input type="checkbox" value="FERTILIZER" id="features2" name="features" /><input type="hidden" name="_features" value="on" />
+                <label for="features2">Fertilizer used</label>
+              </li>
+              <li>
+                <input type="checkbox" value="PH_CORRECTOR" id="features3" name="features" /><input type="hidden" name="_features" value="on" />
+                <label for="features3">PH Corrector used</label>
+              </li>
+              
+            </ul>
+          </div>
+    
+          <div>
+            <label>Rows</label>
+            <table>
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Variety</th>
+                  <th>Seeds per cell</th>
+                  <th>
+                    <button type="submit" name="addRow">Add row</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                
+              </tbody>
+            </table>
+          </div>
+    
+          <div class="submit">
+            <button type="submit" name="save">Add Seed Starter</button>    
+          </div>
+        
+        </fieldset>
+          
+      </form>
+        
+    </div>
+
+  </body>
+</html>

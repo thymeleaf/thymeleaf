@@ -1,0 +1,10 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+Some text /*[-over -]*/here...
+...and here
+# ------------------------------------------------------------
+%OUTPUT
+Some text here...
+...and here
+

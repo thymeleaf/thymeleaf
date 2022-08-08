@@ -1,0 +1,32 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script th:replace="~{somejs :: scriptblock}"></script>
+# ------------------------------------------------------------
+%INPUT[somejs]
+<script th:fragment="scriptblock" th:inline="javascript">
+/*<![CDATA[*/
+$(function() {
+   $.ajax({
+     url: [[@{/my/url}]],
+     success: function(data) {
+       ...
+     }
+   });
+});
+/*]]>*/
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+/*<![CDATA[*/
+$(function() {
+   $.ajax({
+     url: "\/testing\/my\/url",
+     success: function(data) {
+       ...
+     }
+   });
+});
+/*]]>*/
+</script>

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+number = 10
+# ------------------------------------------------------------
+%INPUT
+,,,<span th:insert="(${number} > 10)? ~{f1}" th:remove="tag">...</span>,,,
+# ------------------------------------------------------------
+%INPUT[f1]
+hello
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException
+%EXCEPTION_MESSAGE_PATTERN (.*)?Error resolving(.*?)

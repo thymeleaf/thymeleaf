@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+\uFEFFThis contains a BOM (Byte Order Mark) Symbol, which was ignored in 2.1 but will just pass to output in 3.0
+# ------------------------------------------------------------
+%OUTPUT
+\uFEFFThis contains a BOM (Byte Order Mark) Symbol, which was ignored in 2.1 but will just pass to output in 3.0

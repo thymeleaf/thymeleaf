@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:novalidate="${t}">..</div>
+<div th:novalidate="${f}">..</div>
+<div th:novalidate="${one}">..</div>
+<div novalidate="old" th:novalidate="${t}">..</div>
+<div novalidate="old" th:novalidate="${f}">..</div>
+<div novalidate="old" th:novalidate="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div novalidate="novalidate">..</div>
+<div>..</div>
+<div novalidate="novalidate">..</div>
+<div novalidate="novalidate">..</div>
+<div>..</div>
+<div novalidate="novalidate">..</div>

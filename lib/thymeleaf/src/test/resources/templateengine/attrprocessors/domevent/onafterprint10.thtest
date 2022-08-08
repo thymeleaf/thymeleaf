@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onafterprint="[['hello']]">..</div>
+<div th:onafterprint="[[${null}]]">..</div>
+<div th:onafterprint="[[${one}]]">..</div>
+<div th:onafterprint="[[${two}]]">..</div>
+<div th:onafterprint="[[${three}]]">..</div>
+<div th:onafterprint="[('hello')]">..</div>
+<div th:onafterprint="[(${null})]">..</div>
+<div th:onafterprint="[(${one})]">..</div>
+<div th:onafterprint="[(${two})]">..</div>
+<div th:onafterprint="[(${three})]">..</div>
+<div th:onafterprint="a${a}a[['hello']]a${a}a">..</div>
+<div th:onafterprint="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onafterprint="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onafterprint="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onafterprint="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onafterprint="a${a}a[('hello')]a${a}a">..</div>
+<div th:onafterprint="a${a}a[(${null})]a${a}a">..</div>
+<div th:onafterprint="a${a}a[(${one})]a${a}a">..</div>
+<div th:onafterprint="a${a}a[(${two})]a${a}a">..</div>
+<div th:onafterprint="a${a}a[(${three})]a${a}a">..</div>
+
+<div onafterprint="old" th:onafterprint="[['hello']]">..</div>
+<div onafterprint="old" th:onafterprint="[[${null}]]">..</div>
+<div onafterprint="old" th:onafterprint="[[${one}]]">..</div>
+<div onafterprint="old" th:onafterprint="[[${two}]]">..</div>
+<div onafterprint="old" th:onafterprint="[[${three}]]">..</div>
+<div onafterprint="old" th:onafterprint="[('hello')]">..</div>
+<div onafterprint="old" th:onafterprint="[(${null})]">..</div>
+<div onafterprint="old" th:onafterprint="[(${one})]">..</div>
+<div onafterprint="old" th:onafterprint="[(${two})]">..</div>
+<div onafterprint="old" th:onafterprint="[(${three})]">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[['hello']]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[[${null}]]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[[${one}]]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[[${two}]]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[[${three}]]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[('hello')]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[(${null})]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[(${one})]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[(${two})]a${a}a">..</div>
+<div onafterprint="old" th:onafterprint="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onafterprint="&quot;hello&quot;">..</div>
+<div onafterprint="null">..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="&quot;two&quot;">..</div>
+<div onafterprint="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onafterprint="hello">..</div>
+<div>..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="two">..</div>
+<div onafterprint="two &quot;plus&quot; one">..</div>
+<div onafterprint="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onafterprint="a${a}anulla${a}a">..</div>
+<div onafterprint="a${a}a2a${a}a">..</div>
+<div onafterprint="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onafterprint="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onafterprint="a${a}ahelloa${a}a">..</div>
+<div onafterprint="a${a}aa${a}a">..</div>
+<div onafterprint="a${a}a2a${a}a">..</div>
+<div onafterprint="a${a}atwoa${a}a">..</div>
+<div onafterprint="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onafterprint="&quot;hello&quot;">..</div>
+<div onafterprint="null">..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="&quot;two&quot;">..</div>
+<div onafterprint="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onafterprint="hello">..</div>
+<div>..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="two">..</div>
+<div onafterprint="two &quot;plus&quot; one">..</div>
+<div onafterprint="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onafterprint="a${a}anulla${a}a">..</div>
+<div onafterprint="a${a}a2a${a}a">..</div>
+<div onafterprint="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onafterprint="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onafterprint="a${a}ahelloa${a}a">..</div>
+<div onafterprint="a${a}aa${a}a">..</div>
+<div onafterprint="a${a}a2a${a}a">..</div>
+<div onafterprint="a${a}atwoa${a}a">..</div>
+<div onafterprint="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

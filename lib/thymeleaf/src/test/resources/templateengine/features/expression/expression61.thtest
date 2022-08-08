@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+items = { 'one', 'two', 'three' }
+# ------------------------------------------------------------
+%INPUT
+<span th:each="i,iterationStatus:${items}">
+  <a th:if="${!iterationStatus.last}" th:text="${i}"></a>
+  <span th:if="${iterationStatus.last}" th:text="${i}"></span>
+</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>
+  <a>one</a>
+</span><span>
+  <a>two</a>
+</span><span>
+  <span>three</span>
+</span>

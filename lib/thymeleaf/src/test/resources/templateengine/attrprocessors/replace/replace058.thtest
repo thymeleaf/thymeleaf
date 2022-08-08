@@ -1,0 +1,35 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+product1 = #{ 'name': 'Lettuce',\
+              'price': 12.0 }
+product2 = #{ 'name': 'Apricot',\
+              'price': 8.0 }
+products = { product1, product2 }
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr th:each="product : ${products}" th:replace="product :: productTemplate"
+      th:with="productName=${product.name}, productPrice=${product.price}" 
+      th:remove="tag" />
+</table>
+# ------------------------------------------------------------
+%INPUT[product]
+<tbody th:ref="productTemplate" class="t">
+  <tr class="my-class">
+      <td th:text="${productName}">product name</td>
+      <td th:text="${productPrice}">product price</td>
+  </tr>
+</tbody>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tbody class="t">
+    <tr class="my-class">
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+

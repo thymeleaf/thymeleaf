@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+atext = 'Lorem ipsum blah blah'
+# ------------------------------------------------------------
+%INPUT
+<div class="one" th:insert="frag :: [//b]">
+  <p>Some text over here: <span th:text="${i}">i</span></p>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<p>
+  This is a text <b>with some parts in bold</b> and a text: <b class="now" th:text="${atext}">bluh bluh</b>.
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<div class="one"><b>with some parts in bold</b><b class="now">Lorem ipsum blah blah</b></div>
+
+

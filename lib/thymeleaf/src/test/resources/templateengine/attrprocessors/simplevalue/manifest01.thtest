@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:manifest="${one}">..</div>
+<div th:manifest="'hello'">..</div>
+<div th:manifest="${null}">..</div>
+<div th:manifest="''">..</div>
+
+<div manifest="old" th:manifest="${one}">..</div>
+<div manifest="old" th:manifest="'hello'">..</div>
+<div manifest="old" th:manifest="${null}">..</div>
+<div manifest="old" th:manifest="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div manifest="one!">..</div>
+<div manifest="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div manifest="one!">..</div>
+<div manifest="hello">..</div>
+<div>..</div>
+<div>..</div>

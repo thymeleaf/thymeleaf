@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <p>This is some text</p>
+  <div th:include=":: frag">...</div>
+  <p th:fragment="frag">This is some text</p>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>This is some text</p>
+  <div>This is some text</div>
+  <p>This is some text</p>
+</div>
+

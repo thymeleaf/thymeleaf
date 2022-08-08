@@ -1,0 +1,11 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+val0 = new java.io.ByteArrayInputStream("something".getBytes())
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${val0.class.package.name}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qis forbidden\E(.*)

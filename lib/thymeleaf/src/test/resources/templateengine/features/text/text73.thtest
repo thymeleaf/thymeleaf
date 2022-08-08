@@ -1,0 +1,8 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div th:utext="~{fragg}">
+  Some text
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException

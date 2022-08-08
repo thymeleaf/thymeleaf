@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+list = { "one", "two", "three" }
+# ------------------------------------------------------------
+%INPUT
+Hello
+<span th:each="e : ${list}" th:text="${e}">...</span>
+Goodbye
+# ------------------------------------------------------------
+%OUTPUT
+Hello
+<span>one</span><span>two</span><span>three</span>
+Goodbye

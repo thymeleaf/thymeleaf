@@ -1,0 +1,15 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'something'
+twovar = 20
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <div[# th:assert="${onevar},${twovar}"/] class="a">tururu</div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <div class="a">tururu</div>
+</div>

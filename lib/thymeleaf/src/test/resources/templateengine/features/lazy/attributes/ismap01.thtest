@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:ismap="${t}">..</div>
+<div th:ismap="${f}">..</div>
+<div th:ismap="${one}">..</div>
+<div ismap="old" th:ismap="${t}">..</div>
+<div ismap="old" th:ismap="${f}">..</div>
+<div ismap="old" th:ismap="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ismap="ismap">..</div>
+<div>..</div>
+<div ismap="ismap">..</div>
+<div ismap="ismap">..</div>
+<div>..</div>
+<div ismap="ismap">..</div>

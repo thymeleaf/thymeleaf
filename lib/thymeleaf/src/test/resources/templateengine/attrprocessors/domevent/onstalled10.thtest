@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onstalled="[['hello']]">..</div>
+<div th:onstalled="[[${null}]]">..</div>
+<div th:onstalled="[[${one}]]">..</div>
+<div th:onstalled="[[${two}]]">..</div>
+<div th:onstalled="[[${three}]]">..</div>
+<div th:onstalled="[('hello')]">..</div>
+<div th:onstalled="[(${null})]">..</div>
+<div th:onstalled="[(${one})]">..</div>
+<div th:onstalled="[(${two})]">..</div>
+<div th:onstalled="[(${three})]">..</div>
+<div th:onstalled="a${a}a[['hello']]a${a}a">..</div>
+<div th:onstalled="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onstalled="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onstalled="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onstalled="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onstalled="a${a}a[('hello')]a${a}a">..</div>
+<div th:onstalled="a${a}a[(${null})]a${a}a">..</div>
+<div th:onstalled="a${a}a[(${one})]a${a}a">..</div>
+<div th:onstalled="a${a}a[(${two})]a${a}a">..</div>
+<div th:onstalled="a${a}a[(${three})]a${a}a">..</div>
+
+<div onstalled="old" th:onstalled="[['hello']]">..</div>
+<div onstalled="old" th:onstalled="[[${null}]]">..</div>
+<div onstalled="old" th:onstalled="[[${one}]]">..</div>
+<div onstalled="old" th:onstalled="[[${two}]]">..</div>
+<div onstalled="old" th:onstalled="[[${three}]]">..</div>
+<div onstalled="old" th:onstalled="[('hello')]">..</div>
+<div onstalled="old" th:onstalled="[(${null})]">..</div>
+<div onstalled="old" th:onstalled="[(${one})]">..</div>
+<div onstalled="old" th:onstalled="[(${two})]">..</div>
+<div onstalled="old" th:onstalled="[(${three})]">..</div>
+<div onstalled="old" th:onstalled="a${a}a[['hello']]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[[${null}]]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[[${one}]]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[[${two}]]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[[${three}]]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[('hello')]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[(${null})]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[(${one})]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[(${two})]a${a}a">..</div>
+<div onstalled="old" th:onstalled="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onstalled="&quot;hello&quot;">..</div>
+<div onstalled="null">..</div>
+<div onstalled="2">..</div>
+<div onstalled="&quot;two&quot;">..</div>
+<div onstalled="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onstalled="hello">..</div>
+<div>..</div>
+<div onstalled="2">..</div>
+<div onstalled="two">..</div>
+<div onstalled="two &quot;plus&quot; one">..</div>
+<div onstalled="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onstalled="a${a}anulla${a}a">..</div>
+<div onstalled="a${a}a2a${a}a">..</div>
+<div onstalled="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onstalled="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onstalled="a${a}ahelloa${a}a">..</div>
+<div onstalled="a${a}aa${a}a">..</div>
+<div onstalled="a${a}a2a${a}a">..</div>
+<div onstalled="a${a}atwoa${a}a">..</div>
+<div onstalled="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onstalled="&quot;hello&quot;">..</div>
+<div onstalled="null">..</div>
+<div onstalled="2">..</div>
+<div onstalled="&quot;two&quot;">..</div>
+<div onstalled="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onstalled="hello">..</div>
+<div>..</div>
+<div onstalled="2">..</div>
+<div onstalled="two">..</div>
+<div onstalled="two &quot;plus&quot; one">..</div>
+<div onstalled="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onstalled="a${a}anulla${a}a">..</div>
+<div onstalled="a${a}a2a${a}a">..</div>
+<div onstalled="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onstalled="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onstalled="a${a}ahelloa${a}a">..</div>
+<div onstalled="a${a}aa${a}a">..</div>
+<div onstalled="a${a}a2a${a}a">..</div>
+<div onstalled="a${a}atwoa${a}a">..</div>
+<div onstalled="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

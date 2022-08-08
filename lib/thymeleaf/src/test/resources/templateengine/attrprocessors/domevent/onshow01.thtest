@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onshow="'hello'">..</div>
+<div th:onshow="${null}">..</div>
+<div th:onshow="${one}">..</div>
+<div th:onshow="${2+3}">..</div>
+<div th:onshow="${true}">..</div>
+<div th:onshow="${false}">..</div>
+<div th:onshow="*{null}">..</div>
+<div th:onshow="*{one}">..</div>
+<div th:onshow="*{2+3}">..</div>
+<div th:onshow="*{true}">..</div>
+<div th:onshow="*{false}">..</div>
+
+<div onshow="old" th:onshow="'hello'">..</div>
+<div onshow="old" th:onshow="${null}">..</div>
+<div onshow="old" th:onshow="${one}">..</div>
+<div onshow="old" th:onshow="${2+3}">..</div>
+<div onshow="old" th:onshow="${true}">..</div>
+<div onshow="old" th:onshow="${false}">..</div>
+<div onshow="old" th:onshow="*{null}">..</div>
+<div onshow="old" th:onshow="*{one}">..</div>
+<div onshow="old" th:onshow="*{2+3}">..</div>
+<div onshow="old" th:onshow="*{true}">..</div>
+<div onshow="old" th:onshow="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onshow="hello">..</div>
+<div>..</div>
+<div onshow="2">..</div>
+<div onshow="5">..</div>
+<div onshow="true">..</div>
+<div onshow="false">..</div>
+<div>..</div>
+<div onshow="2">..</div>
+<div onshow="5">..</div>
+<div onshow="true">..</div>
+<div onshow="false">..</div>
+
+<div onshow="hello">..</div>
+<div>..</div>
+<div onshow="2">..</div>
+<div onshow="5">..</div>
+<div onshow="true">..</div>
+<div onshow="false">..</div>
+<div>..</div>
+<div onshow="2">..</div>
+<div onshow="5">..</div>
+<div onshow="true">..</div>
+<div onshow="false">..</div>

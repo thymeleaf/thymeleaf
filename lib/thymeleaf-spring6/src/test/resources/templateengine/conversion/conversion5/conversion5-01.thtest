@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#conversions.convert('Hello','String')}">...</p>
+<p th:text="${#conversions.convert(23,'String')}">...</p>
+<p th:text="${#conversions.convert(23,'String') + 'a'}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Hello</p>
+<p>[23]</p>
+<p>[23]a</p>
+

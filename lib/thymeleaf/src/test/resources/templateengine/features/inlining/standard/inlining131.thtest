@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  var a = 'one';
+/*[-
+  var b = 'two';
+-]*/
+  var c = 'three';
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+  var a = 'one';
+
+  var c = 'three';
+</script>

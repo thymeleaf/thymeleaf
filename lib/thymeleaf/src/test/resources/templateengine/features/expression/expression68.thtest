@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# -----------------------------------------------------------
+%CONTEXT
+contextMap = new java.util.HashMap()
+contextMap['one'] = 'one value'
+contextMap['two'] = 'two value'
+# ------------------------------------------------------------
+%INPUT
+<div th:text="${contextMap.isEmpty()}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>false</div>

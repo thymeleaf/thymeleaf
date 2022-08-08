@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onstalled="'hello'">..</div>
+<div th:onstalled="${null}">..</div>
+<div th:onstalled="${one}">..</div>
+<div th:onstalled="${2+3}">..</div>
+<div th:onstalled="${true}">..</div>
+<div th:onstalled="${false}">..</div>
+<div th:onstalled="*{null}">..</div>
+<div th:onstalled="*{one}">..</div>
+<div th:onstalled="*{2+3}">..</div>
+<div th:onstalled="*{true}">..</div>
+<div th:onstalled="*{false}">..</div>
+
+<div onstalled="old" th:onstalled="'hello'">..</div>
+<div onstalled="old" th:onstalled="${null}">..</div>
+<div onstalled="old" th:onstalled="${one}">..</div>
+<div onstalled="old" th:onstalled="${2+3}">..</div>
+<div onstalled="old" th:onstalled="${true}">..</div>
+<div onstalled="old" th:onstalled="${false}">..</div>
+<div onstalled="old" th:onstalled="*{null}">..</div>
+<div onstalled="old" th:onstalled="*{one}">..</div>
+<div onstalled="old" th:onstalled="*{2+3}">..</div>
+<div onstalled="old" th:onstalled="*{true}">..</div>
+<div onstalled="old" th:onstalled="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onstalled="hello">..</div>
+<div>..</div>
+<div onstalled="2">..</div>
+<div onstalled="5">..</div>
+<div onstalled="true">..</div>
+<div onstalled="false">..</div>
+<div>..</div>
+<div onstalled="2">..</div>
+<div onstalled="5">..</div>
+<div onstalled="true">..</div>
+<div onstalled="false">..</div>
+
+<div onstalled="hello">..</div>
+<div>..</div>
+<div onstalled="2">..</div>
+<div onstalled="5">..</div>
+<div onstalled="true">..</div>
+<div onstalled="false">..</div>
+<div>..</div>
+<div onstalled="2">..</div>
+<div onstalled="5">..</div>
+<div onstalled="true">..</div>
+<div onstalled="false">..</div>

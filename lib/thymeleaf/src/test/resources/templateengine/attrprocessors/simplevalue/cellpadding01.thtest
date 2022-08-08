@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:cellpadding="${one}">..</div>
+<div th:cellpadding="'hello'">..</div>
+<div th:cellpadding="${null}">..</div>
+<div th:cellpadding="''">..</div>
+<div cellpadding="old" th:cellpadding="${one}">..</div>
+<div cellpadding="old" th:cellpadding="'hello'">..</div>
+<div cellpadding="old" th:cellpadding="${null}">..</div>
+<div cellpadding="old" th:cellpadding="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div cellpadding="one!">..</div>
+<div cellpadding="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div cellpadding="one!">..</div>
+<div cellpadding="hello">..</div>
+<div>..</div>
+<div>..</div>

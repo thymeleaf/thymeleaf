@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+text = 'A value</script>. With some other value'
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  var a = [[${text}]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+  var a = "A value<\/script>. With some other value";
+</script>

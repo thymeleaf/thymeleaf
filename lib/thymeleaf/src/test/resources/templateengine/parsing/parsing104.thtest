@@ -1,0 +1,20 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+one = 'Executed!'
+# ------------------------------------------------------------
+%INPUT
+<SCRIPT TYPE="TEXT/JAVASCRIPT">
+    <span th:text="${one}">...</span>
+</SCRIPT>
+<SCRIPT TYPE="TEXT/ECMASCRIPT">
+    <span th:text="${one}">...</span>
+</SCRIPT>
+# ------------------------------------------------------------
+%OUTPUT
+<SCRIPT TYPE="TEXT/JAVASCRIPT">
+    <span th:text="${one}">...</span>
+</SCRIPT>
+<SCRIPT TYPE="TEXT/ECMASCRIPT">
+    <span th:text="${one}">...</span>
+</SCRIPT>

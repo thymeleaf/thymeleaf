@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-multiple="${t}">..</div>
+<div data-th-multiple="${f}">..</div>
+<div data-th-multiple="${one}">..</div>
+<div data-th-multiple="'hello'">..</div>
+<div data-th-multiple="${null}">..</div>
+<div data-th-multiple="''">..</div>
+
+<div multiple="old" data-th-multiple="${t}">..</div>
+<div multiple="old" data-th-multiple="${f}">..</div>
+<div multiple="old" data-th-multiple="${one}">..</div>
+<div multiple="old" data-th-multiple="'hello'">..</div>
+<div multiple="old" data-th-multiple="${null}">..</div>
+<div multiple="old" data-th-multiple="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div multiple="multiple">..</div>
+<div>..</div>
+<div multiple="multiple">..</div>
+<div multiple="multiple">..</div>
+<div>..</div>
+<div multiple="multiple">..</div>
+
+<div multiple="multiple">..</div>
+<div>..</div>
+<div multiple="multiple">..</div>
+<div multiple="multiple">..</div>
+<div>..</div>
+<div multiple="multiple">..</div>

@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:formaction="${one}">..</div>
+<div th:formaction="'hello'">..</div>
+<div th:formaction="${null}">..</div>
+<div th:formaction="''">..</div>
+
+<div formaction="old" th:formaction="${one}">..</div>
+<div formaction="old" th:formaction="'hello'">..</div>
+<div formaction="old" th:formaction="${null}">..</div>
+<div formaction="old" th:formaction="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div formaction="one!">..</div>
+<div formaction="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div formaction="one!">..</div>
+<div formaction="hello">..</div>
+<div>..</div>
+<div>..</div>

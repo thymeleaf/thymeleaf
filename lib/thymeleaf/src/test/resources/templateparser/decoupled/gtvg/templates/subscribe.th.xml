@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<thlogic xmlns:th="http://www.thymeleaf.org">
+
+  <!-- ******************************************************************************* -->
+  <!-- HTML HEADER                                                                     -->
+  <!-- ******************************************************************************* -->
+  <attr sel="head/link[0]" th:href="@{/css/gtvg.css}" />
+
+
+  <!-- ******************************************************************************* -->
+  <!-- HTML BODY                                                                       -->
+  <!-- ******************************************************************************* -->
+
+  <!-- Subscription form -->
+  <attr sel="form" th:action="@{/subscribe}">
+    <attr sel="input[value^='Subscribe']" th:value="#{subscribe.submit}" />
+  </attr>
+
+  <!-- Home link -->
+  <attr sel="homelink"  th:href="@{/}" />
+
+</thlogic>
+

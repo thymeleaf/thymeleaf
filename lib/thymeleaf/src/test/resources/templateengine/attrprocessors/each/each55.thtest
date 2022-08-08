@@ -1,0 +1,18 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+list = { "one", "two", "three" }
+# ------------------------------------------------------------
+%INPUT
+Hello
+<tbody>
+[# th:each="e : ${list}"]<td>[[${eStat.count}]]</td>[/]
+</tbody>
+Goodbye
+# ------------------------------------------------------------
+%OUTPUT
+Hello
+<tbody>
+<td>1</td><td>2</td><td>3</td>
+</tbody>
+Goodbye

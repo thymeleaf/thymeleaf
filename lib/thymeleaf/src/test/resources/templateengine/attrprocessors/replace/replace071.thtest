@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<title>hey</title>
+<div th:replace="frag::f (title=~{:://title})">...</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<div th:fragment="f" class="a">
+    <div th:replace="${title}"></div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<title>hey</title>
+<div class="a">
+    <title>hey</title>
+</div>

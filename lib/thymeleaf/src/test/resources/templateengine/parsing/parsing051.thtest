@@ -1,0 +1,18 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+data = {'alpha','beta'}
+# ------------------------------------------------------------
+%INPUT
+<div>
+    <p th:each="d : ${data}" th:text="${d}">...</p>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+# This is XML mode, so the engine should not mind the element being iterated, whitespace will be added always
+<div>
+    <p>alpha</p>
+    <p>beta</p>
+</div>

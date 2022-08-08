@@ -1,0 +1,43 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="0.0 &gt;= 0.0">...</p>
+<p data-th-text="0.0 &gt;= 2">...</p>
+<p data-th-text="1.0 &gt;= 2">...</p>
+<p data-th-text="2.0 &gt;= 2">...</p>
+<p data-th-text="2.00001 &gt;= 2">...</p>
+<p data-th-text="1234.0 &gt;= 2">...</p>
+<p data-th-text="-351.0 &gt;= 2">...</p>
+<p data-th-text="-1000.0 &gt;= 2">...</p>
+<p data-th-text="-0.0 &gt;= 2">...</p>
+
+<p data-th-text="0.0 ge 0.0">...</p>
+<p data-th-text="0.0 ge 2">...</p>
+<p data-th-text="1.0 ge 2">...</p>
+<p data-th-text="2.0 ge 2">...</p>
+<p data-th-text="2.00001 ge 2">...</p>
+<p data-th-text="1234.0 ge 2">...</p>
+<p data-th-text="-351.0 ge 2">...</p>
+<p data-th-text="-1000.0 ge 2">...</p>
+<p data-th-text="-0.0 ge 2">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>false</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>false</p>

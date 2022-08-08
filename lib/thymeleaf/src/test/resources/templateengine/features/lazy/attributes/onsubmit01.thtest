@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onsubmit="${one}">..</div>
+<div onsubmit="old" th:onsubmit="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onsubmit="2">..</div>
+<div onsubmit="2">..</div>

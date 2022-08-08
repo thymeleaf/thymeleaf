@@ -1,0 +1,32 @@
+%TEMPLATE_MODE HTML5
+# -----------------------------------------------------------
+%MESSAGES
+date.format = yyyy-MM-dd
+# -----------------------------------------------------------
+%CONTEXT
+
+formBean01_01 = new org.thymeleaf.templateengine.springintegration.model.FormBean01()
+formBean01_01.id = 1
+formBean01_01.name = 'Mark Lettuce'
+formBean01_01.date = #dates.create(1492,10,12)
+
+formBean01_02 = new org.thymeleaf.templateengine.springintegration.model.FormBean01()
+formBean01_02.id = 2
+formBean01_02.name = 'Jack Apricot'
+formBean01_02.date = #dates.create(1928,9,28)
+
+formBean01_03 = new org.thymeleaf.templateengine.springintegration.model.FormBean01()
+formBean01_03.id = 3
+formBean01_03.name = 'Anthony Broccoli'
+formBean01_03.date = #dates.create(1808,5,2)
+
+allformBean01s = { formBean01_01, formBean01_02, formBean01_03 } 
+
+
+formBean01 = formBean01_01
+
+formBean02 = new org.thymeleaf.templateengine.springintegration.model.FormBean02()
+formBean02.bean01Ids = { formBean01_02.id, formBean01_03.id }
+
+
+formBean03_01 = new org.thymeleaf.templateengine.springintegration.model.FormBean03()

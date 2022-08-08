@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script id="rights-template" type="text/x-handlebars-template">
+    {{#each this}}
+    <div class="row">
+        <div class="col-md-5"><span class="{{../marker}}">{{right}}</span></div>
+        <div class="col-md-5">{{description}}</div>
+    </div>
+    {{/each}}
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script id="rights-template" type="text/x-handlebars-template">
+    {{#each this}}
+    <div class="row">
+        <div class="col-md-5"><span class="{{../marker}}">{{right}}</span></div>
+        <div class="col-md-5">{{description}}</div>
+    </div>
+    {{/each}}
+</script>

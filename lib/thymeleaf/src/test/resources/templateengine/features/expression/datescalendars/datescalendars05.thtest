@@ -1,0 +1,8 @@
+%EXTENDS datescalendars.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#calendars.format(cal05,'yyyy MM dd HH:mm:ss:SS zzz')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>1492 10 12 10:35:23:455 PST</p>
+

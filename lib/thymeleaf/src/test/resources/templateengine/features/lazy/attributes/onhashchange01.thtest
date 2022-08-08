@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onhashchange="${one}">..</div>
+<div onhashchange="old" th:onhashchange="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onhashchange="2">..</div>
+<div onhashchange="2">..</div>

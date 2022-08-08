@@ -1,0 +1,9 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%MESSAGES
+url.user.list = /user/list
+%INPUT
+<a data-th-href="@{#{url.user.list}}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/user/list">go</a>

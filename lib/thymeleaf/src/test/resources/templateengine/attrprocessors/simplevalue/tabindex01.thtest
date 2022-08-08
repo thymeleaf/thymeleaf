@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:tabindex="${one}">..</div>
+<div th:tabindex="'hello'">..</div>
+<div th:tabindex="${null}">..</div>
+<div th:tabindex="''">..</div>
+
+<div tabindex="old" th:tabindex="${one}">..</div>
+<div tabindex="old" th:tabindex="'hello'">..</div>
+<div tabindex="old" th:tabindex="${null}">..</div>
+<div tabindex="old" th:tabindex="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div tabindex="one!">..</div>
+<div tabindex="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div tabindex="one!">..</div>
+<div tabindex="hello">..</div>
+<div>..</div>
+<div>..</div>

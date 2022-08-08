@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT ul/li/two
+# ------------------------------------------------------------
+%OUTPUT
+<i>template modes</i><a href="documentation.html">documentation</a>

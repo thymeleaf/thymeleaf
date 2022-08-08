@@ -1,0 +1,12 @@
+%TEMPLATE_MODE CSS
+# ------------------------------------------------------------
+%CONTEXT
+customerName = 'Pear & < > Apple'
+# ------------------------------------------------------------
+%INPUT
+/*[#something th:utext="${customerName}"]*/
+  Some text
+/*[/something]*/
+# ------------------------------------------------------------
+%OUTPUT
+[#something]Pear & < > Apple[/something]

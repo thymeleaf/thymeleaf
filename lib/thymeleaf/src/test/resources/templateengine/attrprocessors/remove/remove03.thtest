@@ -1,0 +1,32 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+test = #{ 'text': 'Hi there!' }
+# ------------------------------------------------------------
+%INPUT
+<div th:object="${test}" th:remove="all-but-first"> 
+    <span th:text="*{text}">Text</span> 
+    <span th:text="'Hello!'">Text</span> 
+</div> 
+<div th:object="${test}" th:remove="all-but-first"> 
+    <span th:text="*{text}">Text</span> 
+    <span th:text="'Hello!'">Text</span> 
+    <span>Goodbye!</span> 
+    <span>Goodbye!</span> 
+    <span>Goodbye!</span> 
+</div> 
+<div th:object="${test}" th:remove="all-but-first"> 
+    <span th:text="*{text}">Text</span> 
+    <span th:text="bad expression that should never be executed!">Text</span> 
+</div> 
+# ------------------------------------------------------------
+%OUTPUT
+<div> 
+    <span>Hi there!</span> 
+</div> 
+<div> 
+    <span>Hi there!</span> 
+</div> 
+<div> 
+    <span>Hi there!</span> 
+</div> 

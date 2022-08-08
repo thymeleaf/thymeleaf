@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<section>
+  <div markup:replacebody="...">
+    <p th:assert="${false}">Hello!</p>
+  </div>
+</section>
+# ------------------------------------------------------------
+%OUTPUT
+<section>
+  <div><p>This is a <span>replacement</span></p></div>
+</section>

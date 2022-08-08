@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+value1 = 'one'
+# ------------------------------------------------------------
+%INPUT
+<div th:inline="text">
+  <a href="[(@{offer/__${value1}__})]">[[${value1}]]</a>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+# When inlining TEXT mode inside other template mode like HTML5, only Text nodes will be processed
+<div>
+  <a href="[(@{offer/__${value1}__})]">one</a>
+</div>

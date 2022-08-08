@@ -1,0 +1,33 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%MESSAGES
+onemsg = Red Planet
+# ------------------------------------------------------------
+%CONTEXT
+planet01 = 'Mercury'
+planet02 = 'Venus'
+planet03 = 'Earth'
+planet04 = 'Mars'
+planet05 = 'Jupiter'
+planet06 = 'Saturn'
+planet07 = 'Uranus'
+planet08 = 'Neptune'
+planets = { planet01, planet02, planet03, planet04, planet05, planet06, planet07, planet08 }
+# ------------------------------------------------------------
+%INPUT
+<ul>
+  <li th:each="p : ${planets}" th:text="|We say hello to planet: ${p}|">...</li>
+</ul>
+# ------------------------------------------------------------
+%OUTPUT
+<ul>
+  <li>We say hello to planet: Mercury</li>
+  <li>We say hello to planet: Venus</li>
+  <li>We say hello to planet: Earth</li>
+  <li>We say hello to planet: Mars</li>
+  <li>We say hello to planet: Jupiter</li>
+  <li>We say hello to planet: Saturn</li>
+  <li>We say hello to planet: Uranus</li>
+  <li>We say hello to planet: Neptune</li>
+</ul>
+

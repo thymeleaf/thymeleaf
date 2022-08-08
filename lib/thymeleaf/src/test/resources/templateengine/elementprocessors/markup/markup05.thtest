@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<section>
+  <div markup:printafter="..." markup:replacebody="...">
+    <p>Hello!</p>
+  </div>
+</section>
+# ------------------------------------------------------------
+%OUTPUT
+<section>
+  <div aggafter="&lt;div markup:printafter=&quot;...&quot;&gt;&lt;p&gt;This is a &lt;span th:text=&quot;replacement&quot;&gt;prototype&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;"><p>This is a <span>replacement</span></p></div>
+</section>

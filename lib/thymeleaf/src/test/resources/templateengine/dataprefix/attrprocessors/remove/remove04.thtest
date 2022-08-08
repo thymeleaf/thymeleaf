@@ -1,0 +1,41 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+test = #{ 'text': 'Hi there!' }
+# ------------------------------------------------------------
+%INPUT
+<div data-th-object="${test}" data-th-remove="all-but-first">
+    Some text here that will not be removed because it is not an element, and
+    only elements will be removed!.
+    <!-- And we can even have a comment! --> 
+    <span data-th-text="*{text}">Text</span>
+    <!-- This one goes after, but it is not an element so it won't be removed! -->
+    and some text here! 
+</div> 
+<div data-th-object="${test}" data-th-remove="all-but-first">
+    Some text here that will not be removed because it is not an element, and
+    only elements will be removed!.
+    <!-- And we can even have a comment! --> 
+    <span data-th-text="*{text}">Text</span>
+    <!-- This one goes after, but it is not an element so it won't be removed! -->
+    <span>Should dissapear!!</span> 
+    and some text here! 
+</div> 
+# ------------------------------------------------------------
+%OUTPUT
+<div> 
+    Some text here that will not be removed because it is not an element, and
+    only elements will be removed!.
+    <!-- And we can even have a comment! --> 
+    <span>Hi there!</span> 
+    <!-- This one goes after, but it is not an element so it won't be removed! --> 
+    and some text here! 
+</div> 
+<div> 
+    Some text here that will not be removed because it is not an element, and
+    only elements will be removed!.
+    <!-- And we can even have a comment! --> 
+    <span>Hi there!</span> 
+    <!-- This one goes after, but it is not an element so it won't be removed! --> 
+    and some text here! 
+</div> 

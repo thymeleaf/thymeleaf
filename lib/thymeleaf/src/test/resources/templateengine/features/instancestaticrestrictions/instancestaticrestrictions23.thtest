@@ -1,0 +1,6 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${@String@SOMETHING}">NOT ALLOWED</p>
+# ------------------------------------------------------------
+%EXCEPTION java.lang.ClassNotFoundException

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = new org.thymeleaf.templateengine.features.lazy.LazyExpressionReturner()
+# ------------------------------------------------------------
+%INPUT
+<span th:with="a=${var.doSomething()}" th:text="${#strings.abbreviate(a,69)}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+# This will return the right value because we are first putting the Lazy<T> into a variable, then resolving it
+<span>The lazy value</span>
+
+

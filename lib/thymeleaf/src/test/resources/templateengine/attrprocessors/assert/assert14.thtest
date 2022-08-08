@@ -1,0 +1,13 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'something'
+twovar = #{ 'value' : 25 }
+# ------------------------------------------------------------
+%INPUT
+<div>
+  [# th:object="${twovar}" th:assert="*{value} &gt; 25" th:remove="tag"]tururu[/]
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateAssertionException
+%EXCEPTION_MESSAGE_PATTERN .*?\*\{value\}.*?

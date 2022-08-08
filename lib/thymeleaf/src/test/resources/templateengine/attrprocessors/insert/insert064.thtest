@@ -1,0 +1,16 @@
+#
+# We are going to test here what happens when the inserted template exists, but the
+# inserted fragment does not exist...
+#
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:insert="whatever :: it">,,,</div>
+...
+# ------------------------------------------------------------
+%INPUT[whatever]
+lalala
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException
+%EXCEPTION_MESSAGE_PATTERN (.*)?Error resolving(.*?)

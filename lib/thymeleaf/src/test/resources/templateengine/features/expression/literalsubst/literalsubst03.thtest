@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%MESSAGES
+onemsg = Red Planet
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="|John Apricot's message is: ${onevar}, #{onemsg}!|">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>John Apricot&#39;s message is: Hello, Red Planet!</p>
+

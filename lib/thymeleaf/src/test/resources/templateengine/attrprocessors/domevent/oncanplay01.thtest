@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:oncanplay="'hello'">..</div>
+<div th:oncanplay="${null}">..</div>
+<div th:oncanplay="${one}">..</div>
+<div th:oncanplay="${2+3}">..</div>
+<div th:oncanplay="${true}">..</div>
+<div th:oncanplay="${false}">..</div>
+<div th:oncanplay="*{null}">..</div>
+<div th:oncanplay="*{one}">..</div>
+<div th:oncanplay="*{2+3}">..</div>
+<div th:oncanplay="*{true}">..</div>
+<div th:oncanplay="*{false}">..</div>
+
+<div oncanplay="old" th:oncanplay="'hello'">..</div>
+<div oncanplay="old" th:oncanplay="${null}">..</div>
+<div oncanplay="old" th:oncanplay="${one}">..</div>
+<div oncanplay="old" th:oncanplay="${2+3}">..</div>
+<div oncanplay="old" th:oncanplay="${true}">..</div>
+<div oncanplay="old" th:oncanplay="${false}">..</div>
+<div oncanplay="old" th:oncanplay="*{null}">..</div>
+<div oncanplay="old" th:oncanplay="*{one}">..</div>
+<div oncanplay="old" th:oncanplay="*{2+3}">..</div>
+<div oncanplay="old" th:oncanplay="*{true}">..</div>
+<div oncanplay="old" th:oncanplay="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div oncanplay="hello">..</div>
+<div>..</div>
+<div oncanplay="2">..</div>
+<div oncanplay="5">..</div>
+<div oncanplay="true">..</div>
+<div oncanplay="false">..</div>
+<div>..</div>
+<div oncanplay="2">..</div>
+<div oncanplay="5">..</div>
+<div oncanplay="true">..</div>
+<div oncanplay="false">..</div>
+
+<div oncanplay="hello">..</div>
+<div>..</div>
+<div oncanplay="2">..</div>
+<div oncanplay="5">..</div>
+<div oncanplay="true">..</div>
+<div oncanplay="false">..</div>
+<div>..</div>
+<div oncanplay="2">..</div>
+<div oncanplay="5">..</div>
+<div oncanplay="true">..</div>
+<div oncanplay="false">..</div>

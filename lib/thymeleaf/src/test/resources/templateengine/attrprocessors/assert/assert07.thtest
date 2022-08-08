@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'something'
+twovar = 20
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <div th:with="threevar=${twovar}+25" th:assert="${threevar} &gt; 21" class="a">tururu</div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <div class="a">tururu</div>
+</div>

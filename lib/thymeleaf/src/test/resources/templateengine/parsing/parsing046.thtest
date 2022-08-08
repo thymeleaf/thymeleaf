@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+data = {'alpha','beta'}
+# ------------------------------------------------------------
+%INPUT
+<div>
+    <input type="text" th:each="d : ${data}" th:value="${d}">
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+    <input type="text" value="alpha"><input type="text" value="beta">
+</div>

@@ -1,0 +1,12 @@
+%TEMPLATE_MODE CSS
+# ------------------------------------------------------------
+%CONTEXT
+hello = 'Hello there!'
+# ------------------------------------------------------------
+%INPUT
+[# TH:TEXT="${hello}"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+# The prototyping text is not being replaced because text modes
+# are case-sensitive, so TH:TEXT is not being recognized
+Some text

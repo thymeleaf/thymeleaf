@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onerror="[['hello']]">..</div>
+<div th:onerror="[[${null}]]">..</div>
+<div th:onerror="[[${one}]]">..</div>
+<div th:onerror="[[${two}]]">..</div>
+<div th:onerror="[[${three}]]">..</div>
+<div th:onerror="[('hello')]">..</div>
+<div th:onerror="[(${null})]">..</div>
+<div th:onerror="[(${one})]">..</div>
+<div th:onerror="[(${two})]">..</div>
+<div th:onerror="[(${three})]">..</div>
+<div th:onerror="a${a}a[['hello']]a${a}a">..</div>
+<div th:onerror="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onerror="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onerror="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onerror="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onerror="a${a}a[('hello')]a${a}a">..</div>
+<div th:onerror="a${a}a[(${null})]a${a}a">..</div>
+<div th:onerror="a${a}a[(${one})]a${a}a">..</div>
+<div th:onerror="a${a}a[(${two})]a${a}a">..</div>
+<div th:onerror="a${a}a[(${three})]a${a}a">..</div>
+
+<div onerror="old" th:onerror="[['hello']]">..</div>
+<div onerror="old" th:onerror="[[${null}]]">..</div>
+<div onerror="old" th:onerror="[[${one}]]">..</div>
+<div onerror="old" th:onerror="[[${two}]]">..</div>
+<div onerror="old" th:onerror="[[${three}]]">..</div>
+<div onerror="old" th:onerror="[('hello')]">..</div>
+<div onerror="old" th:onerror="[(${null})]">..</div>
+<div onerror="old" th:onerror="[(${one})]">..</div>
+<div onerror="old" th:onerror="[(${two})]">..</div>
+<div onerror="old" th:onerror="[(${three})]">..</div>
+<div onerror="old" th:onerror="a${a}a[['hello']]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[[${null}]]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[[${one}]]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[[${two}]]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[[${three}]]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[('hello')]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[(${null})]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[(${one})]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[(${two})]a${a}a">..</div>
+<div onerror="old" th:onerror="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onerror="&quot;hello&quot;">..</div>
+<div onerror="null">..</div>
+<div onerror="2">..</div>
+<div onerror="&quot;two&quot;">..</div>
+<div onerror="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onerror="hello">..</div>
+<div>..</div>
+<div onerror="2">..</div>
+<div onerror="two">..</div>
+<div onerror="two &quot;plus&quot; one">..</div>
+<div onerror="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onerror="a${a}anulla${a}a">..</div>
+<div onerror="a${a}a2a${a}a">..</div>
+<div onerror="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onerror="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onerror="a${a}ahelloa${a}a">..</div>
+<div onerror="a${a}aa${a}a">..</div>
+<div onerror="a${a}a2a${a}a">..</div>
+<div onerror="a${a}atwoa${a}a">..</div>
+<div onerror="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onerror="&quot;hello&quot;">..</div>
+<div onerror="null">..</div>
+<div onerror="2">..</div>
+<div onerror="&quot;two&quot;">..</div>
+<div onerror="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onerror="hello">..</div>
+<div>..</div>
+<div onerror="2">..</div>
+<div onerror="two">..</div>
+<div onerror="two &quot;plus&quot; one">..</div>
+<div onerror="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onerror="a${a}anulla${a}a">..</div>
+<div onerror="a${a}a2a${a}a">..</div>
+<div onerror="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onerror="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onerror="a${a}ahelloa${a}a">..</div>
+<div onerror="a${a}aa${a}a">..</div>
+<div onerror="a${a}a2a${a}a">..</div>
+<div onerror="a${a}atwoa${a}a">..</div>
+<div onerror="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

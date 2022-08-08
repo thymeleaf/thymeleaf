@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+<html>
+  <div th:insert="frag :: f">hello!</div>
+</html>
+# ------------------------------------------------------------
+%INPUT[frag]
+Some text
+<p>some text here too...</p>
+<p th:fragment="f">hello!<span th:inline="text">goodbye [['what&ver']]!</span></p>
+<p>...surrounding the important part</p>
+# ------------------------------------------------------------
+%OUTPUT
+<html pre="0" post="0">
+   (pre:0) (post:0)<div pre="1" post="1"><p pre="0" post="2">hello! (pre:0) (post:1)<span pre="1" post="3">goodbye what&amp;ver! (pre:1) (post:2)</span></p></div>
+ (pre:2) (post:3)</html>

@@ -1,0 +1,12 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+class = 'This is a class text'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#vars.class}">...</p>
+<p data-th-text="${class}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>This is a class text</p>
+<p>This is a class text</p>

@@ -1,0 +1,49 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div th:with="index=0">
+  <p>This is some text</p>
+  <div th:substituteby="frag :: f">...</div>
+</div>
+%INPUT[frag]
+<div th:fragment="f" class="a">
+  <div th:with="index=(${index}+1)">
+    <p>before</p>
+    <div th:if="${index &lt; 3}" th:remove="tag"><div th:substituteby="frag :: f">...</div></div>
+    <p>after</p>
+  </div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>This is some text</p>
+# start fragment
+  <div class="a">
+    <div>
+# index = 1
+      <p>before</p>
+# start fragment
+      <div class="a">
+        <div>
+# index = 2
+          <p>before</p>
+# start fragment
+          <div class="a">
+            <div>
+# index = 3
+              <p>before</p>
+# no fragment to be included... index == 3!
+              <p>after</p>
+            </div>
+          </div>
+# end fragment
+          <p>after</p>
+        </div>
+      </div>
+# end fragment
+      <p>after</p>
+    </div>
+  </div>
+# end fragment
+</div>
+

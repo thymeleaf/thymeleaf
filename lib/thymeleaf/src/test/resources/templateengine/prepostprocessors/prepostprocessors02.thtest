@@ -1,0 +1,29 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html>
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<?xml version="1.0"?>
+<html>
+  <p>hello!</p>
+  <img src="something">
+  <p>goodbye!</p>
+</html>
+<?php whatever?>
+<?php whatever?>
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html [(pre:0) (post:0)]>
+ (pre:0) (post:0)<?xml version="1.0" encoding="(pre:0) (post:0)"?>
+ (pre:1) (post:1)<!DOCTYPE html [(pre:1) (post:1)]>
+ (pre:2) (post:2)<?xml version="1.0" encoding="(pre:1) (post:1)"?>
+ (pre:3) (post:3)<html pre="0" post="0">
+   (pre:4) (post:4)<p pre="1" post="1">hello! (pre:5) (post:5)</p>
+   (pre:6) (post:6)<img src="something" pre="0" post="0">
+   (pre:7) (post:7)<p pre="2" post="2">goodbye! (pre:8) (post:8)</p>
+ (pre:9) (post:9)</html>
+ (pre:10) (post:10)<?php whatever (pre:0) (post:0)?>
+ (pre:11) (post:11)<?php whatever (pre:1) (post:1)?>

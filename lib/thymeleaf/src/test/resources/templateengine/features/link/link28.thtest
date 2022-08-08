@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+value1 = 'one'
+# ------------------------------------------------------------
+%INPUT
+<div th:inline="text">
+  <a href="[(@{offer/__${value1}__})]">[# th:utext="${value1}"/]</a>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+# We are doing TEXT inlining, so elements in Text events will be processed
+<div>
+  <a href="[(@{offer/__${value1}__})]">one</a>
+</div>

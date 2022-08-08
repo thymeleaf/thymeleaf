@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+value1 = 'one'
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <a href="[(@{offer/__${value1}__})]">[# th:utext="${value1}"/]</a>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+# Default HTML inlining taking place, so no element processing as in TEXT mode
+<div>
+  <a href="[(@{offer/__${value1}__})]">[# th:utext="${value1}"/]</a>
+</div>

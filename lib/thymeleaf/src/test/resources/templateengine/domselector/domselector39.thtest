@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT ul/[@class='not-important']
+# ------------------------------------------------------------
+%OUTPUT
+<li class="last not-important">Extremely extensible: can be used as a <i>template engine framework</i> if needed.</li>

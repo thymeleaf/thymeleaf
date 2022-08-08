@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:nowrap="${t}">..</div>
+<div th:nowrap="${f}">..</div>
+<div th:nowrap="${one}">..</div>
+<div th:nowrap="'hello'">..</div>
+<div th:nowrap="${null}">..</div>
+<div th:nowrap="''">..</div>
+
+<div nowrap="old" th:nowrap="${t}">..</div>
+<div nowrap="old" th:nowrap="${f}">..</div>
+<div nowrap="old" th:nowrap="${one}">..</div>
+<div nowrap="old" th:nowrap="'hello'">..</div>
+<div nowrap="old" th:nowrap="${null}">..</div>
+<div nowrap="old" th:nowrap="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div nowrap="nowrap">..</div>
+<div>..</div>
+<div nowrap="nowrap">..</div>
+<div nowrap="nowrap">..</div>
+<div>..</div>
+<div nowrap="nowrap">..</div>
+
+<div nowrap="nowrap">..</div>
+<div>..</div>
+<div nowrap="nowrap">..</div>
+<div nowrap="nowrap">..</div>
+<div>..</div>
+<div nowrap="nowrap">..</div>

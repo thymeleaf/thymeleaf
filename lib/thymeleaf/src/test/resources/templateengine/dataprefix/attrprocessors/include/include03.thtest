@@ -1,0 +1,37 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+product1 = #{ 'name': 'Lettuce',\
+              'price': 12.0 }
+product2 = #{ 'name': 'Apricot',\
+              'price': 8.0 }
+products = { product1, product2 }
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr data-th-each="product : ${products}" data-th-include="product :: productTemplate"
+      data-th-with="productName=${product.name}, productPrice=${product.price}"
+      data-th-remove="tag" />
+</table>
+# ------------------------------------------------------------
+%INPUT[product]
+<tbody data-th-fragment="productTemplate">
+  <tr class="my-class">
+      <td data-th-text="${productName}">product name</td>
+      <td data-th-text="${productPrice}">product price</td>
+  </tr>
+</tbody>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tr class="my-class">
+    <td>Lettuce</td>
+    <td>12.0</td>
+  </tr>
+  <tr class="my-class">
+    <td>Apricot</td>
+    <td>8.0</td>
+  </tr>
+</table>
+
+

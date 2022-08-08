@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="frag(cond=false,a=~{::title.a},b=~{::title.b})">
+  <title class="a">A title</title>
+  <title class="b">B title</title>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<span th:replace="${cond} ? ${a} : ${b}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<title class="b">B title</title>

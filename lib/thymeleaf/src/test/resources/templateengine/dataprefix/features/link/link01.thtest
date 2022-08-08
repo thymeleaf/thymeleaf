@@ -1,0 +1,11 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%INPUT
+<a data-th-href="@{/url(a[0]='b')}">go</a>
+<a data-th-href="@{${base_url}(a[0]='b')}">go</a>
+<a data-th-href="@{(${base_url} + '/doit')(a[0]='b')}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/url?a%5B0%5D=b">go</a>
+<a href="/testing/base/url?a%5B0%5D=b">go</a>
+<a href="/testing/base/url/doit?a%5B0%5D=b">go</a>

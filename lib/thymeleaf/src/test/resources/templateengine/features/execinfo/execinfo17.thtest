@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+%NAME execinfotest17
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="frag">...</div>
+%INPUT[frag]
+<!--[if IE]><p th:text="${#execInfo.templateName}">...</p><![endif]-->
+# ------------------------------------------------------------
+%OUTPUT
+<!--[if IE]><p>frag</p><![endif]-->

@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT span
+# ------------------------------------------------------------
+%OUTPUT
+<span class="current">features</span>

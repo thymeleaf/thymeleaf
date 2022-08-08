@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+user = #{ 'name': 'Jack Melon',\
+           'role': 'finance' }
+# ------------------------------------------------------------
+%INPUT
+<div data-th-with="a=${user}">...</div>
+<div data-th-text="${a.name}">...</div>
+# ------------------------------------------------------------
+%EXCEPTION ognl.OgnlException
+

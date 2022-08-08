@@ -1,0 +1,10 @@
+%TEMPLATE_MODE TEXT
+%NAME execinfotest06
+# ------------------------------------------------------------
+%INPUT
+[# th:text="${#execInfo.templateName}"]the test name will be used...[/]
+[# th:if="${#execInfo.now != null}"]there is a now[/]
+# ------------------------------------------------------------
+%OUTPUT
+execinfotest06-001
+there is a now

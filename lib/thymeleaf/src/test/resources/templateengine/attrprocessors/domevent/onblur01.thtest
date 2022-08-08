@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onblur="'hello'">..</div>
+<div th:onblur="${null}">..</div>
+<div th:onblur="${one}">..</div>
+<div th:onblur="${2+3}">..</div>
+<div th:onblur="${true}">..</div>
+<div th:onblur="${false}">..</div>
+<div th:onblur="*{null}">..</div>
+<div th:onblur="*{one}">..</div>
+<div th:onblur="*{2+3}">..</div>
+<div th:onblur="*{true}">..</div>
+<div th:onblur="*{false}">..</div>
+
+<div onblur="old" th:onblur="'hello'">..</div>
+<div onblur="old" th:onblur="${null}">..</div>
+<div onblur="old" th:onblur="${one}">..</div>
+<div onblur="old" th:onblur="${2+3}">..</div>
+<div onblur="old" th:onblur="${true}">..</div>
+<div onblur="old" th:onblur="${false}">..</div>
+<div onblur="old" th:onblur="*{null}">..</div>
+<div onblur="old" th:onblur="*{one}">..</div>
+<div onblur="old" th:onblur="*{2+3}">..</div>
+<div onblur="old" th:onblur="*{true}">..</div>
+<div onblur="old" th:onblur="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onblur="hello">..</div>
+<div>..</div>
+<div onblur="2">..</div>
+<div onblur="5">..</div>
+<div onblur="true">..</div>
+<div onblur="false">..</div>
+<div>..</div>
+<div onblur="2">..</div>
+<div onblur="5">..</div>
+<div onblur="true">..</div>
+<div onblur="false">..</div>
+
+<div onblur="hello">..</div>
+<div>..</div>
+<div onblur="2">..</div>
+<div onblur="5">..</div>
+<div onblur="true">..</div>
+<div onblur="false">..</div>
+<div>..</div>
+<div onblur="2">..</div>
+<div onblur="5">..</div>
+<div onblur="true">..</div>
+<div onblur="false">..</div>

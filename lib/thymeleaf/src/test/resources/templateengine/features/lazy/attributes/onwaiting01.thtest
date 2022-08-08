@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onwaiting="${one}">..</div>
+<div onwaiting="old" th:onwaiting="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onwaiting="2">..</div>
+<div onwaiting="2">..</div>

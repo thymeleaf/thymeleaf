@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+user = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+<![CDATA[
+  Hello, [[${user}]]
+]]>
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+<![CDATA[
+  Hello, "John Apricot"
+]]>
+</script>

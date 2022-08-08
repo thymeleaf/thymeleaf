@@ -1,0 +1,15 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'something'
+twovar = #{ 'value' : 25 }
+# ------------------------------------------------------------
+%INPUT
+<div>
+  [# th:object="${twovar}" th:assert="*{value} &gt; 21" th:remove="tag"]tururu[/]
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  tururu
+</div>

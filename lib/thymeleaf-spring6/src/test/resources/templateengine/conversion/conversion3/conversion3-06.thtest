@@ -1,0 +1,21 @@
+%EXTENDS conversion3.common
+# ------------------------------------------------------------
+%CONTEXT
+obj = conversion3Obj1
+objs = { conversion3Obj2 }
+alldates = { conversion3Obj1, conversion3Obj2 }
+# ------------------------------------------------------------
+%INPUT
+<p th:each=" obj : ${objs}" th:text="${{obj.date}}">A date, which should be from 1990</p>
+<p th:text="${{obj.date}}">A date, which should be from 2006</p>
+<ul>
+  <li th:each=" d : ${alldates}" th:text="${{d.date}}">...</li>
+</ul>
+# ------------------------------------------------------------
+%OUTPUT
+<p>1990-04-30</p>
+<p>2006-05-23</p>
+<ul>
+  <li>2006-05-23</li>
+  <li>1990-04-30</li>
+</ul>

@@ -1,0 +1,7 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+[# th:inline="none"]var fizz = [[fizz, buzz], [foo, bar, [# th:inline="css"][[${10+3}]][/]]];[/]
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+

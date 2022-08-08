@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+map = new java.util.EnumMap(@java.util.concurrent.TimeUnit@class)
+map[@java.util.concurrent.TimeUnit@SECONDS] = 1
+map[@java.util.concurrent.TimeUnit@MILLISECONDS] = 2
+# ------------------------------------------------------------
+%INPUT
+<div data-th-each="entry :${map}" data-th-text="${entry}"></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>MILLISECONDS=2</div><div>SECONDS=1</div>

@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onedate = new org.thymeleaf.templateengine.conversion.conversion2.Conversion2Date(#dates.create(1492,10,12))
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${onedate}">...</p>
+<p th:text="|The date is ${onedate}|">...</p>
+<p th:text="${{onedate}}">...</p>
+<p th:text="|The date is ${{onedate}}|">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Fri Oct 12 00:00:00 1492</p>
+<p>The date is Fri Oct 12 00:00:00 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+

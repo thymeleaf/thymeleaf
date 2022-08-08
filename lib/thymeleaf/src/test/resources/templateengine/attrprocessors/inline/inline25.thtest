@@ -1,0 +1,20 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+foo = 'fooo!'
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="dart">
+    /* <![CDATA[ */
+            fooUrl:/*[['/fooservice/foo/']]*/   "http://10.200.55.223/fooservice/foo/",
+            barUrl:/*[['/barservice/bar/']]*/   "http://10.200.55.223/barservice/bar/"
+    /* ]]> */
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+    /* <![CDATA[ */
+            fooUrl:"\/fooservice\/foo\/",
+            barUrl:"\/barservice\/bar\/"
+    /* ]]> */
+</script>

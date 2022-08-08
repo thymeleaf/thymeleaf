@@ -1,0 +1,30 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+user = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html>
+<html>
+  <body th:inline="text">
+    <div>
+      Hello, [[${user}]]
+      <div th:if="${user == null}">
+	    There is no user!
+      </div>
+      Yes, it's [# th:text="${user}"/]!
+    </div>
+  </body>
+</html>
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+<html>
+  <body>
+    <div>
+      Hello, John Apricot
+
+      Yes, it's John Apricot!
+    </div>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+param.one = '/something'
+param.two = 'Something'
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{${param.one}(param=1)}">go</a>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

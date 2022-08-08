@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:selected="${t}">..</div>
+<div th:selected="${f}">..</div>
+<div th:selected="${one}">..</div>
+<div th:selected="'hello'">..</div>
+<div th:selected="${null}">..</div>
+<div th:selected="''">..</div>
+
+<div selected="old" th:selected="${t}">..</div>
+<div selected="old" th:selected="${f}">..</div>
+<div selected="old" th:selected="${one}">..</div>
+<div selected="old" th:selected="'hello'">..</div>
+<div selected="old" th:selected="${null}">..</div>
+<div selected="old" th:selected="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div selected="selected">..</div>
+<div>..</div>
+<div selected="selected">..</div>
+<div selected="selected">..</div>
+<div>..</div>
+<div selected="selected">..</div>
+
+<div selected="selected">..</div>
+<div>..</div>
+<div selected="selected">..</div>
+<div selected="selected">..</div>
+<div>..</div>
+<div selected="selected">..</div>

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<section>
+  <div markup:replace="...">
+    <p>Hello!</p>
+  </div>
+</section>
+# ------------------------------------------------------------
+%OUTPUT
+<section>
+  <p>This is a <span>replacement</span></p>
+</section>

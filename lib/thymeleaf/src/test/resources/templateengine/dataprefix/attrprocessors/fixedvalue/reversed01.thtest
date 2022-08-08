@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-reversed="${t}">..</div>
+<div data-th-reversed="${f}">..</div>
+<div data-th-reversed="${one}">..</div>
+<div data-th-reversed="'hello'">..</div>
+<div data-th-reversed="${null}">..</div>
+<div data-th-reversed="''">..</div>
+
+<div reversed="old" data-th-reversed="${t}">..</div>
+<div reversed="old" data-th-reversed="${f}">..</div>
+<div reversed="old" data-th-reversed="${one}">..</div>
+<div reversed="old" data-th-reversed="'hello'">..</div>
+<div reversed="old" data-th-reversed="${null}">..</div>
+<div reversed="old" data-th-reversed="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div reversed="reversed">..</div>
+<div>..</div>
+<div reversed="reversed">..</div>
+<div reversed="reversed">..</div>
+<div>..</div>
+<div reversed="reversed">..</div>
+
+<div reversed="reversed">..</div>
+<div>..</div>
+<div reversed="reversed">..</div>
+<div reversed="reversed">..</div>
+<div>..</div>
+<div reversed="reversed">..</div>

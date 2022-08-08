@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<body>
+<style th:inline="css">
+  sometag {
+    something1: '/*';
+    something2: "/*";
+  }
+</style>
+</body>
+# ------------------------------------------------------------
+%OUTPUT
+<body>
+<style>
+  sometag {
+    something1: '/*';
+    something2: "/*";
+  }
+</style>
+</body>

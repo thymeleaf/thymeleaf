@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondurationchange="'hello'">..</div>
+<div th:ondurationchange="${null}">..</div>
+<div th:ondurationchange="${one}">..</div>
+<div th:ondurationchange="${2+3}">..</div>
+<div th:ondurationchange="${true}">..</div>
+<div th:ondurationchange="${false}">..</div>
+<div th:ondurationchange="*{null}">..</div>
+<div th:ondurationchange="*{one}">..</div>
+<div th:ondurationchange="*{2+3}">..</div>
+<div th:ondurationchange="*{true}">..</div>
+<div th:ondurationchange="*{false}">..</div>
+
+<div ondurationchange="old" th:ondurationchange="'hello'">..</div>
+<div ondurationchange="old" th:ondurationchange="${null}">..</div>
+<div ondurationchange="old" th:ondurationchange="${one}">..</div>
+<div ondurationchange="old" th:ondurationchange="${2+3}">..</div>
+<div ondurationchange="old" th:ondurationchange="${true}">..</div>
+<div ondurationchange="old" th:ondurationchange="${false}">..</div>
+<div ondurationchange="old" th:ondurationchange="*{null}">..</div>
+<div ondurationchange="old" th:ondurationchange="*{one}">..</div>
+<div ondurationchange="old" th:ondurationchange="*{2+3}">..</div>
+<div ondurationchange="old" th:ondurationchange="*{true}">..</div>
+<div ondurationchange="old" th:ondurationchange="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondurationchange="hello">..</div>
+<div>..</div>
+<div ondurationchange="2">..</div>
+<div ondurationchange="5">..</div>
+<div ondurationchange="true">..</div>
+<div ondurationchange="false">..</div>
+<div>..</div>
+<div ondurationchange="2">..</div>
+<div ondurationchange="5">..</div>
+<div ondurationchange="true">..</div>
+<div ondurationchange="false">..</div>
+
+<div ondurationchange="hello">..</div>
+<div>..</div>
+<div ondurationchange="2">..</div>
+<div ondurationchange="5">..</div>
+<div ondurationchange="true">..</div>
+<div ondurationchange="false">..</div>
+<div>..</div>
+<div ondurationchange="2">..</div>
+<div ondurationchange="5">..</div>
+<div ondurationchange="true">..</div>
+<div ondurationchange="false">..</div>

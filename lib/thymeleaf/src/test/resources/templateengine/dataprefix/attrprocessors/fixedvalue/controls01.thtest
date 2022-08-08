@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-controls="${t}">..</div>
+<div data-th-controls="${f}">..</div>
+<div data-th-controls="${one}">..</div>
+<div data-th-controls="'hello'">..</div>
+<div data-th-controls="${null}">..</div>
+<div data-th-controls="''">..</div>
+
+<div controls="old" data-th-controls="${t}">..</div>
+<div controls="old" data-th-controls="${f}">..</div>
+<div controls="old" data-th-controls="${one}">..</div>
+<div controls="old" data-th-controls="'hello'">..</div>
+<div controls="old" data-th-controls="${null}">..</div>
+<div controls="old" data-th-controls="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div controls="controls">..</div>
+<div>..</div>
+<div controls="controls">..</div>
+<div controls="controls">..</div>
+<div>..</div>
+<div controls="controls">..</div>
+
+<div controls="controls">..</div>
+<div>..</div>
+<div controls="controls">..</div>
+<div controls="controls">..</div>
+<div>..</div>
+<div controls="controls">..</div>

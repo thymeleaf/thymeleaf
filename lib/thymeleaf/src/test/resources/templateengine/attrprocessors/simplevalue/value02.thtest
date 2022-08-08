@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+<div value="x" id=2 th:value="one">..</div>
+<div th:value='hello' id=2>..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div value="one" id=2>..</div>
+<div value='hello' id=2>..</div>

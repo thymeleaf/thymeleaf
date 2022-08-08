@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onkeypress="[['hello']]">..</div>
+<div th:onkeypress="[[${null}]]">..</div>
+<div th:onkeypress="[[${one}]]">..</div>
+<div th:onkeypress="[[${two}]]">..</div>
+<div th:onkeypress="[[${three}]]">..</div>
+<div th:onkeypress="[('hello')]">..</div>
+<div th:onkeypress="[(${null})]">..</div>
+<div th:onkeypress="[(${one})]">..</div>
+<div th:onkeypress="[(${two})]">..</div>
+<div th:onkeypress="[(${three})]">..</div>
+<div th:onkeypress="a${a}a[['hello']]a${a}a">..</div>
+<div th:onkeypress="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onkeypress="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onkeypress="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onkeypress="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onkeypress="a${a}a[('hello')]a${a}a">..</div>
+<div th:onkeypress="a${a}a[(${null})]a${a}a">..</div>
+<div th:onkeypress="a${a}a[(${one})]a${a}a">..</div>
+<div th:onkeypress="a${a}a[(${two})]a${a}a">..</div>
+<div th:onkeypress="a${a}a[(${three})]a${a}a">..</div>
+
+<div onkeypress="old" th:onkeypress="[['hello']]">..</div>
+<div onkeypress="old" th:onkeypress="[[${null}]]">..</div>
+<div onkeypress="old" th:onkeypress="[[${one}]]">..</div>
+<div onkeypress="old" th:onkeypress="[[${two}]]">..</div>
+<div onkeypress="old" th:onkeypress="[[${three}]]">..</div>
+<div onkeypress="old" th:onkeypress="[('hello')]">..</div>
+<div onkeypress="old" th:onkeypress="[(${null})]">..</div>
+<div onkeypress="old" th:onkeypress="[(${one})]">..</div>
+<div onkeypress="old" th:onkeypress="[(${two})]">..</div>
+<div onkeypress="old" th:onkeypress="[(${three})]">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[['hello']]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[[${null}]]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[[${one}]]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[[${two}]]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[[${three}]]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[('hello')]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[(${null})]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[(${one})]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[(${two})]a${a}a">..</div>
+<div onkeypress="old" th:onkeypress="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onkeypress="&quot;hello&quot;">..</div>
+<div onkeypress="null">..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="&quot;two&quot;">..</div>
+<div onkeypress="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onkeypress="hello">..</div>
+<div>..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="two">..</div>
+<div onkeypress="two &quot;plus&quot; one">..</div>
+<div onkeypress="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onkeypress="a${a}anulla${a}a">..</div>
+<div onkeypress="a${a}a2a${a}a">..</div>
+<div onkeypress="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onkeypress="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onkeypress="a${a}ahelloa${a}a">..</div>
+<div onkeypress="a${a}aa${a}a">..</div>
+<div onkeypress="a${a}a2a${a}a">..</div>
+<div onkeypress="a${a}atwoa${a}a">..</div>
+<div onkeypress="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onkeypress="&quot;hello&quot;">..</div>
+<div onkeypress="null">..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="&quot;two&quot;">..</div>
+<div onkeypress="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onkeypress="hello">..</div>
+<div>..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="two">..</div>
+<div onkeypress="two &quot;plus&quot; one">..</div>
+<div onkeypress="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onkeypress="a${a}anulla${a}a">..</div>
+<div onkeypress="a${a}a2a${a}a">..</div>
+<div onkeypress="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onkeypress="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onkeypress="a${a}ahelloa${a}a">..</div>
+<div onkeypress="a${a}aa${a}a">..</div>
+<div onkeypress="a${a}a2a${a}a">..</div>
+<div onkeypress="a${a}atwoa${a}a">..</div>
+<div onkeypress="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

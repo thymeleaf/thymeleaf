@@ -1,0 +1,11 @@
+%TEMPLATE_MODE XML
+%TEMPLATE_MODE[frag] HTML
+%NAME execinfotest18
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="frag">...</div>
+%INPUT[frag]
+<!--[if IE]><p th:text="${#execInfo.templateName}">...</p><![endif]-->
+# ------------------------------------------------------------
+%OUTPUT
+<!--[if IE]><p>frag</p><![endif]-->

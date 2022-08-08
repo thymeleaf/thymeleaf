@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onhashchange="[['hello']]">..</div>
+<div th:onhashchange="[[${null}]]">..</div>
+<div th:onhashchange="[[${one}]]">..</div>
+<div th:onhashchange="[[${two}]]">..</div>
+<div th:onhashchange="[[${three}]]">..</div>
+<div th:onhashchange="[('hello')]">..</div>
+<div th:onhashchange="[(${null})]">..</div>
+<div th:onhashchange="[(${one})]">..</div>
+<div th:onhashchange="[(${two})]">..</div>
+<div th:onhashchange="[(${three})]">..</div>
+<div th:onhashchange="a${a}a[['hello']]a${a}a">..</div>
+<div th:onhashchange="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onhashchange="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onhashchange="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onhashchange="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onhashchange="a${a}a[('hello')]a${a}a">..</div>
+<div th:onhashchange="a${a}a[(${null})]a${a}a">..</div>
+<div th:onhashchange="a${a}a[(${one})]a${a}a">..</div>
+<div th:onhashchange="a${a}a[(${two})]a${a}a">..</div>
+<div th:onhashchange="a${a}a[(${three})]a${a}a">..</div>
+
+<div onhashchange="old" th:onhashchange="[['hello']]">..</div>
+<div onhashchange="old" th:onhashchange="[[${null}]]">..</div>
+<div onhashchange="old" th:onhashchange="[[${one}]]">..</div>
+<div onhashchange="old" th:onhashchange="[[${two}]]">..</div>
+<div onhashchange="old" th:onhashchange="[[${three}]]">..</div>
+<div onhashchange="old" th:onhashchange="[('hello')]">..</div>
+<div onhashchange="old" th:onhashchange="[(${null})]">..</div>
+<div onhashchange="old" th:onhashchange="[(${one})]">..</div>
+<div onhashchange="old" th:onhashchange="[(${two})]">..</div>
+<div onhashchange="old" th:onhashchange="[(${three})]">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[['hello']]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[[${null}]]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[[${one}]]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[[${two}]]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[[${three}]]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[('hello')]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[(${null})]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[(${one})]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[(${two})]a${a}a">..</div>
+<div onhashchange="old" th:onhashchange="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onhashchange="&quot;hello&quot;">..</div>
+<div onhashchange="null">..</div>
+<div onhashchange="2">..</div>
+<div onhashchange="&quot;two&quot;">..</div>
+<div onhashchange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onhashchange="hello">..</div>
+<div>..</div>
+<div onhashchange="2">..</div>
+<div onhashchange="two">..</div>
+<div onhashchange="two &quot;plus&quot; one">..</div>
+<div onhashchange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onhashchange="a${a}anulla${a}a">..</div>
+<div onhashchange="a${a}a2a${a}a">..</div>
+<div onhashchange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onhashchange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onhashchange="a${a}ahelloa${a}a">..</div>
+<div onhashchange="a${a}aa${a}a">..</div>
+<div onhashchange="a${a}a2a${a}a">..</div>
+<div onhashchange="a${a}atwoa${a}a">..</div>
+<div onhashchange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onhashchange="&quot;hello&quot;">..</div>
+<div onhashchange="null">..</div>
+<div onhashchange="2">..</div>
+<div onhashchange="&quot;two&quot;">..</div>
+<div onhashchange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onhashchange="hello">..</div>
+<div>..</div>
+<div onhashchange="2">..</div>
+<div onhashchange="two">..</div>
+<div onhashchange="two &quot;plus&quot; one">..</div>
+<div onhashchange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onhashchange="a${a}anulla${a}a">..</div>
+<div onhashchange="a${a}a2a${a}a">..</div>
+<div onhashchange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onhashchange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onhashchange="a${a}ahelloa${a}a">..</div>
+<div onhashchange="a${a}aa${a}a">..</div>
+<div onhashchange="a${a}a2a${a}a">..</div>
+<div onhashchange="a${a}atwoa${a}a">..</div>
+<div onhashchange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

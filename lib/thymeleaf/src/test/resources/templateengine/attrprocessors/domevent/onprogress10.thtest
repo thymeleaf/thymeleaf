@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onprogress="[['hello']]">..</div>
+<div th:onprogress="[[${null}]]">..</div>
+<div th:onprogress="[[${one}]]">..</div>
+<div th:onprogress="[[${two}]]">..</div>
+<div th:onprogress="[[${three}]]">..</div>
+<div th:onprogress="[('hello')]">..</div>
+<div th:onprogress="[(${null})]">..</div>
+<div th:onprogress="[(${one})]">..</div>
+<div th:onprogress="[(${two})]">..</div>
+<div th:onprogress="[(${three})]">..</div>
+<div th:onprogress="a${a}a[['hello']]a${a}a">..</div>
+<div th:onprogress="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onprogress="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onprogress="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onprogress="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onprogress="a${a}a[('hello')]a${a}a">..</div>
+<div th:onprogress="a${a}a[(${null})]a${a}a">..</div>
+<div th:onprogress="a${a}a[(${one})]a${a}a">..</div>
+<div th:onprogress="a${a}a[(${two})]a${a}a">..</div>
+<div th:onprogress="a${a}a[(${three})]a${a}a">..</div>
+
+<div onprogress="old" th:onprogress="[['hello']]">..</div>
+<div onprogress="old" th:onprogress="[[${null}]]">..</div>
+<div onprogress="old" th:onprogress="[[${one}]]">..</div>
+<div onprogress="old" th:onprogress="[[${two}]]">..</div>
+<div onprogress="old" th:onprogress="[[${three}]]">..</div>
+<div onprogress="old" th:onprogress="[('hello')]">..</div>
+<div onprogress="old" th:onprogress="[(${null})]">..</div>
+<div onprogress="old" th:onprogress="[(${one})]">..</div>
+<div onprogress="old" th:onprogress="[(${two})]">..</div>
+<div onprogress="old" th:onprogress="[(${three})]">..</div>
+<div onprogress="old" th:onprogress="a${a}a[['hello']]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[[${null}]]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[[${one}]]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[[${two}]]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[[${three}]]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[('hello')]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[(${null})]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[(${one})]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[(${two})]a${a}a">..</div>
+<div onprogress="old" th:onprogress="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onprogress="&quot;hello&quot;">..</div>
+<div onprogress="null">..</div>
+<div onprogress="2">..</div>
+<div onprogress="&quot;two&quot;">..</div>
+<div onprogress="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onprogress="hello">..</div>
+<div>..</div>
+<div onprogress="2">..</div>
+<div onprogress="two">..</div>
+<div onprogress="two &quot;plus&quot; one">..</div>
+<div onprogress="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onprogress="a${a}anulla${a}a">..</div>
+<div onprogress="a${a}a2a${a}a">..</div>
+<div onprogress="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onprogress="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onprogress="a${a}ahelloa${a}a">..</div>
+<div onprogress="a${a}aa${a}a">..</div>
+<div onprogress="a${a}a2a${a}a">..</div>
+<div onprogress="a${a}atwoa${a}a">..</div>
+<div onprogress="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onprogress="&quot;hello&quot;">..</div>
+<div onprogress="null">..</div>
+<div onprogress="2">..</div>
+<div onprogress="&quot;two&quot;">..</div>
+<div onprogress="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onprogress="hello">..</div>
+<div>..</div>
+<div onprogress="2">..</div>
+<div onprogress="two">..</div>
+<div onprogress="two &quot;plus&quot; one">..</div>
+<div onprogress="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onprogress="a${a}anulla${a}a">..</div>
+<div onprogress="a${a}a2a${a}a">..</div>
+<div onprogress="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onprogress="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onprogress="a${a}ahelloa${a}a">..</div>
+<div onprogress="a${a}aa${a}a">..</div>
+<div onprogress="a${a}a2a${a}a">..</div>
+<div onprogress="a${a}atwoa${a}a">..</div>
+<div onprogress="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

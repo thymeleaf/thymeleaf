@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onundo="[['hello']]">..</div>
+<div th:onundo="[[${null}]]">..</div>
+<div th:onundo="[[${one}]]">..</div>
+<div th:onundo="[[${two}]]">..</div>
+<div th:onundo="[[${three}]]">..</div>
+<div th:onundo="[('hello')]">..</div>
+<div th:onundo="[(${null})]">..</div>
+<div th:onundo="[(${one})]">..</div>
+<div th:onundo="[(${two})]">..</div>
+<div th:onundo="[(${three})]">..</div>
+<div th:onundo="a${a}a[['hello']]a${a}a">..</div>
+<div th:onundo="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onundo="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onundo="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onundo="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onundo="a${a}a[('hello')]a${a}a">..</div>
+<div th:onundo="a${a}a[(${null})]a${a}a">..</div>
+<div th:onundo="a${a}a[(${one})]a${a}a">..</div>
+<div th:onundo="a${a}a[(${two})]a${a}a">..</div>
+<div th:onundo="a${a}a[(${three})]a${a}a">..</div>
+
+<div onundo="old" th:onundo="[['hello']]">..</div>
+<div onundo="old" th:onundo="[[${null}]]">..</div>
+<div onundo="old" th:onundo="[[${one}]]">..</div>
+<div onundo="old" th:onundo="[[${two}]]">..</div>
+<div onundo="old" th:onundo="[[${three}]]">..</div>
+<div onundo="old" th:onundo="[('hello')]">..</div>
+<div onundo="old" th:onundo="[(${null})]">..</div>
+<div onundo="old" th:onundo="[(${one})]">..</div>
+<div onundo="old" th:onundo="[(${two})]">..</div>
+<div onundo="old" th:onundo="[(${three})]">..</div>
+<div onundo="old" th:onundo="a${a}a[['hello']]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[[${null}]]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[[${one}]]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[[${two}]]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[[${three}]]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[('hello')]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[(${null})]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[(${one})]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[(${two})]a${a}a">..</div>
+<div onundo="old" th:onundo="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onundo="&quot;hello&quot;">..</div>
+<div onundo="null">..</div>
+<div onundo="2">..</div>
+<div onundo="&quot;two&quot;">..</div>
+<div onundo="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onundo="hello">..</div>
+<div>..</div>
+<div onundo="2">..</div>
+<div onundo="two">..</div>
+<div onundo="two &quot;plus&quot; one">..</div>
+<div onundo="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onundo="a${a}anulla${a}a">..</div>
+<div onundo="a${a}a2a${a}a">..</div>
+<div onundo="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onundo="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onundo="a${a}ahelloa${a}a">..</div>
+<div onundo="a${a}aa${a}a">..</div>
+<div onundo="a${a}a2a${a}a">..</div>
+<div onundo="a${a}atwoa${a}a">..</div>
+<div onundo="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onundo="&quot;hello&quot;">..</div>
+<div onundo="null">..</div>
+<div onundo="2">..</div>
+<div onundo="&quot;two&quot;">..</div>
+<div onundo="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onundo="hello">..</div>
+<div>..</div>
+<div onundo="2">..</div>
+<div onundo="two">..</div>
+<div onundo="two &quot;plus&quot; one">..</div>
+<div onundo="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onundo="a${a}anulla${a}a">..</div>
+<div onundo="a${a}a2a${a}a">..</div>
+<div onundo="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onundo="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onundo="a${a}ahelloa${a}a">..</div>
+<div onundo="a${a}aa${a}a">..</div>
+<div onundo="a${a}a2a${a}a">..</div>
+<div onundo="a${a}atwoa${a}a">..</div>
+<div onundo="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

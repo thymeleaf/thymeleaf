@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 'one & two'
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:inline="text">
+ This is some value: [# th:text="${var}" /]
+</div>
+...
+# ------------------------------------------------------------
+%OUTPUT
+...
+<div>
+ This is some value: one &amp; two
+</div>
+...

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+param.one='One'
+# ------------------------------------------------------------
+%INPUT
+<html ng-app="myapp" th:ng-app="${param.one} + ' more'">
+# ------------------------------------------------------------
+%INPUT[frag]
+<span id="content">oneapp</span>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

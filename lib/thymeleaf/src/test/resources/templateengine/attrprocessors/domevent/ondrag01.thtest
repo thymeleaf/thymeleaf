@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondrag="'hello'">..</div>
+<div th:ondrag="${null}">..</div>
+<div th:ondrag="${one}">..</div>
+<div th:ondrag="${2+3}">..</div>
+<div th:ondrag="${true}">..</div>
+<div th:ondrag="${false}">..</div>
+<div th:ondrag="*{null}">..</div>
+<div th:ondrag="*{one}">..</div>
+<div th:ondrag="*{2+3}">..</div>
+<div th:ondrag="*{true}">..</div>
+<div th:ondrag="*{false}">..</div>
+
+<div ondrag="old" th:ondrag="'hello'">..</div>
+<div ondrag="old" th:ondrag="${null}">..</div>
+<div ondrag="old" th:ondrag="${one}">..</div>
+<div ondrag="old" th:ondrag="${2+3}">..</div>
+<div ondrag="old" th:ondrag="${true}">..</div>
+<div ondrag="old" th:ondrag="${false}">..</div>
+<div ondrag="old" th:ondrag="*{null}">..</div>
+<div ondrag="old" th:ondrag="*{one}">..</div>
+<div ondrag="old" th:ondrag="*{2+3}">..</div>
+<div ondrag="old" th:ondrag="*{true}">..</div>
+<div ondrag="old" th:ondrag="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondrag="hello">..</div>
+<div>..</div>
+<div ondrag="2">..</div>
+<div ondrag="5">..</div>
+<div ondrag="true">..</div>
+<div ondrag="false">..</div>
+<div>..</div>
+<div ondrag="2">..</div>
+<div ondrag="5">..</div>
+<div ondrag="true">..</div>
+<div ondrag="false">..</div>
+
+<div ondrag="hello">..</div>
+<div>..</div>
+<div ondrag="2">..</div>
+<div ondrag="5">..</div>
+<div ondrag="true">..</div>
+<div ondrag="false">..</div>
+<div>..</div>
+<div ondrag="2">..</div>
+<div ondrag="5">..</div>
+<div ondrag="true">..</div>
+<div ondrag="false">..</div>

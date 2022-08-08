@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:spellcheck="${one}">..</div>
+<div th:spellcheck="'hello'">..</div>
+<div th:spellcheck="${null}">..</div>
+<div th:spellcheck="''">..</div>
+
+<div spellcheck="old" th:spellcheck="${one}">..</div>
+<div spellcheck="old" th:spellcheck="'hello'">..</div>
+<div spellcheck="old" th:spellcheck="${null}">..</div>
+<div spellcheck="old" th:spellcheck="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div spellcheck="one!">..</div>
+<div spellcheck="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div spellcheck="one!">..</div>
+<div spellcheck="hello">..</div>
+<div>..</div>
+<div>..</div>

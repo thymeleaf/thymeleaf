@@ -1,0 +1,31 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+product1 = #{ 'name': 'Lettuce',\
+              'price': 12.0 }
+product2 = #{ 'name': 'Apricot',\
+              'price': 8.0 }
+products = { product1, product2 }
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr th:each="product : ${products}" th:replace="&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#32;&colon;&colon;&#32;&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#84;&#101;&#109;&#112;&#108;&#97;&#116;&#101;"
+      th:object="${product}" th:with="productName=*{name}, productPrice=*{price}" />
+</table>
+# ------------------------------------------------------------
+%INPUT[product]
+<tr th:fragment="productTemplate">
+    <td th:text="${productName}">product name</td>
+    <td th:text="${productPrice}">product price</td>
+</tr>
+# ------------------------------------------------------------
+%OUTPUT
+# These cells are empty because th:replace has less precedence than th:each
+<table>
+  <tr>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+

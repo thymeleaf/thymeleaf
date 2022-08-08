@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+classname = 'main elems'
+align = 'center'
+# ------------------------------------------------------------
+%INPUT
+<style th:inline="css">
+.[[${classname}]] {
+  text-align: [[${align}]];
+}
+</style>
+# ------------------------------------------------------------
+%OUTPUT
+<style>
+.main\ elems {
+  text-align: center;
+}
+</style>

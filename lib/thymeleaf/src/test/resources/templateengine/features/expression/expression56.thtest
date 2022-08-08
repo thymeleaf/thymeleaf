@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = "a value"
+# ------------------------------------------------------------
+%INPUT
+<div th:text="'00__${one.method}__00'">...</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <title>Spring Thyme Seed Starter Manager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/css/stsm.css"/>
+  </head>
+
+  <body>
+
+    <div id="logo">
+      <img src="/images/stsmlogo.png" alt="Spring Thyme Seed-Starter Manager" title="Spring Thyme Seed-Starter Manager"/>
+    </div>
+
+    .<div class="seedstarterlist">
+
+      <h2>Seed Starter List</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date planted</th>
+            <th>Covered</th>
+            <th>Type</th>
+            <th>Features</th>
+            <th>Rows</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>02/19/2016</td>
+            <td>yes</td>
+            <td>Plastic</td>
+            <td>Seed starter-specific substrate, Fertilizer used</td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Thymus x citriodorus</td>
+                    <td>20</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Thymus pseudolaginosus</td>
+                    <td>10</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>02/18/2016</td>
+            <td>no</td>
+            <td>Wood</td>
+            <td></td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Thymus vulgaris</td>
+                    <td>30</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+
+    <div id="formsection">
+
+      <h2>Add new Seed Starter</h2>
+
+      <form action="/seedstartermng" method="post">
+
+        <fieldset>
+
+          <legend>Seed Starter data</legend>
+
+
+
+
+          <div id="datePlantedFormPart">
+            <label for="datePlanted">
+              <span>Date planted</span>
+              (<span>MM/dd/yyyy</span>)
+            </label>
+            <input type="text" id="datePlanted" name="datePlanted" value="02/20/2016"/>
+          </div>
+          <div id="coveredFormPart">
+            <label for="covered1">Covered</label>
+            <input type="checkbox" id="covered1" name="covered" value="true"/><input type="hidden" name="_covered" value="on"/>
+          </div>
+          <div id="typeFormPart">
+            <label for="type">Type</label>
+            <select id="type" name="type">
+              <option value="PLASTIC" selected="selected">Plastic</option>
+              <option value="WOOD">Wood</option>
+            </select>
+          </div>
+          <div id="featuresFormPart">
+            <label>Features</label>
+            <ul>
+              <li>
+                <input type="checkbox" value="SEEDSTARTER_SPECIFIC_SUBSTRATE" id="features1" name="features"/><input type="hidden" name="_features" value="on"/>
+                <label for="features1">Seed starter-specific substrate</label>
+              </li>
+              <li>
+                <input type="checkbox" value="FERTILIZER" id="features2" name="features"/><input type="hidden" name="_features" value="on"/>
+                <label for="features2">Fertilizer used</label>
+              </li>
+              <li>
+                <input type="checkbox" value="PH_CORRECTOR" id="features3" name="features"/><input type="hidden" name="_features" value="on"/>
+                <label for="features3">PH Corrector used</label>
+              </li>
+
+            </ul>
+          </div>
+
+          <div id="rowsFormPart">
+            <label>Rows</label>
+            <table>
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Variety</th>
+                  <th>Seeds per cell</th>
+                  <th>
+                    <button type="submit" name="addRow">Add row</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+
+          <div class="submit">
+            <button type="submit" name="save">Add Seed Starter</button>
+          </div>
+
+        </fieldset>
+
+      </form>
+
+    </div>
+
+  </body>
+</html>

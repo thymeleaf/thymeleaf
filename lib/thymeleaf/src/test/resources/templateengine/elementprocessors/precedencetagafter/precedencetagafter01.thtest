@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+local = 'original!'
+# ------------------------------------------------------------
+%INPUT
+<span precedence:modify-local-variable-tag="..." th:text="${local}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>original!</span>

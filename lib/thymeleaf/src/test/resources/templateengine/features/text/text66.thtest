@@ -1,0 +1,13 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+var = 10
+customerName = 'This is <strong th:text="${var}">strong</strong>'
+# ------------------------------------------------------------
+%INPUT
+[# th:utext="${customerName}"]
+  Some text
+[/]
+# ------------------------------------------------------------
+%OUTPUT
+This is <strong th:text="${var}">strong</strong>

@@ -1,0 +1,11 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean01}">
+   <input th:field="*{name}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+   <input id="name" name="name" value="Mark Lettuce" />
+</form>

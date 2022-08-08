@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+bean1 = new org.thymeleaf.templateengine.features.expression.ExpBean1()
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${bean1.value}">...</span>
+<span th:text="${bean1.code}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>a value</span>
+<span>a code</span>

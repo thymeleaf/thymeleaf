@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<section>
+  <div markup:printbefore="...">
+    <p markup:printbefore="...">
+      <span markup:printbefore="...">Hello!</span>
+    </p>
+  </div>
+</section>
+# ------------------------------------------------------------
+%OUTPUT
+<section>
+  <div aggbefore="&lt;div markup:printbefore=&quot;...&quot;&gt;\n    &lt;p markup:printbefore=&quot;...&quot;&gt;\n      &lt;span markup:printbefore=&quot;...&quot;&gt;Hello!&lt;/span&gt;\n    &lt;/p&gt;\n  &lt;/div&gt;">
+    <p aggbefore="&lt;p markup:printbefore=&quot;...&quot;&gt;\n      &lt;span markup:printbefore=&quot;...&quot;&gt;Hello!&lt;/span&gt;\n    &lt;/p&gt;">
+      <span aggbefore="&lt;span markup:printbefore=&quot;...&quot;&gt;Hello!&lt;/span&gt;">Hello!</span>
+    </p>
+  </div>
+</section>

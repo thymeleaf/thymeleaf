@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onresize="'hello'">..</div>
+<div th:onresize="${null}">..</div>
+<div th:onresize="${one}">..</div>
+<div th:onresize="${2+3}">..</div>
+<div th:onresize="${true}">..</div>
+<div th:onresize="${false}">..</div>
+<div th:onresize="*{null}">..</div>
+<div th:onresize="*{one}">..</div>
+<div th:onresize="*{2+3}">..</div>
+<div th:onresize="*{true}">..</div>
+<div th:onresize="*{false}">..</div>
+
+<div onresize="old" th:onresize="'hello'">..</div>
+<div onresize="old" th:onresize="${null}">..</div>
+<div onresize="old" th:onresize="${one}">..</div>
+<div onresize="old" th:onresize="${2+3}">..</div>
+<div onresize="old" th:onresize="${true}">..</div>
+<div onresize="old" th:onresize="${false}">..</div>
+<div onresize="old" th:onresize="*{null}">..</div>
+<div onresize="old" th:onresize="*{one}">..</div>
+<div onresize="old" th:onresize="*{2+3}">..</div>
+<div onresize="old" th:onresize="*{true}">..</div>
+<div onresize="old" th:onresize="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onresize="hello">..</div>
+<div>..</div>
+<div onresize="2">..</div>
+<div onresize="5">..</div>
+<div onresize="true">..</div>
+<div onresize="false">..</div>
+<div>..</div>
+<div onresize="2">..</div>
+<div onresize="5">..</div>
+<div onresize="true">..</div>
+<div onresize="false">..</div>
+
+<div onresize="hello">..</div>
+<div>..</div>
+<div onresize="2">..</div>
+<div onresize="5">..</div>
+<div onresize="true">..</div>
+<div onresize="false">..</div>
+<div>..</div>
+<div onresize="2">..</div>
+<div onresize="5">..</div>
+<div onresize="true">..</div>
+<div onresize="false">..</div>

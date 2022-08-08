@@ -1,0 +1,20 @@
+# ------------------------------------------------------------
+# This test works around the problem that nekoHTML converts
+# all the contents of a <script> tag into a Text node,
+# therefore making it impossible to execute attributes like
+# th:text inside text/template fragments.
+# ------------------------------------------------------------
+%TEMPLATE_MODE LEGACYHTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'Executed!'
+# ------------------------------------------------------------
+%INPUT
+<script type="text/template">
+    <span th:text="${one}">...</span>
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/template">
+    <span>Executed!</span>
+</script>

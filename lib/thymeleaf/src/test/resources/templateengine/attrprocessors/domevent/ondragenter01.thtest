@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragenter="'hello'">..</div>
+<div th:ondragenter="${null}">..</div>
+<div th:ondragenter="${one}">..</div>
+<div th:ondragenter="${2+3}">..</div>
+<div th:ondragenter="${true}">..</div>
+<div th:ondragenter="${false}">..</div>
+<div th:ondragenter="*{null}">..</div>
+<div th:ondragenter="*{one}">..</div>
+<div th:ondragenter="*{2+3}">..</div>
+<div th:ondragenter="*{true}">..</div>
+<div th:ondragenter="*{false}">..</div>
+
+<div ondragenter="old" th:ondragenter="'hello'">..</div>
+<div ondragenter="old" th:ondragenter="${null}">..</div>
+<div ondragenter="old" th:ondragenter="${one}">..</div>
+<div ondragenter="old" th:ondragenter="${2+3}">..</div>
+<div ondragenter="old" th:ondragenter="${true}">..</div>
+<div ondragenter="old" th:ondragenter="${false}">..</div>
+<div ondragenter="old" th:ondragenter="*{null}">..</div>
+<div ondragenter="old" th:ondragenter="*{one}">..</div>
+<div ondragenter="old" th:ondragenter="*{2+3}">..</div>
+<div ondragenter="old" th:ondragenter="*{true}">..</div>
+<div ondragenter="old" th:ondragenter="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragenter="hello">..</div>
+<div>..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="5">..</div>
+<div ondragenter="true">..</div>
+<div ondragenter="false">..</div>
+<div>..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="5">..</div>
+<div ondragenter="true">..</div>
+<div ondragenter="false">..</div>
+
+<div ondragenter="hello">..</div>
+<div>..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="5">..</div>
+<div ondragenter="true">..</div>
+<div ondragenter="false">..</div>
+<div>..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="5">..</div>
+<div ondragenter="true">..</div>
+<div ondragenter="false">..</div>

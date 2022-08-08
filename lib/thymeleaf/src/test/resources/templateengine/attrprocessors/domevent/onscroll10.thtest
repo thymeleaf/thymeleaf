@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onscroll="[['hello']]">..</div>
+<div th:onscroll="[[${null}]]">..</div>
+<div th:onscroll="[[${one}]]">..</div>
+<div th:onscroll="[[${two}]]">..</div>
+<div th:onscroll="[[${three}]]">..</div>
+<div th:onscroll="[('hello')]">..</div>
+<div th:onscroll="[(${null})]">..</div>
+<div th:onscroll="[(${one})]">..</div>
+<div th:onscroll="[(${two})]">..</div>
+<div th:onscroll="[(${three})]">..</div>
+<div th:onscroll="a${a}a[['hello']]a${a}a">..</div>
+<div th:onscroll="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onscroll="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onscroll="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onscroll="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onscroll="a${a}a[('hello')]a${a}a">..</div>
+<div th:onscroll="a${a}a[(${null})]a${a}a">..</div>
+<div th:onscroll="a${a}a[(${one})]a${a}a">..</div>
+<div th:onscroll="a${a}a[(${two})]a${a}a">..</div>
+<div th:onscroll="a${a}a[(${three})]a${a}a">..</div>
+
+<div onscroll="old" th:onscroll="[['hello']]">..</div>
+<div onscroll="old" th:onscroll="[[${null}]]">..</div>
+<div onscroll="old" th:onscroll="[[${one}]]">..</div>
+<div onscroll="old" th:onscroll="[[${two}]]">..</div>
+<div onscroll="old" th:onscroll="[[${three}]]">..</div>
+<div onscroll="old" th:onscroll="[('hello')]">..</div>
+<div onscroll="old" th:onscroll="[(${null})]">..</div>
+<div onscroll="old" th:onscroll="[(${one})]">..</div>
+<div onscroll="old" th:onscroll="[(${two})]">..</div>
+<div onscroll="old" th:onscroll="[(${three})]">..</div>
+<div onscroll="old" th:onscroll="a${a}a[['hello']]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[[${null}]]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[[${one}]]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[[${two}]]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[[${three}]]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[('hello')]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[(${null})]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[(${one})]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[(${two})]a${a}a">..</div>
+<div onscroll="old" th:onscroll="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onscroll="&quot;hello&quot;">..</div>
+<div onscroll="null">..</div>
+<div onscroll="2">..</div>
+<div onscroll="&quot;two&quot;">..</div>
+<div onscroll="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onscroll="hello">..</div>
+<div>..</div>
+<div onscroll="2">..</div>
+<div onscroll="two">..</div>
+<div onscroll="two &quot;plus&quot; one">..</div>
+<div onscroll="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onscroll="a${a}anulla${a}a">..</div>
+<div onscroll="a${a}a2a${a}a">..</div>
+<div onscroll="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onscroll="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onscroll="a${a}ahelloa${a}a">..</div>
+<div onscroll="a${a}aa${a}a">..</div>
+<div onscroll="a${a}a2a${a}a">..</div>
+<div onscroll="a${a}atwoa${a}a">..</div>
+<div onscroll="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onscroll="&quot;hello&quot;">..</div>
+<div onscroll="null">..</div>
+<div onscroll="2">..</div>
+<div onscroll="&quot;two&quot;">..</div>
+<div onscroll="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onscroll="hello">..</div>
+<div>..</div>
+<div onscroll="2">..</div>
+<div onscroll="two">..</div>
+<div onscroll="two &quot;plus&quot; one">..</div>
+<div onscroll="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onscroll="a${a}anulla${a}a">..</div>
+<div onscroll="a${a}a2a${a}a">..</div>
+<div onscroll="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onscroll="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onscroll="a${a}ahelloa${a}a">..</div>
+<div onscroll="a${a}aa${a}a">..</div>
+<div onscroll="a${a}a2a${a}a">..</div>
+<div onscroll="a${a}atwoa${a}a">..</div>
+<div onscroll="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

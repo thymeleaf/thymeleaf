@@ -1,0 +1,11 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-with="date = ${#calendars.createToday()}"
+   data-th-text="${date.get(@java.util.Calendar@HOUR_OF_DAY) + ' ' +
+              date.get(@java.util.Calendar@MINUTE) + ' ' + 
+              date.get(@java.util.Calendar@SECOND) + ' ' + 
+              date.get(@java.util.Calendar@MILLISECOND)}">should all be zero</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>0 0 0 0</p>

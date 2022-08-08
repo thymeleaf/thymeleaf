@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div></div>
+# ------------------------------------------------------------
+# This should work in 3.0 because multiple dialects with the same prefix should be possible
+# ------------------------------------------------------------
+%OUTPUT
+# Note the contents of the <div> will be ignored because the processor introducing the content before the first
+# div will remove the contents of the queue when it executes
+[From Dialect 02-2]<div>[From Dialect 02][01][02][From Dialect 01][01][02]</div>

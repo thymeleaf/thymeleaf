@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+items = { 'een', 'twee', 'drei' }
+# ------------------------------------------------------------
+%INPUT
+<div th:remove="all-but-first"><div ctxvar:setvar="one" th:insert="f" ctxvar:attr2model th:each="i : ${items}" th:id="${i}"></div><span ctxvar:writevar>...</span></div>
+# ------------------------------------------------------------
+%INPUT[f]
+<span ctxvar:writevar>...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<div><div id="een" var2="one"><span>one</span></div><div id="twee" var2="one"><span>one</span></div><div id="drei" var2="one"><span>one</span></div></div>
+

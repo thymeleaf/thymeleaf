@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    words = text.match(/"[^"]+"|[^ ]+/g)
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    words = text.match(/"[^"]+"|[^ ]+/g)
+</script>

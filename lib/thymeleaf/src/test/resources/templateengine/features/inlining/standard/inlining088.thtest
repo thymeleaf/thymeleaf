@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="none">
+  var fizz = [[fizz, buzz], [foo, bar]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+  var fizz = [[fizz, buzz], [foo, bar]];
+</script>
+
+

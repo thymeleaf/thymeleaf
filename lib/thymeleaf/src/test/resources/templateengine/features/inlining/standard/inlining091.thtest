@@ -1,0 +1,9 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+[# th:inline="none"]var fizz = [[fizz, buzz], [foo, bar, [# th:inline="javascript"][[${10+3}]][/]]];[/]
+# ------------------------------------------------------------
+%OUTPUT
+var fizz = [[fizz, buzz], [foo, bar, 13]];
+
+

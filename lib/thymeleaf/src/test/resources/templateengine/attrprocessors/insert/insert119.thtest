@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div th:insert="frag :: f/content()(var=~{::p/text()})">
+    <p>Hello</p>
+</div>
+%INPUT[frag]
+<div th:fragment="f">
+  [[${var}]]
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  Hello
+</div>

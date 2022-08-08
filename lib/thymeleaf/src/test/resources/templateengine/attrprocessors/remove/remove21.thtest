@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+test = { "lele" }
+# ------------------------------------------------------------
+%INPUT
+<ul th:remove="all-but-first">
+  <li th:each="o : ${test}" th:text="${o}">...</li>
+  <li>NOT SHOWN</li>
+  <li>NOT SHOWN EITHER</li>
+</ul>
+# ------------------------------------------------------------
+%OUTPUT
+<ul>
+  <li>lele</li>
+</ul>

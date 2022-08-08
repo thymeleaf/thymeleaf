@@ -1,0 +1,29 @@
+# ------------------------------------------------------------
+# Fails because of https://issues.apache.org/jira/browse/OGNL-236
+# ------------------------------------------------------------
+%EXTENDS strings.common
+# ------------------------------------------------------------
+%CONTEXT
+anotherOne = 'one'
+anotherOne2 = 'oneone'
+anotherTwo = 'TWO'
+anull = null
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#strings.concat(one, anotherOne)}">...</p>
+<p data-th-text="${#strings.concat(one, anotherOne2)}">...</p>
+<p data-th-text="${#strings.concat(two, anotherTwo)}">...</p>
+<p data-th-text="${#strings.concatReplaceNulls('**', null, one, null)}">...</p>
+<p data-th-text="${#strings.concatReplaceNulls('**', 'one', null, 'two')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>oneone</p>
+<p>oneoneone</p>
+<p>twoTWO</p>
+# If it weren't for the mentioned OGNL bug, results should be the following:
+#<p>**one**</p>
+#<p>one**two</p>
+# But while this OGNL bug exists results will be:
+<p>one</p>
+<p>onetwo</p>
+

@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onmessage="'hello'">..</div>
+<div th:onmessage="${null}">..</div>
+<div th:onmessage="${one}">..</div>
+<div th:onmessage="${2+3}">..</div>
+<div th:onmessage="${true}">..</div>
+<div th:onmessage="${false}">..</div>
+<div th:onmessage="*{null}">..</div>
+<div th:onmessage="*{one}">..</div>
+<div th:onmessage="*{2+3}">..</div>
+<div th:onmessage="*{true}">..</div>
+<div th:onmessage="*{false}">..</div>
+
+<div onmessage="old" th:onmessage="'hello'">..</div>
+<div onmessage="old" th:onmessage="${null}">..</div>
+<div onmessage="old" th:onmessage="${one}">..</div>
+<div onmessage="old" th:onmessage="${2+3}">..</div>
+<div onmessage="old" th:onmessage="${true}">..</div>
+<div onmessage="old" th:onmessage="${false}">..</div>
+<div onmessage="old" th:onmessage="*{null}">..</div>
+<div onmessage="old" th:onmessage="*{one}">..</div>
+<div onmessage="old" th:onmessage="*{2+3}">..</div>
+<div onmessage="old" th:onmessage="*{true}">..</div>
+<div onmessage="old" th:onmessage="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmessage="hello">..</div>
+<div>..</div>
+<div onmessage="2">..</div>
+<div onmessage="5">..</div>
+<div onmessage="true">..</div>
+<div onmessage="false">..</div>
+<div>..</div>
+<div onmessage="2">..</div>
+<div onmessage="5">..</div>
+<div onmessage="true">..</div>
+<div onmessage="false">..</div>
+
+<div onmessage="hello">..</div>
+<div>..</div>
+<div onmessage="2">..</div>
+<div onmessage="5">..</div>
+<div onmessage="true">..</div>
+<div onmessage="false">..</div>
+<div>..</div>
+<div onmessage="2">..</div>
+<div onmessage="5">..</div>
+<div onmessage="true">..</div>
+<div onmessage="false">..</div>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<thlogic xmlns:th="http://www.thymeleaf.org">
+
+  <!-- ******************************************************************************* -->
+  <!-- HTML HEADER                                                                     -->
+  <!-- ******************************************************************************* -->
+  <attr sel="head/link[0]" th:href="@{/css/gtvg.css}" />
+
+
+  <!-- ******************************************************************************* -->
+  <!-- HTML BODY                                                                       -->
+  <!-- ******************************************************************************* -->
+  <attr sel="img#logo" th:src="@{/images/gtvglogo.png}" th:alt-title="#{logo}" />
+
+  <!-- Welcome and date texts -->
+  <attr sel="#welcome" th:utext="#{home.welcome(${user.name})}" />
+  <attr sel="#date/span" th:with="df=#{date.format}" th:text="${#calendars.format(today,df)}" />
+
+  <!-- Main application menu -->
+  <attr sel="#menu">
+    <attr sel="li[0]/a" th:href="@{/product/list}"/>
+    <attr sel="li[1]/a" th:href="@{/order/list}"/>
+    <attr sel="li[2]/a" th:href="@{/subscribe}"/>
+    <attr sel="li[3]/a" th:href="@{/userprofile}"/>
+  </attr>
+
+  <!-- Static/Dynamic discriminator text -->
+  <attr sel="#apptype/span" th:text="'working web application'" />
+
+  <!-- Layout: footer -->
+  <attr sel="#footer" th:replace="~{footer::copy}" />
+
+</thlogic>

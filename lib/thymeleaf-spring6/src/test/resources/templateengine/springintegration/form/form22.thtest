@@ -1,0 +1,25 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+bean = new org.thymeleaf.templateengine.springintegration.model.FormBean06()
+bean.something = 'value three'
+thevalues = {'value one', 'value two', 'value three', 'value four'}
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${bean}" th:action="'/url'">
+   <select th:field="*{something}">
+    <th:block th:each="avalue : ${thevalues}">
+     <option th:value="${avalue}" th:text="${avalue}">option</option>
+    </th:block>
+   </select>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <select id="something" name="something">
+     <option value="value one">value one</option>
+     <option value="value two">value two</option>
+     <option value="value three" selected="selected">value three</option>
+     <option value="value four">value four</option>
+   </select>
+</form>

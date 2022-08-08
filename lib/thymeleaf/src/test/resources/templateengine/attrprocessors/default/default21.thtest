@@ -1,0 +1,16 @@
+
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+var = 'aaa'
+# ------------------------------------------------------------
+%INPUT
+<html data-th-NG-app='${var}' a="${var}" data-th-ng-APP2="a" data-Some-Other='${var}'>
+  <div><span th:one="${var}">
+
+# ------------------------------------------------------------
+%OUTPUT
+<html NG-app='aaa' a="${var}" ng-APP2="a" data-Some-Other='${var}'>
+  <div><span one="aaa">

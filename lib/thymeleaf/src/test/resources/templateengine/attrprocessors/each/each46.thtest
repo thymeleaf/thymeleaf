@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<ul th:remove="all-but-first">
+  <li th:each="num : ${#numbers.sequence(1,3)}" th:text="${num}"/>
+</ul>
+<ul th:remove="all-but-first">
+  Whatever!!
+  <li th:each="num : ${#numbers.sequence(4,6)}" th:text="${num}"/>
+  Whichever!!
+</ul>
+# ------------------------------------------------------------
+%OUTPUT
+<ul>
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+</ul>
+<ul>
+  Whatever!!
+  <li>4</li>
+  <li>5</li>
+  <li>6</li>
+  Whichever!!
+</ul>

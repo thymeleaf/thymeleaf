@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<section>
+  <div markup:printafter="..." markup:replacebody="..." />
+</section>
+# ------------------------------------------------------------
+%OUTPUT
+# This replacebody processor only makes room for the replacement if this is an open/close tag pair
+<section>
+  <div aggafter="&lt;div markup:printafter=&quot;...&quot; /&gt;" /><p>This is a <span>replacement</span></p>
+</section>

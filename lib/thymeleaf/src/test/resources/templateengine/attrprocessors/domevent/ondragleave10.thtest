@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragleave="[['hello']]">..</div>
+<div th:ondragleave="[[${null}]]">..</div>
+<div th:ondragleave="[[${one}]]">..</div>
+<div th:ondragleave="[[${two}]]">..</div>
+<div th:ondragleave="[[${three}]]">..</div>
+<div th:ondragleave="[('hello')]">..</div>
+<div th:ondragleave="[(${null})]">..</div>
+<div th:ondragleave="[(${one})]">..</div>
+<div th:ondragleave="[(${two})]">..</div>
+<div th:ondragleave="[(${three})]">..</div>
+<div th:ondragleave="a${a}a[['hello']]a${a}a">..</div>
+<div th:ondragleave="a${a}a[[${null}]]a${a}a">..</div>
+<div th:ondragleave="a${a}a[[${one}]]a${a}a">..</div>
+<div th:ondragleave="a${a}a[[${two}]]a${a}a">..</div>
+<div th:ondragleave="a${a}a[[${three}]]a${a}a">..</div>
+<div th:ondragleave="a${a}a[('hello')]a${a}a">..</div>
+<div th:ondragleave="a${a}a[(${null})]a${a}a">..</div>
+<div th:ondragleave="a${a}a[(${one})]a${a}a">..</div>
+<div th:ondragleave="a${a}a[(${two})]a${a}a">..</div>
+<div th:ondragleave="a${a}a[(${three})]a${a}a">..</div>
+
+<div ondragleave="old" th:ondragleave="[['hello']]">..</div>
+<div ondragleave="old" th:ondragleave="[[${null}]]">..</div>
+<div ondragleave="old" th:ondragleave="[[${one}]]">..</div>
+<div ondragleave="old" th:ondragleave="[[${two}]]">..</div>
+<div ondragleave="old" th:ondragleave="[[${three}]]">..</div>
+<div ondragleave="old" th:ondragleave="[('hello')]">..</div>
+<div ondragleave="old" th:ondragleave="[(${null})]">..</div>
+<div ondragleave="old" th:ondragleave="[(${one})]">..</div>
+<div ondragleave="old" th:ondragleave="[(${two})]">..</div>
+<div ondragleave="old" th:ondragleave="[(${three})]">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[['hello']]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[[${null}]]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[[${one}]]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[[${two}]]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[[${three}]]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[('hello')]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[(${null})]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[(${one})]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[(${two})]a${a}a">..</div>
+<div ondragleave="old" th:ondragleave="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragleave="&quot;hello&quot;">..</div>
+<div ondragleave="null">..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="&quot;two&quot;">..</div>
+<div ondragleave="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragleave="hello">..</div>
+<div>..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="two">..</div>
+<div ondragleave="two &quot;plus&quot; one">..</div>
+<div ondragleave="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragleave="a${a}anulla${a}a">..</div>
+<div ondragleave="a${a}a2a${a}a">..</div>
+<div ondragleave="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragleave="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragleave="a${a}ahelloa${a}a">..</div>
+<div ondragleave="a${a}aa${a}a">..</div>
+<div ondragleave="a${a}a2a${a}a">..</div>
+<div ondragleave="a${a}atwoa${a}a">..</div>
+<div ondragleave="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div ondragleave="&quot;hello&quot;">..</div>
+<div ondragleave="null">..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="&quot;two&quot;">..</div>
+<div ondragleave="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragleave="hello">..</div>
+<div>..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="two">..</div>
+<div ondragleave="two &quot;plus&quot; one">..</div>
+<div ondragleave="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragleave="a${a}anulla${a}a">..</div>
+<div ondragleave="a${a}a2a${a}a">..</div>
+<div ondragleave="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragleave="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragleave="a${a}ahelloa${a}a">..</div>
+<div ondragleave="a${a}aa${a}a">..</div>
+<div ondragleave="a${a}a2a${a}a">..</div>
+<div ondragleave="a${a}atwoa${a}a">..</div>
+<div ondragleave="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

@@ -1,0 +1,63 @@
+%EXTENDS orderdetails.common
+# ------------------------------------------------------------
+%CONTEXT
+order = order2
+# ------------------------------------------------------------
+%OUTPUT 
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
+  </head>
+
+  <body>
+
+    <h1>Order details</h1>
+
+    <div>
+      <p><b>Code:</b> <span>2</span></p>
+      <p><b>Date:</b> <span>09 Jun 2010</span></p>
+    </div>
+
+    <h2>Customer</h2>
+      
+    <div>
+      <p><b>Name:</b> <span>George Garlic</span></p>
+      <p><b>Since:</b> <span>18 May 2010</span></p>
+    </div>
+  
+    <h2>Products</h2>
+  
+    <table>
+      <tr>
+        <th>PRODUCT</th>
+        <th>AMOUNT</th>
+        <th>PURCHASE PRICE</th>
+      </tr>
+      <tr class="odd">
+        <td>Fresh Sweet Basil</td>
+        <td class="number">5</td>
+        <td class="number">3.75</td>
+      </tr><tr>
+        <td>Old Cheddar</td>
+        <td class="number">2</td>
+        <td class="number">17.99</td>
+      </tr>
+    </table>
+
+    <div>
+      <b>TOTAL:</b> <span>54.73</span>
+    </div>
+  
+    <p>
+      <a href="/testing/order/list">Return to order list</a>
+    </p>
+    
+  </body>
+  
+</html>

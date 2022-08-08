@@ -1,0 +1,13 @@
+%EXTENDS escaping.common
+# ------------------------------------------------------------
+%INPUT
+<div th:id="${'4&lt;&nbsp;6'}">
+  <span th:text="${'4&lt;&nbsp;6'}">...</span>
+  <span th:utext="${'4&lt;&nbsp;6'}">...</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div id="4&lt;\u00A06">
+  <span>4&lt;\u00A06</span>
+  <span>4<\u00A06</span>
+</div>

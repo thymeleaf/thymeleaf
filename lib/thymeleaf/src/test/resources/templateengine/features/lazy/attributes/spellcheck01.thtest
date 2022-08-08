@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:spellcheck="${one}">..</div>
+<div spellcheck="old" th:spellcheck="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div spellcheck="one!">..</div>
+<div spellcheck="one!">..</div>

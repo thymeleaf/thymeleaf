@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onselect="[['hello']]">..</div>
+<div th:onselect="[[${null}]]">..</div>
+<div th:onselect="[[${one}]]">..</div>
+<div th:onselect="[[${two}]]">..</div>
+<div th:onselect="[[${three}]]">..</div>
+<div th:onselect="[('hello')]">..</div>
+<div th:onselect="[(${null})]">..</div>
+<div th:onselect="[(${one})]">..</div>
+<div th:onselect="[(${two})]">..</div>
+<div th:onselect="[(${three})]">..</div>
+<div th:onselect="a${a}a[['hello']]a${a}a">..</div>
+<div th:onselect="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onselect="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onselect="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onselect="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onselect="a${a}a[('hello')]a${a}a">..</div>
+<div th:onselect="a${a}a[(${null})]a${a}a">..</div>
+<div th:onselect="a${a}a[(${one})]a${a}a">..</div>
+<div th:onselect="a${a}a[(${two})]a${a}a">..</div>
+<div th:onselect="a${a}a[(${three})]a${a}a">..</div>
+
+<div onselect="old" th:onselect="[['hello']]">..</div>
+<div onselect="old" th:onselect="[[${null}]]">..</div>
+<div onselect="old" th:onselect="[[${one}]]">..</div>
+<div onselect="old" th:onselect="[[${two}]]">..</div>
+<div onselect="old" th:onselect="[[${three}]]">..</div>
+<div onselect="old" th:onselect="[('hello')]">..</div>
+<div onselect="old" th:onselect="[(${null})]">..</div>
+<div onselect="old" th:onselect="[(${one})]">..</div>
+<div onselect="old" th:onselect="[(${two})]">..</div>
+<div onselect="old" th:onselect="[(${three})]">..</div>
+<div onselect="old" th:onselect="a${a}a[['hello']]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[[${null}]]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[[${one}]]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[[${two}]]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[[${three}]]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[('hello')]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[(${null})]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[(${one})]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[(${two})]a${a}a">..</div>
+<div onselect="old" th:onselect="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onselect="&quot;hello&quot;">..</div>
+<div onselect="null">..</div>
+<div onselect="2">..</div>
+<div onselect="&quot;two&quot;">..</div>
+<div onselect="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onselect="hello">..</div>
+<div>..</div>
+<div onselect="2">..</div>
+<div onselect="two">..</div>
+<div onselect="two &quot;plus&quot; one">..</div>
+<div onselect="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onselect="a${a}anulla${a}a">..</div>
+<div onselect="a${a}a2a${a}a">..</div>
+<div onselect="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onselect="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onselect="a${a}ahelloa${a}a">..</div>
+<div onselect="a${a}aa${a}a">..</div>
+<div onselect="a${a}a2a${a}a">..</div>
+<div onselect="a${a}atwoa${a}a">..</div>
+<div onselect="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onselect="&quot;hello&quot;">..</div>
+<div onselect="null">..</div>
+<div onselect="2">..</div>
+<div onselect="&quot;two&quot;">..</div>
+<div onselect="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onselect="hello">..</div>
+<div>..</div>
+<div onselect="2">..</div>
+<div onselect="two">..</div>
+<div onselect="two &quot;plus&quot; one">..</div>
+<div onselect="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onselect="a${a}anulla${a}a">..</div>
+<div onselect="a${a}a2a${a}a">..</div>
+<div onselect="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onselect="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onselect="a${a}ahelloa${a}a">..</div>
+<div onselect="a${a}aa${a}a">..</div>
+<div onselect="a${a}a2a${a}a">..</div>
+<div onselect="a${a}atwoa${a}a">..</div>
+<div onselect="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<a th:href="${#mvc.url('MSC#someController').build()}">link</a>
+<a th:href="${#mvc.url('MSC#someControllerWithArgs').arg(0,'argumentone').build()}">link</a>
+<a th:href="${#mvc.url('MSC#someControllerWithArgs').arg(0,'argumentcach&eacute;').build()}">link</a>
+<a th:href="${#mvc.url('MSC#someControllerWithOtherArgs').arg(0,'argumentcach&eacute;').arg(1,'arg2').arg(2,'argumentthree').build()}">link</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/something">link</a>
+<a href="/testing/somethingArgs?argOne=argumentone">link</a>
+<a href="/testing/somethingArgs?argOne=argumentcach%C3%A9">link</a>
+<a href="/testing/somethingOtherArgs/arg2?argOne=argumentcach%C3%A9&amp;argThree=argumentthree">link</a>

@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<head th:replace="layout :: header(title=~{::title/text()})">
+</head>
+# ------------------------------------------------------------
+%INPUT[layout]
+<head th:fragment="header(title)">
+  <title th:text="${title} ? |My App: ${title}| : _">My App</title>
+</head>
+# ------------------------------------------------------------
+%OUTPUT
+<head>
+  <title>My App</title>
+</head>

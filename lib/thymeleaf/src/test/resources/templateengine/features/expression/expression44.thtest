@@ -1,0 +1,49 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="true">...</p>
+<p th:text="false">...</p>
+<p th:text="!true">...</p>
+<p th:text="!false">...</p>
+
+<p th:text="((2 == 2) == true)">...</p>
+<p th:text="((2 == 2) != true)">...</p>
+<p th:text="((2 == 2) == false)">...</p>
+<p th:text="((2 == 2) != false)">...</p>
+<p th:text="((2 > 2) == true)">...</p>
+<p th:text="((2 > 2) != true)">...</p>
+<p th:text="((2 > 2) == false)">...</p>
+<p th:text="((2 > 2) != false)">...</p>
+
+<p th:text="((2 == 2) ==true )">...</p>
+<p th:text="((2 == 2) !=true )">...</p>
+<p th:text="((2 == 2) ==false )">...</p>
+<p th:text="((2 == 2) !=false )">...</p>
+<p th:text="((2 > 2) ==true )">...</p>
+<p th:text="((2 > 2) !=true )">...</p>
+<p th:text="((2 > 2) ==false )">...</p>
+<p th:text="((2 > 2) !=false )">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>

@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+someVar = 'Hi there!'
+# ------------------------------------------------------------
+%INPUT
+<p>before</p>
+<data data-th-inline="text" data-th-remove="tag">
+[[${someVar}]]
+</data>
+<p>after</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>before</p>
+Hi there!
+<p>after</p>
+

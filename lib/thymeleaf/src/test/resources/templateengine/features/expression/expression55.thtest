@@ -1,0 +1,6 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div th:text="'00__${null.toString()}__00'">...</div>
+# ------------------------------------------------------------
+%EXCEPTION java.lang.NullPointerException

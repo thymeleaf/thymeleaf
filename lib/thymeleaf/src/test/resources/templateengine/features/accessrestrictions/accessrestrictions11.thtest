@@ -1,0 +1,14 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+param.templateName = 'other'
+# ------------------------------------------------------------
+%INPUT
+[# th:insert="${param.templateName[0]}"/]
+# ------------------------------------------------------------
+%INPUT[other]
+some text over here, that should never be included...
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)
+

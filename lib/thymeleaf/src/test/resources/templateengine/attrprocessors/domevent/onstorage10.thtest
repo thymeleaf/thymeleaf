@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onstorage="[['hello']]">..</div>
+<div th:onstorage="[[${null}]]">..</div>
+<div th:onstorage="[[${one}]]">..</div>
+<div th:onstorage="[[${two}]]">..</div>
+<div th:onstorage="[[${three}]]">..</div>
+<div th:onstorage="[('hello')]">..</div>
+<div th:onstorage="[(${null})]">..</div>
+<div th:onstorage="[(${one})]">..</div>
+<div th:onstorage="[(${two})]">..</div>
+<div th:onstorage="[(${three})]">..</div>
+<div th:onstorage="a${a}a[['hello']]a${a}a">..</div>
+<div th:onstorage="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onstorage="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onstorage="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onstorage="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onstorage="a${a}a[('hello')]a${a}a">..</div>
+<div th:onstorage="a${a}a[(${null})]a${a}a">..</div>
+<div th:onstorage="a${a}a[(${one})]a${a}a">..</div>
+<div th:onstorage="a${a}a[(${two})]a${a}a">..</div>
+<div th:onstorage="a${a}a[(${three})]a${a}a">..</div>
+
+<div onstorage="old" th:onstorage="[['hello']]">..</div>
+<div onstorage="old" th:onstorage="[[${null}]]">..</div>
+<div onstorage="old" th:onstorage="[[${one}]]">..</div>
+<div onstorage="old" th:onstorage="[[${two}]]">..</div>
+<div onstorage="old" th:onstorage="[[${three}]]">..</div>
+<div onstorage="old" th:onstorage="[('hello')]">..</div>
+<div onstorage="old" th:onstorage="[(${null})]">..</div>
+<div onstorage="old" th:onstorage="[(${one})]">..</div>
+<div onstorage="old" th:onstorage="[(${two})]">..</div>
+<div onstorage="old" th:onstorage="[(${three})]">..</div>
+<div onstorage="old" th:onstorage="a${a}a[['hello']]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[[${null}]]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[[${one}]]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[[${two}]]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[[${three}]]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[('hello')]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[(${null})]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[(${one})]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[(${two})]a${a}a">..</div>
+<div onstorage="old" th:onstorage="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onstorage="&quot;hello&quot;">..</div>
+<div onstorage="null">..</div>
+<div onstorage="2">..</div>
+<div onstorage="&quot;two&quot;">..</div>
+<div onstorage="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onstorage="hello">..</div>
+<div>..</div>
+<div onstorage="2">..</div>
+<div onstorage="two">..</div>
+<div onstorage="two &quot;plus&quot; one">..</div>
+<div onstorage="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onstorage="a${a}anulla${a}a">..</div>
+<div onstorage="a${a}a2a${a}a">..</div>
+<div onstorage="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onstorage="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onstorage="a${a}ahelloa${a}a">..</div>
+<div onstorage="a${a}aa${a}a">..</div>
+<div onstorage="a${a}a2a${a}a">..</div>
+<div onstorage="a${a}atwoa${a}a">..</div>
+<div onstorage="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onstorage="&quot;hello&quot;">..</div>
+<div onstorage="null">..</div>
+<div onstorage="2">..</div>
+<div onstorage="&quot;two&quot;">..</div>
+<div onstorage="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onstorage="hello">..</div>
+<div>..</div>
+<div onstorage="2">..</div>
+<div onstorage="two">..</div>
+<div onstorage="two &quot;plus&quot; one">..</div>
+<div onstorage="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onstorage="a${a}anulla${a}a">..</div>
+<div onstorage="a${a}a2a${a}a">..</div>
+<div onstorage="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onstorage="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onstorage="a${a}ahelloa${a}a">..</div>
+<div onstorage="a${a}aa${a}a">..</div>
+<div onstorage="a${a}a2a${a}a">..</div>
+<div onstorage="a${a}atwoa${a}a">..</div>
+<div onstorage="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

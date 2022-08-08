@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onsuspend="${one}">..</div>
+<div onsuspend="old" th:onsuspend="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onsuspend="2">..</div>
+<div onsuspend="2">..</div>

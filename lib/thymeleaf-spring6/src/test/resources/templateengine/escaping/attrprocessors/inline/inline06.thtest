@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+bean = new org.thymeleaf.templateengine.escaping.model.EscapeBean()
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  var a = [[${bean.text}]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+  var a = "[\b\t\n\f\r\"\\\/]";
+</script>

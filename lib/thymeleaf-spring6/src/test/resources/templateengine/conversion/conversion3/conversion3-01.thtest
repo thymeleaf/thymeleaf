@@ -1,0 +1,21 @@
+%EXTENDS conversion3.common
+# ------------------------------------------------------------
+%CONTEXT
+obj = conversion3Obj1
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${obj}">
+  <input type="text" th:field="*{id}" />
+  <input type="text" th:field="*{age}" />
+  <input type="text" th:field="*{name}" />
+  <input type="text" th:field="*{date}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="text" id="id" name="id" value="12,345" />
+  <input type="text" id="age" name="age" value="9.876.543" />
+  <input type="text" id="name" name="name" value="Matusalem" />
+  <input type="text" id="date" name="date" value="2006-05-23" />
+</form>
+

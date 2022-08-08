@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+outerBean = new org.thymeleaf.templateengine.attrprocessors.model.Bean01()
+outerBean.innerBean = null
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${outerBean.innerBean} != null ? ${outerBean.innerBean.someProperty} : 'default value'">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>default value</span>

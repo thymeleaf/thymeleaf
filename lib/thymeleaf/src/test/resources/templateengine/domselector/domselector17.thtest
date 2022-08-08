@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT //two
+# ------------------------------------------------------------
+%OUTPUT
+<i>template modes</i><a href="documentation.html">documentation</a><h2>Standard and SpringStandard Dialects</h2>

@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onafterprint="'hello'">..</div>
+<div th:onafterprint="${null}">..</div>
+<div th:onafterprint="${one}">..</div>
+<div th:onafterprint="${2+3}">..</div>
+<div th:onafterprint="${true}">..</div>
+<div th:onafterprint="${false}">..</div>
+<div th:onafterprint="*{null}">..</div>
+<div th:onafterprint="*{one}">..</div>
+<div th:onafterprint="*{2+3}">..</div>
+<div th:onafterprint="*{true}">..</div>
+<div th:onafterprint="*{false}">..</div>
+
+<div onafterprint="old" th:onafterprint="'hello'">..</div>
+<div onafterprint="old" th:onafterprint="${null}">..</div>
+<div onafterprint="old" th:onafterprint="${one}">..</div>
+<div onafterprint="old" th:onafterprint="${2+3}">..</div>
+<div onafterprint="old" th:onafterprint="${true}">..</div>
+<div onafterprint="old" th:onafterprint="${false}">..</div>
+<div onafterprint="old" th:onafterprint="*{null}">..</div>
+<div onafterprint="old" th:onafterprint="*{one}">..</div>
+<div onafterprint="old" th:onafterprint="*{2+3}">..</div>
+<div onafterprint="old" th:onafterprint="*{true}">..</div>
+<div onafterprint="old" th:onafterprint="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onafterprint="hello">..</div>
+<div>..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="5">..</div>
+<div onafterprint="true">..</div>
+<div onafterprint="false">..</div>
+<div>..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="5">..</div>
+<div onafterprint="true">..</div>
+<div onafterprint="false">..</div>
+
+<div onafterprint="hello">..</div>
+<div>..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="5">..</div>
+<div onafterprint="true">..</div>
+<div onafterprint="false">..</div>
+<div>..</div>
+<div onafterprint="2">..</div>
+<div onafterprint="5">..</div>
+<div onafterprint="true">..</div>
+<div onafterprint="false">..</div>

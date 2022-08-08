@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+items = { 'een', 'twee', 'drei' }
+# ------------------------------------------------------------
+%INPUT
+<div><div ctxvar:setvar="one" th:each="i : ${items}" th:id="${i}" ctxvar:writevar/><span ctxvar:writevar>...</span></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div><div id="een">one</div><div id="twee">one</div><div id="drei">one</div><span></span></div>
+

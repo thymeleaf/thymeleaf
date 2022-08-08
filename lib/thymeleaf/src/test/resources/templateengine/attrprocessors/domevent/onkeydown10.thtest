@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onkeydown="[['hello']]">..</div>
+<div th:onkeydown="[[${null}]]">..</div>
+<div th:onkeydown="[[${one}]]">..</div>
+<div th:onkeydown="[[${two}]]">..</div>
+<div th:onkeydown="[[${three}]]">..</div>
+<div th:onkeydown="[('hello')]">..</div>
+<div th:onkeydown="[(${null})]">..</div>
+<div th:onkeydown="[(${one})]">..</div>
+<div th:onkeydown="[(${two})]">..</div>
+<div th:onkeydown="[(${three})]">..</div>
+<div th:onkeydown="a${a}a[['hello']]a${a}a">..</div>
+<div th:onkeydown="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onkeydown="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onkeydown="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onkeydown="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onkeydown="a${a}a[('hello')]a${a}a">..</div>
+<div th:onkeydown="a${a}a[(${null})]a${a}a">..</div>
+<div th:onkeydown="a${a}a[(${one})]a${a}a">..</div>
+<div th:onkeydown="a${a}a[(${two})]a${a}a">..</div>
+<div th:onkeydown="a${a}a[(${three})]a${a}a">..</div>
+
+<div onkeydown="old" th:onkeydown="[['hello']]">..</div>
+<div onkeydown="old" th:onkeydown="[[${null}]]">..</div>
+<div onkeydown="old" th:onkeydown="[[${one}]]">..</div>
+<div onkeydown="old" th:onkeydown="[[${two}]]">..</div>
+<div onkeydown="old" th:onkeydown="[[${three}]]">..</div>
+<div onkeydown="old" th:onkeydown="[('hello')]">..</div>
+<div onkeydown="old" th:onkeydown="[(${null})]">..</div>
+<div onkeydown="old" th:onkeydown="[(${one})]">..</div>
+<div onkeydown="old" th:onkeydown="[(${two})]">..</div>
+<div onkeydown="old" th:onkeydown="[(${three})]">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[['hello']]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[[${null}]]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[[${one}]]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[[${two}]]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[[${three}]]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[('hello')]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[(${null})]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[(${one})]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[(${two})]a${a}a">..</div>
+<div onkeydown="old" th:onkeydown="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onkeydown="&quot;hello&quot;">..</div>
+<div onkeydown="null">..</div>
+<div onkeydown="2">..</div>
+<div onkeydown="&quot;two&quot;">..</div>
+<div onkeydown="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onkeydown="hello">..</div>
+<div>..</div>
+<div onkeydown="2">..</div>
+<div onkeydown="two">..</div>
+<div onkeydown="two &quot;plus&quot; one">..</div>
+<div onkeydown="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onkeydown="a${a}anulla${a}a">..</div>
+<div onkeydown="a${a}a2a${a}a">..</div>
+<div onkeydown="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onkeydown="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onkeydown="a${a}ahelloa${a}a">..</div>
+<div onkeydown="a${a}aa${a}a">..</div>
+<div onkeydown="a${a}a2a${a}a">..</div>
+<div onkeydown="a${a}atwoa${a}a">..</div>
+<div onkeydown="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onkeydown="&quot;hello&quot;">..</div>
+<div onkeydown="null">..</div>
+<div onkeydown="2">..</div>
+<div onkeydown="&quot;two&quot;">..</div>
+<div onkeydown="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onkeydown="hello">..</div>
+<div>..</div>
+<div onkeydown="2">..</div>
+<div onkeydown="two">..</div>
+<div onkeydown="two &quot;plus&quot; one">..</div>
+<div onkeydown="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onkeydown="a${a}anulla${a}a">..</div>
+<div onkeydown="a${a}a2a${a}a">..</div>
+<div onkeydown="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onkeydown="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onkeydown="a${a}ahelloa${a}a">..</div>
+<div onkeydown="a${a}aa${a}a">..</div>
+<div onkeydown="a${a}a2a${a}a">..</div>
+<div onkeydown="a${a}atwoa${a}a">..</div>
+<div onkeydown="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

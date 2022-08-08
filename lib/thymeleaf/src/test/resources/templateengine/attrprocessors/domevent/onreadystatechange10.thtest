@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onreadystatechange="[['hello']]">..</div>
+<div th:onreadystatechange="[[${null}]]">..</div>
+<div th:onreadystatechange="[[${one}]]">..</div>
+<div th:onreadystatechange="[[${two}]]">..</div>
+<div th:onreadystatechange="[[${three}]]">..</div>
+<div th:onreadystatechange="[('hello')]">..</div>
+<div th:onreadystatechange="[(${null})]">..</div>
+<div th:onreadystatechange="[(${one})]">..</div>
+<div th:onreadystatechange="[(${two})]">..</div>
+<div th:onreadystatechange="[(${three})]">..</div>
+<div th:onreadystatechange="a${a}a[['hello']]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[('hello')]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[(${null})]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[(${one})]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[(${two})]a${a}a">..</div>
+<div th:onreadystatechange="a${a}a[(${three})]a${a}a">..</div>
+
+<div onreadystatechange="old" th:onreadystatechange="[['hello']]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[[${null}]]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[[${one}]]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[[${two}]]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[[${three}]]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[('hello')]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[(${null})]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[(${one})]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[(${two})]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="[(${three})]">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[['hello']]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[[${null}]]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[[${one}]]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[[${two}]]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[[${three}]]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[('hello')]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[(${null})]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[(${one})]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[(${two})]a${a}a">..</div>
+<div onreadystatechange="old" th:onreadystatechange="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onreadystatechange="&quot;hello&quot;">..</div>
+<div onreadystatechange="null">..</div>
+<div onreadystatechange="2">..</div>
+<div onreadystatechange="&quot;two&quot;">..</div>
+<div onreadystatechange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onreadystatechange="hello">..</div>
+<div>..</div>
+<div onreadystatechange="2">..</div>
+<div onreadystatechange="two">..</div>
+<div onreadystatechange="two &quot;plus&quot; one">..</div>
+<div onreadystatechange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onreadystatechange="a${a}anulla${a}a">..</div>
+<div onreadystatechange="a${a}a2a${a}a">..</div>
+<div onreadystatechange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onreadystatechange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onreadystatechange="a${a}ahelloa${a}a">..</div>
+<div onreadystatechange="a${a}aa${a}a">..</div>
+<div onreadystatechange="a${a}a2a${a}a">..</div>
+<div onreadystatechange="a${a}atwoa${a}a">..</div>
+<div onreadystatechange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onreadystatechange="&quot;hello&quot;">..</div>
+<div onreadystatechange="null">..</div>
+<div onreadystatechange="2">..</div>
+<div onreadystatechange="&quot;two&quot;">..</div>
+<div onreadystatechange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onreadystatechange="hello">..</div>
+<div>..</div>
+<div onreadystatechange="2">..</div>
+<div onreadystatechange="two">..</div>
+<div onreadystatechange="two &quot;plus&quot; one">..</div>
+<div onreadystatechange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onreadystatechange="a${a}anulla${a}a">..</div>
+<div onreadystatechange="a${a}a2a${a}a">..</div>
+<div onreadystatechange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onreadystatechange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onreadystatechange="a${a}ahelloa${a}a">..</div>
+<div onreadystatechange="a${a}aa${a}a">..</div>
+<div onreadystatechange="a${a}a2a${a}a">..</div>
+<div onreadystatechange="a${a}atwoa${a}a">..</div>
+<div onreadystatechange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

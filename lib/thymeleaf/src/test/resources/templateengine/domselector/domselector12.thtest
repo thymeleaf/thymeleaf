@@ -1,0 +1,6 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT //li[@id='xml' and @class='important']
+# ------------------------------------------------------------
+%OUTPUT
+<li id="xml" class="important"><b>XML</b>: validating against a DTD or not.</li>

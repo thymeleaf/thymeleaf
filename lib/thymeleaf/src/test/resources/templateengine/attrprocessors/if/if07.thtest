@@ -1,0 +1,23 @@
+%EXTENDS booleans.common 
+# ------------------------------------------------------------
+%INPUT
+Text before
+
+<div th:if="${value22}"> 
+    First value
+</div>
+
+<div th:if="${value23}"> 
+    Second value
+</div>
+
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+<div> 
+    First value
+</div>
+
+Text after 

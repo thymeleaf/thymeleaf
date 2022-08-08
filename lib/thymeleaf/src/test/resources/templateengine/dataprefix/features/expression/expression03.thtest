@@ -1,0 +1,21 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+value1 = 100.0
+value2 = 37.397436
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${value1}*3.000">...</p>
+<p data-th-text="${value1}*3.0">...</p>
+<p data-th-text="${value1}*3">...</p>
+<p data-th-with="number=(${value2}*3.000)" data-th-text="${#numbers.formatDecimal(number, 0, 6)}">...</p>
+<p data-th-with="number=(${value2}*3.0)" data-th-text="${#numbers.formatDecimal(number, 0, 6)}">...</p>
+<p data-th-with="number=(${value2}*3)" data-th-text="${#numbers.formatDecimal(number, 0, 6)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>300.000</p>
+<p>300.0</p>
+<p>300</p>
+<p>112.192308</p>
+<p>112.192308</p>
+<p>112.192308</p>

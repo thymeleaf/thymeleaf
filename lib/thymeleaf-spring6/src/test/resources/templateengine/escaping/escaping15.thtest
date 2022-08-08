@@ -1,0 +1,16 @@
+%EXTENDS escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+formBean01_01.text = '4<&nbsp;6'
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean01_01}">
+  <input type="text" th:field="*{text}" />
+  <textarea th:field="*{text}">...</textarea>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="text" id="text" name="text" value="4&lt;&amp;nbsp;6" />
+  <textarea id="text" name="text">4&lt;&amp;nbsp;6</textarea>
+</form>

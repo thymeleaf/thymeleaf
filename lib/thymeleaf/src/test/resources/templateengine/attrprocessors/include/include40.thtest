@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+%TEMPLATE_MODE[frag] TEXT
+# ------------------------------------------------------------
+%CONTEXT
+var = 10
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:include="frag">...</div>
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+...
+[# th:text="${var}"/]
+...
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)Cross\-template\-mode(.*?)

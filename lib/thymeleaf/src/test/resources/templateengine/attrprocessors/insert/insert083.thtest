@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+name = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:insert="frag :: fa (${name})" class="a"></div>
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+<div>
+  <span th:fragment="f (thename)">Hello [[${thename}]]!</span>
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException
+%EXCEPTION_MESSAGE_PATTERN (.*)?Error resolving(.*?)

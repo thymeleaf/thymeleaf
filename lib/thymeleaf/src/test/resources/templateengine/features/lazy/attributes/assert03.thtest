@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onevar = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('something')
+twovar = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(20)
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <div th:assert="${onevar},(${twovar} &lt; 10)" class="a">tururu</div>
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateAssertionException
+%EXCEPTION_MESSAGE_PATTERN .*?\$\{twovar\}.*?line 2.*?

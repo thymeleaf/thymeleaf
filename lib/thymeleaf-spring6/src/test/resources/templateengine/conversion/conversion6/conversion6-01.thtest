@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+obj = new org.thymeleaf.templateengine.conversion.conversion6.Conversion6Bean01()
+obj.num = 1234
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${obj}">
+  <input type="number" th:field="*{num}"/>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="number" id="num" name="num" value="1234" />
+</form>

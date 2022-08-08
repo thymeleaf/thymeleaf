@@ -1,0 +1,7 @@
+%TEMPLATE_MODE CSS
+# ------------------------------------------------------------
+%INPUT
+Hello this is a [# th:text="'working template'"]test[/]!
+# ------------------------------------------------------------
+%OUTPUT
+Hello this is a working\ template!

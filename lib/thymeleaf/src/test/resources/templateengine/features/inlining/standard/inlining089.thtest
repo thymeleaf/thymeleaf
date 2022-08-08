@@ -1,0 +1,9 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+var fizz = [ [fizz, buzz], [foo, bar] ];
+# ------------------------------------------------------------
+%OUTPUT
+var fizz = [ [fizz, buzz], [foo, bar] ];
+
+

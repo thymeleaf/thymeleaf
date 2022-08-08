@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<thlogic>
+
+  <!-- Layout: fragment marker -->
+  <attr sel="#copy" th:fragment="copy" />
+
+</thlogic>

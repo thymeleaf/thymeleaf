@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<head th:insert="layout :: header/content()(~{::title/text()})">
+    <title>Please Login</title>
+</head>
+# ------------------------------------------------------------
+# In this case there will be no correct application of the
+# title because the fragment parameter is unnamed, and the
+# markup selector does not select the fragment proper, but
+# instead only its contents.
+# ------------------------------------------------------------
+%INPUT[layout]
+<head th:fragment="header(title)">
+  <title>My App: [[${title}]]</title>
+</head>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)?synthetic(.*)?

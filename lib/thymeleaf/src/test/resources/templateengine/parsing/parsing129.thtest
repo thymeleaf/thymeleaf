@@ -1,0 +1,21 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+Some '/*aaaaaa*/'.
+Some "/*aaaaaa*/".
+Some '/*aaa'"'"aaa*/'.
+Some "/*aaa"'"'aaa*/".
+Some /*'aaaaaa'*/.
+Some /*"aaaaaa"*/.
+Some /*'aaa'"'"aaa'*/.
+Some /*"aaa"'"'aaa"*/.
+# ------------------------------------------------------------
+%OUTPUT
+Some '/*aaaaaa*/'.
+Some "/*aaaaaa*/".
+Some '/*aaa'"'"aaa*/'.
+Some "/*aaa"'"'aaa*/".
+Some /*'aaaaaa'*/.
+Some /*"aaaaaa"*/.
+Some /*'aaa'"'"aaa'*/.
+Some /*"aaa"'"'aaa"*/.

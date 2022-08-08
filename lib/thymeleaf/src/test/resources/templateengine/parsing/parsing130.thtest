@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+This is a custom tag, with a hyphen at the end:
+<tag->whatever</tag->
+...and strangely, it is allowed by the HTML5 custom element syntax.
+# ------------------------------------------------------------
+%OUTPUT
+This is a custom tag, with a hyphen at the end:
+<tag->whatever</tag->
+...and strangely, it is allowed by the HTML5 custom element syntax.

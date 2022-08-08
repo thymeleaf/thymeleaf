@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onmousewheel="[['hello']]">..</div>
+<div th:onmousewheel="[[${null}]]">..</div>
+<div th:onmousewheel="[[${one}]]">..</div>
+<div th:onmousewheel="[[${two}]]">..</div>
+<div th:onmousewheel="[[${three}]]">..</div>
+<div th:onmousewheel="[('hello')]">..</div>
+<div th:onmousewheel="[(${null})]">..</div>
+<div th:onmousewheel="[(${one})]">..</div>
+<div th:onmousewheel="[(${two})]">..</div>
+<div th:onmousewheel="[(${three})]">..</div>
+<div th:onmousewheel="a${a}a[['hello']]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[('hello')]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[(${null})]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[(${one})]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[(${two})]a${a}a">..</div>
+<div th:onmousewheel="a${a}a[(${three})]a${a}a">..</div>
+
+<div onmousewheel="old" th:onmousewheel="[['hello']]">..</div>
+<div onmousewheel="old" th:onmousewheel="[[${null}]]">..</div>
+<div onmousewheel="old" th:onmousewheel="[[${one}]]">..</div>
+<div onmousewheel="old" th:onmousewheel="[[${two}]]">..</div>
+<div onmousewheel="old" th:onmousewheel="[[${three}]]">..</div>
+<div onmousewheel="old" th:onmousewheel="[('hello')]">..</div>
+<div onmousewheel="old" th:onmousewheel="[(${null})]">..</div>
+<div onmousewheel="old" th:onmousewheel="[(${one})]">..</div>
+<div onmousewheel="old" th:onmousewheel="[(${two})]">..</div>
+<div onmousewheel="old" th:onmousewheel="[(${three})]">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[['hello']]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[[${null}]]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[[${one}]]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[[${two}]]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[[${three}]]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[('hello')]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[(${null})]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[(${one})]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[(${two})]a${a}a">..</div>
+<div onmousewheel="old" th:onmousewheel="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmousewheel="&quot;hello&quot;">..</div>
+<div onmousewheel="null">..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="&quot;two&quot;">..</div>
+<div onmousewheel="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onmousewheel="hello">..</div>
+<div>..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="two">..</div>
+<div onmousewheel="two &quot;plus&quot; one">..</div>
+<div onmousewheel="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onmousewheel="a${a}anulla${a}a">..</div>
+<div onmousewheel="a${a}a2a${a}a">..</div>
+<div onmousewheel="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onmousewheel="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onmousewheel="a${a}ahelloa${a}a">..</div>
+<div onmousewheel="a${a}aa${a}a">..</div>
+<div onmousewheel="a${a}a2a${a}a">..</div>
+<div onmousewheel="a${a}atwoa${a}a">..</div>
+<div onmousewheel="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onmousewheel="&quot;hello&quot;">..</div>
+<div onmousewheel="null">..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="&quot;two&quot;">..</div>
+<div onmousewheel="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onmousewheel="hello">..</div>
+<div>..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="two">..</div>
+<div onmousewheel="two &quot;plus&quot; one">..</div>
+<div onmousewheel="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onmousewheel="a${a}anulla${a}a">..</div>
+<div onmousewheel="a${a}a2a${a}a">..</div>
+<div onmousewheel="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onmousewheel="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onmousewheel="a${a}ahelloa${a}a">..</div>
+<div onmousewheel="a${a}aa${a}a">..</div>
+<div onmousewheel="a${a}a2a${a}a">..</div>
+<div onmousewheel="a${a}atwoa${a}a">..</div>
+<div onmousewheel="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

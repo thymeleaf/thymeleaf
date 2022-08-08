@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+vals = { 23, 123, 4 }
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{/something(param=1,ParAM=2)}">go</a>
+<a th:href="@{/something(parAM=1,param=2)}">go</a>
+<a th:href="@{/something(parAM=1,param=${vals})}">go</a>
+<a th:href="@{/something(parAM=${vals},param=100)}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/something?param=1&amp;param=2">go</a>
+<a href="/testing/something?parAM=1&amp;parAM=2">go</a>
+<a href="/testing/something?parAM=1&amp;parAM=23&amp;parAM=123&amp;parAM=4">go</a>
+<a href="/testing/something?parAM=23&amp;parAM=123&amp;parAM=4&amp;parAM=100">go</a>

@@ -1,0 +1,10 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT div[@id='breadcrumb']
+# ------------------------------------------------------------
+%OUTPUT
+<div id="breadcrumb">
+   <a href="index.html">thymeleaf</a>
+   ::
+   <span class="current">features</span>
+</div>

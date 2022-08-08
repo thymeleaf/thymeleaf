@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onloadstart="'hello'">..</div>
+<div th:onloadstart="${null}">..</div>
+<div th:onloadstart="${one}">..</div>
+<div th:onloadstart="${2+3}">..</div>
+<div th:onloadstart="${true}">..</div>
+<div th:onloadstart="${false}">..</div>
+<div th:onloadstart="*{null}">..</div>
+<div th:onloadstart="*{one}">..</div>
+<div th:onloadstart="*{2+3}">..</div>
+<div th:onloadstart="*{true}">..</div>
+<div th:onloadstart="*{false}">..</div>
+
+<div onloadstart="old" th:onloadstart="'hello'">..</div>
+<div onloadstart="old" th:onloadstart="${null}">..</div>
+<div onloadstart="old" th:onloadstart="${one}">..</div>
+<div onloadstart="old" th:onloadstart="${2+3}">..</div>
+<div onloadstart="old" th:onloadstart="${true}">..</div>
+<div onloadstart="old" th:onloadstart="${false}">..</div>
+<div onloadstart="old" th:onloadstart="*{null}">..</div>
+<div onloadstart="old" th:onloadstart="*{one}">..</div>
+<div onloadstart="old" th:onloadstart="*{2+3}">..</div>
+<div onloadstart="old" th:onloadstart="*{true}">..</div>
+<div onloadstart="old" th:onloadstart="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onloadstart="hello">..</div>
+<div>..</div>
+<div onloadstart="2">..</div>
+<div onloadstart="5">..</div>
+<div onloadstart="true">..</div>
+<div onloadstart="false">..</div>
+<div>..</div>
+<div onloadstart="2">..</div>
+<div onloadstart="5">..</div>
+<div onloadstart="true">..</div>
+<div onloadstart="false">..</div>
+
+<div onloadstart="hello">..</div>
+<div>..</div>
+<div onloadstart="2">..</div>
+<div onloadstart="5">..</div>
+<div onloadstart="true">..</div>
+<div onloadstart="false">..</div>
+<div>..</div>
+<div onloadstart="2">..</div>
+<div onloadstart="5">..</div>
+<div onloadstart="true">..</div>
+<div onloadstart="false">..</div>

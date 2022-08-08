@@ -1,0 +1,14 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+cond = true
+# ------------------------------------------------------------
+%INPUT
+[# th:text="all"]Some text[/]
+[# th:text="tag"]Some text[/]
+[# th:text="${cond} ? do_it : dont"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+all
+tag
+do_it

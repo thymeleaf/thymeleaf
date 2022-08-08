@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'something'
+twovar = #{ 'value' : 25 }
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <div th:object="${twovar}" th:assert="*{value} &gt; 21" class="a"
+       th:remove="tag">tururu</div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  tururu
+</div>

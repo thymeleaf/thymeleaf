@@ -1,0 +1,7 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+[# th:assert="${onevar}"]...[/]
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateAssertionException
+%EXCEPTION_MESSAGE_PATTERN .*?\$\{onevar\}.*?line 1.*?

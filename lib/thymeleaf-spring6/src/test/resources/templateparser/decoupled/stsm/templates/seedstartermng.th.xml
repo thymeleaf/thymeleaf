@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<thlogic xmlns:th="http://www.thymeleaf.org">
+
+  <attr sel="head/link[0]" th:href="@{/css/stsm.css}" />
+
+  <attr sel="#logo/img" th:src="@{/images/stsmlogo.png}" th:alt-title="#{title.application}" />
+
+  <attr sel="div.seedstarterlist" th:unless="${#lists.isEmpty(allSeedStarters)}">
+    <attr sel="/h2" th:text="#{title.list}" />
+    <attr sel="/table">
+      <attr sel="thead">
+        <attr sel="th[0]" th:text="#{seedstarter.datePlanted}" />
+        <attr sel="th[1]" th:text="#{seedstarter.covered}" />
+        <attr sel="th[2]" th:text="#{seedstarter.type}" />
+        <attr sel="th[3]" th:text="#{seedstarter.features}" />
+        <attr sel="th[4]" th:text="#{seedstarter.rows}" />
+      </attr>
+      <attr sel="/tbody/tr" th:each="sb : ${allSeedStarters}">
+        <attr sel="/td[0]" th:text="${#dates.format(sb.datePlanted,'MM/dd/YYYY')}" />
+        <attr sel="/td[1]" th:text="${sb.covered}? #{bool.true} : #{bool.false}" />
+        <attr sel="/td[2]" th:text="#{${'seedstarter.type.' + sb.type}}" />
+        <attr sel="/td[3]" th:text="${#strings.arrayJoin(
+                                        #messages.arrayMsg(
+                                           #strings.arrayPrepend(sb.features,'seedstarter.feature.')),
+                                        ', ')}" />
+        <attr sel="/td[4]/table/tbody/tr" th:each="row,rowStat : ${sb.rows}">
+          <attr sel="/td[0]" th:text="${rowStat.count}" />
+          <attr sel="/td[1]" th:text="${row.variety.name}" />
+          <attr sel="/td[2]" th:text="${row.seedsPerCell}" />
+        </attr>
+      </attr>
+    </attr>
+  </attr>
+
+  <attr sel="#formsection">
+
+    <attr sel="/h2" th:text="#{title.new}" />
+
+    <attr sel="/form" th:action="@{/seedstartermng}" th:object="${seedStarter}">
+
+      <attr sel="legend" th:text="#{seedstarter.data}" />
+
+      <attr sel="ul.errorlist" th:if="${#fields.hasErrors('*')}">
+        <attr sel="/li" th:each="err : ${#fields.errors('*')}" th:text="${err}" />
+      </attr>
+
+      <attr sel="#datePlantedFormPart">
+        <attr sel="label[for='datePlanted']">
+          <attr sel="/span[0]" th:text="#{seedstarter.datePlanted}" />
+          <attr sel="/span[1]" th:text="#{date.format}" />
+        </attr>
+        <attr sel="input" th:id="datePlanted" th:name="datePlanted" th:value="*{#dates.format(datePlanted,'MM/dd/YYYY')}" />
+      </attr>
+
+      <attr sel="#coveredFormPart">
+        <attr sel="label" th:for="${#ids.next('covered')}" th:text="#{seedstarter.covered}" />
+        <attr sel="input" th:field="*{covered}" />
+      </attr>
+
+      <attr sel="#typeFormPart">
+        <attr sel="label" th:text="#{seedstarter.type}" />
+        <attr sel="select" th:field="*{type}">
+          <attr sel="option" th:each="type : ${allTypes}" th:value="${type}" th:text="#{${'seedstarter.type.' + type}}" />
+        </attr>
+      </attr>
+
+      <attr sel="#featuresFormPart">
+        <attr sel="/label" th:text="#{seedstarter.__${'f' + 'e'}__atures}" />
+        <attr sel="/ul/li[0]" th:each="feat : ${allFeatures}">
+          <attr sel="input" th:field="*{features}" th:value="${feat}" />
+          <attr sel="label" th:for="${#ids.prev('features')}" th:text="#{${'seedstarter.feature.' + feat}}"/>
+        </attr>
+        <attr sel="/ul/li[1]" th:remove="all" />
+      </attr>
+
+      <attr sel="#rowsFormPart">
+        <attr sel="/label" th:text="#{seedstarter.rows}" />
+      </attr>
+
+    </attr>
+
+  </attr>
+
+
+</thlogic>

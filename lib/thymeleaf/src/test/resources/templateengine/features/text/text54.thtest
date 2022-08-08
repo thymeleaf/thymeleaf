@@ -1,0 +1,17 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+[# th:text="'one' lt 'two'"]Some text[/]
+[# th:text="'two' gt 'three'"]Some text[/]
+[# th:text="'two' lt 'three'"]Some text[/]
+[# th:text="one lt two"]Some text[/]
+[# th:text="two gt three"]Some text[/]
+[# th:text="two lt three"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+true
+true
+false
+true
+true
+false

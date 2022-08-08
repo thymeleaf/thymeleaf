@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondblclick="[['hello']]">..</div>
+<div th:ondblclick="[[${null}]]">..</div>
+<div th:ondblclick="[[${one}]]">..</div>
+<div th:ondblclick="[[${two}]]">..</div>
+<div th:ondblclick="[[${three}]]">..</div>
+<div th:ondblclick="[('hello')]">..</div>
+<div th:ondblclick="[(${null})]">..</div>
+<div th:ondblclick="[(${one})]">..</div>
+<div th:ondblclick="[(${two})]">..</div>
+<div th:ondblclick="[(${three})]">..</div>
+<div th:ondblclick="a${a}a[['hello']]a${a}a">..</div>
+<div th:ondblclick="a${a}a[[${null}]]a${a}a">..</div>
+<div th:ondblclick="a${a}a[[${one}]]a${a}a">..</div>
+<div th:ondblclick="a${a}a[[${two}]]a${a}a">..</div>
+<div th:ondblclick="a${a}a[[${three}]]a${a}a">..</div>
+<div th:ondblclick="a${a}a[('hello')]a${a}a">..</div>
+<div th:ondblclick="a${a}a[(${null})]a${a}a">..</div>
+<div th:ondblclick="a${a}a[(${one})]a${a}a">..</div>
+<div th:ondblclick="a${a}a[(${two})]a${a}a">..</div>
+<div th:ondblclick="a${a}a[(${three})]a${a}a">..</div>
+
+<div ondblclick="old" th:ondblclick="[['hello']]">..</div>
+<div ondblclick="old" th:ondblclick="[[${null}]]">..</div>
+<div ondblclick="old" th:ondblclick="[[${one}]]">..</div>
+<div ondblclick="old" th:ondblclick="[[${two}]]">..</div>
+<div ondblclick="old" th:ondblclick="[[${three}]]">..</div>
+<div ondblclick="old" th:ondblclick="[('hello')]">..</div>
+<div ondblclick="old" th:ondblclick="[(${null})]">..</div>
+<div ondblclick="old" th:ondblclick="[(${one})]">..</div>
+<div ondblclick="old" th:ondblclick="[(${two})]">..</div>
+<div ondblclick="old" th:ondblclick="[(${three})]">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[['hello']]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[[${null}]]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[[${one}]]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[[${two}]]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[[${three}]]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[('hello')]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[(${null})]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[(${one})]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[(${two})]a${a}a">..</div>
+<div ondblclick="old" th:ondblclick="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondblclick="&quot;hello&quot;">..</div>
+<div ondblclick="null">..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="&quot;two&quot;">..</div>
+<div ondblclick="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondblclick="hello">..</div>
+<div>..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="two">..</div>
+<div ondblclick="two &quot;plus&quot; one">..</div>
+<div ondblclick="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondblclick="a${a}anulla${a}a">..</div>
+<div ondblclick="a${a}a2a${a}a">..</div>
+<div ondblclick="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondblclick="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondblclick="a${a}ahelloa${a}a">..</div>
+<div ondblclick="a${a}aa${a}a">..</div>
+<div ondblclick="a${a}a2a${a}a">..</div>
+<div ondblclick="a${a}atwoa${a}a">..</div>
+<div ondblclick="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div ondblclick="&quot;hello&quot;">..</div>
+<div ondblclick="null">..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="&quot;two&quot;">..</div>
+<div ondblclick="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondblclick="hello">..</div>
+<div>..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="two">..</div>
+<div ondblclick="two &quot;plus&quot; one">..</div>
+<div ondblclick="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondblclick="a${a}anulla${a}a">..</div>
+<div ondblclick="a${a}a2a${a}a">..</div>
+<div ondblclick="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondblclick="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondblclick="a${a}ahelloa${a}a">..</div>
+<div ondblclick="a${a}aa${a}a">..</div>
+<div ondblclick="a${a}a2a${a}a">..</div>
+<div ondblclick="a${a}atwoa${a}a">..</div>
+<div ondblclick="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

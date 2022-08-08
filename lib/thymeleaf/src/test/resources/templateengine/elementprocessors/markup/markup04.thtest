@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+# This test executes a processor (badaggregate) that tries to
+# modify immutable markup, and should therefore raise an exception
+<section>
+  <div markup:printbefore="..." markup:replacebody="...">
+    <p>Hello!</p>
+  </div>
+</section>
+# ------------------------------------------------------------
+%OUTPUT
+<section>
+  <div aggbefore="&lt;div markup:printbefore=&quot;...&quot; markup:replacebody=&quot;...&quot;&gt;\n    &lt;p&gt;Hello!&lt;/p&gt;\n  &lt;/div&gt;"><p>This is a <span>replacement</span></p></div>
+</section>

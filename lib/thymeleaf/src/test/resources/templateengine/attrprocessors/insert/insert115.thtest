@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML
+%TEMPLATE_MODE[somejs] JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+<script th:insert="~{somejs}"></script>
+# ------------------------------------------------------------
+%INPUT[somejs]
+$(function() {
+   $.ajax({
+     url: [[@{/my/url}]],
+     success: function(data) {
+       ...
+     }
+   });
+});
+# ------------------------------------------------------------
+%OUTPUT
+<script>$(function() {
+   $.ajax({
+     url: "\/testing\/my\/url",
+     success: function(data) {
+       ...
+     }
+   });
+});</script>

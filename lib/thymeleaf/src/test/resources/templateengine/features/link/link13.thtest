@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+base_url = '//www.thymeleaf.org/documentation.html'
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{//www.thymeleaf.org}">go</a>
+<a th:href="@{${base_url}(a[0]='b')}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="//www.thymeleaf.org">go</a>
+<a href="//www.thymeleaf.org/documentation.html?a%5B0%5D=b">go</a>

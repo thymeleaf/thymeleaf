@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+caps = {}
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <th:block th:each="c : ${caps}">
+    <span th:text="${cStat.count}">0</span>
+    <p th:text="${c.city}">City</p>
+    <span th:text="${c.country}">Country</span>
+  </th:block>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+</div>

@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:max="${one}">..</div>
+<div max="old" th:max="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div max="one!">..</div>
+<div max="one!">..</div>

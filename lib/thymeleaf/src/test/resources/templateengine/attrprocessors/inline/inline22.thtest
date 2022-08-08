@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+etb = new org.thymeleaf.templateengine.attrprocessors.model.ExceptionThrowingBean()
+# ------------------------------------------------------------
+%INPUT
+<style th:inline="css">
+    foo: [[$etbthrowException(...)]];
+</style>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)Could not parse(.*?)

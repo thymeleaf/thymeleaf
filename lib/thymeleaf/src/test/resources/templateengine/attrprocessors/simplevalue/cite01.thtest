@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:cite="${one}">..</div>
+<div th:cite="'hello'">..</div>
+<div th:cite="${null}">..</div>
+<div th:cite="''">..</div>
+<div cite="old" th:cite="${one}">..</div>
+<div cite="old" th:cite="'hello'">..</div>
+<div cite="old" th:cite="${null}">..</div>
+<div cite="old" th:cite="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div cite="one!">..</div>
+<div cite="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div cite="one!">..</div>
+<div cite="hello">..</div>
+<div>..</div>
+<div>..</div>

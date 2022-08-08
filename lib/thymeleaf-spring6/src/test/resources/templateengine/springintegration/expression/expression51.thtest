@@ -1,0 +1,14 @@
+%EXTENDS ../springintegration.common
+# -----------------------------------------------------------
+%CONTEXT
+contextMap = new java.util.HashMap()
+contextMap['one'] = 'one value'
+contextMap['two'] = 'two value'
+# ------------------------------------------------------------
+%INPUT
+<div th:text="${contextMap.empty}">..</div>
+<div th:text="${contextMap.isEmpty()}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>false</div>
+<div>false</div>

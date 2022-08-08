@@ -1,0 +1,17 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean02}" th:action="'/url'">
+   <select th:field="*{bean01Ids}">
+     <option th:each="bean01 : ${allformBean01s}" th:value="${bean01.id}" th:text="${bean01.name}">option</option>
+   </select>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <select id="bean01Ids" name="bean01Ids">
+     <option value="1">Mark Lettuce</option>
+     <option value="2" selected="selected">Jack Apricot</option>
+     <option value="3" selected="selected">Anthony Broccoli</option>
+   </select>
+</form>

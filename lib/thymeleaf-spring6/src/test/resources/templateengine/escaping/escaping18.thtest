@@ -1,0 +1,20 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+text = '4<&nbsp;6'
+# ------------------------------------------------------------
+%INPUT
+<div id="[[${text}]]" th:inline="text">
+  <span>[# th:text="${text}"/]</span>
+  <span>[# th:utext="${text}"/]</span>
+  <span>[[${text}]]</span>
+  <span>[(${text})]</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div id="[[${text}]]">
+  <span>4&lt;&amp;nbsp;6</span>
+  <span>4<&nbsp;6</span>
+  <span>4&lt;&amp;nbsp;6</span>
+  <span>4<&nbsp;6</span>
+</div>

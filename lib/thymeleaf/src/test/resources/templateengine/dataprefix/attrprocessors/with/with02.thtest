@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+user = #{ 'name': 'Jack Melon',\
+           'role': 'finance' }
+# ------------------------------------------------------------
+%INPUT
+<div data-th-with="a=${user}" data-th-text="${a.name}">...</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Jack Melon</div>
+

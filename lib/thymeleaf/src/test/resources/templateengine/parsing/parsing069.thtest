@@ -1,0 +1,16 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+Some text /*[-
+over
+and over
+and over
+and over
+
+and oooooover.... -]*/here...
+...and here
+# ------------------------------------------------------------
+%OUTPUT
+Some text here...
+...and here
+

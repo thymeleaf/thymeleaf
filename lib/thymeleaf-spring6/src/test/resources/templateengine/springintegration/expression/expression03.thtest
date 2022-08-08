@@ -1,0 +1,21 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+value1 = 100.0
+value2 = 37.397436
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${value1}*3.000">...</p>
+<p th:text="${value1}*3.0">...</p>
+<p th:text="${value1}*3">...</p>
+<p th:with="number=(${value2}*3.000)" th:text="${#numbers.formatDecimal(number, 0, 6)}">...</p>
+<p th:with="number=(${value2}*3.0)" th:text="${#numbers.formatDecimal(number, 0, 6)}">...</p>
+<p th:with="number=(${value2}*3)" th:text="${#numbers.formatDecimal(number, 0, 6)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>300.000</p>
+<p>300.0</p>
+<p>300</p>
+<p>112.192308</p>
+<p>112.192308</p>
+<p>112.192308</p>

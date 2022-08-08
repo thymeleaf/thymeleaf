@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+session.something1 = 'this value'
+session.something2 = 'that value'
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${session.size()}">some text</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>2</span>

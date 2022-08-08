@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onresize="[['hello']]">..</div>
+<div th:onresize="[[${null}]]">..</div>
+<div th:onresize="[[${one}]]">..</div>
+<div th:onresize="[[${two}]]">..</div>
+<div th:onresize="[[${three}]]">..</div>
+<div th:onresize="[('hello')]">..</div>
+<div th:onresize="[(${null})]">..</div>
+<div th:onresize="[(${one})]">..</div>
+<div th:onresize="[(${two})]">..</div>
+<div th:onresize="[(${three})]">..</div>
+<div th:onresize="a${a}a[['hello']]a${a}a">..</div>
+<div th:onresize="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onresize="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onresize="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onresize="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onresize="a${a}a[('hello')]a${a}a">..</div>
+<div th:onresize="a${a}a[(${null})]a${a}a">..</div>
+<div th:onresize="a${a}a[(${one})]a${a}a">..</div>
+<div th:onresize="a${a}a[(${two})]a${a}a">..</div>
+<div th:onresize="a${a}a[(${three})]a${a}a">..</div>
+
+<div onresize="old" th:onresize="[['hello']]">..</div>
+<div onresize="old" th:onresize="[[${null}]]">..</div>
+<div onresize="old" th:onresize="[[${one}]]">..</div>
+<div onresize="old" th:onresize="[[${two}]]">..</div>
+<div onresize="old" th:onresize="[[${three}]]">..</div>
+<div onresize="old" th:onresize="[('hello')]">..</div>
+<div onresize="old" th:onresize="[(${null})]">..</div>
+<div onresize="old" th:onresize="[(${one})]">..</div>
+<div onresize="old" th:onresize="[(${two})]">..</div>
+<div onresize="old" th:onresize="[(${three})]">..</div>
+<div onresize="old" th:onresize="a${a}a[['hello']]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[[${null}]]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[[${one}]]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[[${two}]]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[[${three}]]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[('hello')]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[(${null})]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[(${one})]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[(${two})]a${a}a">..</div>
+<div onresize="old" th:onresize="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onresize="&quot;hello&quot;">..</div>
+<div onresize="null">..</div>
+<div onresize="2">..</div>
+<div onresize="&quot;two&quot;">..</div>
+<div onresize="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onresize="hello">..</div>
+<div>..</div>
+<div onresize="2">..</div>
+<div onresize="two">..</div>
+<div onresize="two &quot;plus&quot; one">..</div>
+<div onresize="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onresize="a${a}anulla${a}a">..</div>
+<div onresize="a${a}a2a${a}a">..</div>
+<div onresize="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onresize="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onresize="a${a}ahelloa${a}a">..</div>
+<div onresize="a${a}aa${a}a">..</div>
+<div onresize="a${a}a2a${a}a">..</div>
+<div onresize="a${a}atwoa${a}a">..</div>
+<div onresize="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onresize="&quot;hello&quot;">..</div>
+<div onresize="null">..</div>
+<div onresize="2">..</div>
+<div onresize="&quot;two&quot;">..</div>
+<div onresize="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onresize="hello">..</div>
+<div>..</div>
+<div onresize="2">..</div>
+<div onresize="two">..</div>
+<div onresize="two &quot;plus&quot; one">..</div>
+<div onresize="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onresize="a${a}anulla${a}a">..</div>
+<div onresize="a${a}a2a${a}a">..</div>
+<div onresize="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onresize="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onresize="a${a}ahelloa${a}a">..</div>
+<div onresize="a${a}aa${a}a">..</div>
+<div onresize="a${a}a2a${a}a">..</div>
+<div onresize="a${a}atwoa${a}a">..</div>
+<div onresize="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

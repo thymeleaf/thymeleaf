@@ -1,0 +1,11 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="'hello'">...</p>
+<p th:text="'goodbye'">...</p>
+<p th:text="'hello, ' + 'world'">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>hello</p>
+<p>goodbye</p>
+<p>hello, world</p>

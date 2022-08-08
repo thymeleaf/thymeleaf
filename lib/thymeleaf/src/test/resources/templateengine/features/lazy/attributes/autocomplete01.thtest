@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:autocomplete="${one}">..</div>
+<div autocomplete="old" th:autocomplete="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div autocomplete="one!">..</div>
+<div autocomplete="one!">..</div>

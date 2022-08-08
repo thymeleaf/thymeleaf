@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragover="'hello'">..</div>
+<div th:ondragover="${null}">..</div>
+<div th:ondragover="${one}">..</div>
+<div th:ondragover="${2+3}">..</div>
+<div th:ondragover="${true}">..</div>
+<div th:ondragover="${false}">..</div>
+<div th:ondragover="*{null}">..</div>
+<div th:ondragover="*{one}">..</div>
+<div th:ondragover="*{2+3}">..</div>
+<div th:ondragover="*{true}">..</div>
+<div th:ondragover="*{false}">..</div>
+
+<div ondragover="old" th:ondragover="'hello'">..</div>
+<div ondragover="old" th:ondragover="${null}">..</div>
+<div ondragover="old" th:ondragover="${one}">..</div>
+<div ondragover="old" th:ondragover="${2+3}">..</div>
+<div ondragover="old" th:ondragover="${true}">..</div>
+<div ondragover="old" th:ondragover="${false}">..</div>
+<div ondragover="old" th:ondragover="*{null}">..</div>
+<div ondragover="old" th:ondragover="*{one}">..</div>
+<div ondragover="old" th:ondragover="*{2+3}">..</div>
+<div ondragover="old" th:ondragover="*{true}">..</div>
+<div ondragover="old" th:ondragover="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragover="hello">..</div>
+<div>..</div>
+<div ondragover="2">..</div>
+<div ondragover="5">..</div>
+<div ondragover="true">..</div>
+<div ondragover="false">..</div>
+<div>..</div>
+<div ondragover="2">..</div>
+<div ondragover="5">..</div>
+<div ondragover="true">..</div>
+<div ondragover="false">..</div>
+
+<div ondragover="hello">..</div>
+<div>..</div>
+<div ondragover="2">..</div>
+<div ondragover="5">..</div>
+<div ondragover="true">..</div>
+<div ondragover="false">..</div>
+<div>..</div>
+<div ondragover="2">..</div>
+<div ondragover="5">..</div>
+<div ondragover="true">..</div>
+<div ondragover="false">..</div>

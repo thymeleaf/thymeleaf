@@ -1,0 +1,27 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+tn = 'frag'
+fn = 'f'
+sel = '/title'
+# ------------------------------------------------------------
+%INPUT
+<title>main</title>
+<span th:replace="fragg">...</span>
+# ------------------------------------------------------------
+%INPUT[fragg]
+<title>hey</title>
+<div th:replace="${tn}::${fn} (title=~{::${sel}})">...</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<title>inner</title>
+<div th:fragment="f" class="a">
+    <div th:replace="${title}"></div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<title>main</title>
+<title>hey</title>
+<div class="a">
+    <title>hey</title>
+</div>

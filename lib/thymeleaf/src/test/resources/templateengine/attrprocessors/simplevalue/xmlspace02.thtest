@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+<div xml:space="x" id=2 th:xmlspace="one">..</div>
+<div th:xmlspace='hello' id=2>..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div xml:space="one" id=2>..</div>
+<div xml:space='hello' id=2>..</div>

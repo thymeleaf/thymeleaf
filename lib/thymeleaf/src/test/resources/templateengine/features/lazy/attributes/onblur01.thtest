@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onblur="${one}">..</div>
+<div onblur="old" th:onblur="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onblur="2">..</div>
+<div onblur="2">..</div>

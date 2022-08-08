@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:wrap="${one}">..</div>
+<div th:wrap="'hello'">..</div>
+<div th:wrap="${null}">..</div>
+<div th:wrap="''">..</div>
+
+<div wrap="old" th:wrap="${one}">..</div>
+<div wrap="old" th:wrap="'hello'">..</div>
+<div wrap="old" th:wrap="${null}">..</div>
+<div wrap="old" th:wrap="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div wrap="one!">..</div>
+<div wrap="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div wrap="one!">..</div>
+<div wrap="hello">..</div>
+<div>..</div>
+<div>..</div>

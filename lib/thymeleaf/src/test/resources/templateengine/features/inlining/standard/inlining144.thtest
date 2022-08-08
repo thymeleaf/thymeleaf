@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">[[@{'/someUrl'}]]</script>
+<script type="text/javascript" th:inline="javascript">[(@{'/someUrl'})]</script>
+<script type="text/javascript" th:inline="javascript">"[(@{'/someUrl'})]"</script>
+<script type="text/javascript" th:inline="javascript">'[(@{'/someUrl'})]'</script>
+<script type="text/javascript" th:inline="javascript">""[[@{'/someUrl'}]]""</script>
+<script type="text/javascript" th:inline="javascript">''[[@{'/someUrl'}]]''</script>
+<script type="text/javascript" th:inline="javascript">""[(@{'/someUrl'})]""</script>
+<script type="text/javascript" th:inline="javascript">''[(@{'/someUrl'})]''</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">"\/testing\/someUrl"</script>
+<script type="text/javascript">/testing/someUrl</script>
+<script type="text/javascript">"/testing/someUrl"</script>
+<script type="text/javascript">'/testing/someUrl'</script>
+<script type="text/javascript">"""\/testing\/someUrl"""</script>
+<script type="text/javascript">''"\/testing\/someUrl"''</script>
+<script type="text/javascript">""/testing/someUrl""</script>
+<script type="text/javascript">''/testing/someUrl''</script>

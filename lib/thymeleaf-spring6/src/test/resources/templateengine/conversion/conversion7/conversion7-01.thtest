@@ -1,0 +1,25 @@
+%EXTENDS conversion7.common
+# ------------------------------------------------------------
+%CONTEXT
+obj = conversion7Obj1
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${obj}">
+  <input type="text" th:field="*{date}" />
+  <input type="text" th:field="*{inner.date}" />
+  <span th:text="*{{date}}">...</span>
+  <span th:text="*{{inner.date}}">...</span>
+  <span th:text="${{obj.date}}">...</span>
+  <span th:text="${{obj.inner.date}}">...</span>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="text" id="date" name="date" value="2020_01_01" />
+  <input type="text" id="inner.date" name="inner.date" value="2020//01//01" />
+  <span>2020_01_01</span>
+  <span>2020//01//01</span>
+  <span>2020_01_01</span>
+  <span>2020//01//01</span>
+</form>
+

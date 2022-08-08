@@ -1,0 +1,8 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div><div ctxvar:setvar="one" ctxvar:model ctxvar:writevar></div><span ctxvar:writevar>...</span></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div><ctx>one</ctx><span></span></div>
+

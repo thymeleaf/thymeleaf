@@ -1,0 +1,35 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+prices = #{ 'euros': 9.00,\
+            'dollars': 12.00 }
+product = #{ 'name': 'Lettuce',\
+             'prices': prices }
+# ------------------------------------------------------------
+%INPUT
+<p data-th-object="${product}" data-th-with="x=*{prices}" data-th-text="${x.euros}">...</p>
+<p data-th-object="${product}" data-th-with="x=*{prices}">
+  <span data-th-text="${x.euros}">...</span>
+</p>
+<p data-th-object="${product}">
+  <span data-th-with="x=*{prices}" data-th-text="${x.euros}">...</span>
+</p>
+<p data-th-object="${product}">
+  <span data-th-with="x=*{prices}">
+    <span data-th-text="${x.euros}">...</span>
+  </span>
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>9.0</p>
+<p>
+  <span>9.0</span>
+</p>
+<p>
+  <span>9.0</span>
+</p>
+<p>
+  <span>
+    <span>9.0</span>
+  </span>
+</p>

@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+color = 'color: green;'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-styleappend="${color}">..</div>
+<div data-th-styleappend="'color: blue;'">..</div>
+<div data-th-styleappend="${null}">..</div>
+<div data-th-styleappend="''">..</div>
+
+<div style="font-weight: bold;" data-th-styleappend="${color}">..</div>
+<div style="font-weight: bold;" data-th-styleappend="'color: blue;'">..</div>
+<div style="font-weight: bold;" data-th-styleappend="${null}">..</div>
+<div style="font-weight: bold;" data-th-styleappend="''">..</div>
+
+<div style="" data-th-styleappend="${color}">..</div>
+<div style="" data-th-styleappend="'color: blue;'">..</div>
+<div style="" data-th-styleappend="${null}">..</div>
+<div style="" data-th-styleappend="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div style="color: green;">..</div>
+<div style="color: blue;">..</div>
+<div>..</div>
+<div>..</div>
+
+<div style="font-weight: bold; color: green;">..</div>
+<div style="font-weight: bold; color: blue;">..</div>
+<div style="font-weight: bold;">..</div>
+<div style="font-weight: bold;">..</div>
+
+<div style="color: green;">..</div>
+<div style="color: blue;">..</div>
+<div style="">..</div>
+<div style="">..</div>

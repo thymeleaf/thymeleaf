@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:required="${t}">..</div>
+<div th:required="${f}">..</div>
+<div th:required="${one}">..</div>
+<div required="old" th:required="${t}">..</div>
+<div required="old" th:required="${f}">..</div>
+<div required="old" th:required="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>

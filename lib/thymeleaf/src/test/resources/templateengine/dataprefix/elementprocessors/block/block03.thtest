@@ -1,0 +1,29 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+cap1 = #{'city' : 'Madrid', 'country' : 'Spain'}
+cap2 = #{'city' : 'Lisboa', 'country' : 'Portugal'}
+cap3 = #{'city' : 'Paris', 'country' : 'France'}
+caps = {cap1, cap2, cap3}
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <th-block data-th-each="c : ${caps}">
+    <span data-th-text="${cStat.count}">0</span>
+    <p data-th-text="${c['city']}">City</p>
+    <span data-th-text="${c['country']}">Country</span>
+  </th-block>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+    <span>1</span>
+    <p>Madrid</p>
+    <span>Spain</span>
+    <span>2</span>
+    <p>Lisboa</p>
+    <span>Portugal</span>
+    <span>3</span>
+    <p>Paris</p>
+    <span>France</span>
+</div>

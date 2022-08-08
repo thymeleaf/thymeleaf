@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+a = 'message'
+# ------------------------------------------------------------
+%INPUT
+...
+<body>
+<script th:replace="f :: s"></script>
+</body>
+...
+# ------------------------------------------------------------
+%INPUT[f]
+<script type="text/x-jquery-tmpl" th:fragment="s">
+  <div th:text="${a}"></div>
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+...
+<body>
+<script type="text/x-jquery-tmpl">
+  <div>message</div>
+</script>
+</body>
+...

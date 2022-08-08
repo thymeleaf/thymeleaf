@@ -1,0 +1,142 @@
+%EXTENDS stsm.common
+# ------------------------------------------------------------
+%CONTEXT
+
+seedStarterRow0 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarterRow0.variety = varietyRepository.findById(3)
+seedStarterRow0.seedsPerCell = 20
+
+seedStarterRow1 = new org.thymeleaf.templateengine.dataprefix.stsm.model.Row()
+seedStarterRow1.variety = varietyRepository.findById(4)
+seedStarterRow1.seedsPerCell = 15
+
+seedStarter.rows = { seedStarterRow0, seedStarterRow1 }
+
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+
+
+<html>
+
+  <head>
+    <title>Spring Thyme Seed Starter Manager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/stsm.css" />
+  </head>
+
+  <body>
+
+    <div>
+      <img src="/testing/images/stsmlogo.png" alt="Spring Thyme Seed-Starter Manager" title="Spring Thyme Seed-Starter Manager" />
+    </div>
+    
+    
+
+
+    <div>
+    
+      <h2>Add new Seed Starter</h2>
+
+      <form action="/testing/seedstartermng" method="post">
+    
+        <fieldset>
+          
+          <legend>Seed Starter data</legend>
+
+          
+
+          
+          <div>
+            <label for="datePlanted">
+              <span>Date planted</span>
+              (<span>MM/dd/yyyy</span>)
+            </label>
+            <input type="text" id="datePlanted" name="datePlanted" value="05/03/2013" />
+          </div>
+          <div>
+            <label for="covered1">Covered</label>
+            <input type="checkbox" id="covered1" name="covered" value="true" /><input type="hidden" name="_covered" value="on" />
+          </div>
+          <div>
+            <label for="type">Type</label>
+            <select id="type" name="type">
+              <option value="PLASTIC" selected="selected">Plastic</option><option value="WOOD">Wood</option>
+            </select>
+          </div>
+          <div>
+            <label>Features</label>
+            <ul>
+              <li>
+                <input type="checkbox" value="SEEDSTARTER_SPECIFIC_SUBSTRATE" id="features1" name="features" /><input type="hidden" name="_features" value="on" />
+                <label for="features1">Seed starter-specific substrate</label>
+              </li>
+              <li>
+                <input type="checkbox" value="FERTILIZER" id="features2" name="features" /><input type="hidden" name="_features" value="on" />
+                <label for="features2">Fertilizer used</label>
+              </li>
+              <li>
+                <input type="checkbox" value="PH_CORRECTOR" id="features3" name="features" /><input type="hidden" name="_features" value="on" />
+                <label for="features3">PH Corrector used</label>
+              </li>
+              
+            </ul>
+          </div>
+    
+          <div>
+            <label>Rows</label>
+            <table>
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Variety</th>
+                  <th>Seeds per cell</th>
+                  <th>
+                    <button type="submit" name="addRow">Add row</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>
+                    <select id="rows0.variety" name="rows[0].variety">
+                      <option value="1">Thymus vulgaris</option><option value="2">Thymus x citriodorus</option><option value="3" selected="selected">Thymus herba-barona</option><option value="4">Thymus pseudolaginosus</option><option value="5">Thymus serpyllum</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" id="rows0.seedsPerCell" name="rows[0].seedsPerCell" value="20" />
+                  </td>
+                  <td>
+                    <button type="submit" name="removeRow" value="0">Remove row</button>
+                  </td>
+                </tr><tr>
+                  <td>2</td>
+                  <td>
+                    <select id="rows1.variety" name="rows[1].variety">
+                      <option value="1">Thymus vulgaris</option><option value="2">Thymus x citriodorus</option><option value="3">Thymus herba-barona</option><option value="4" selected="selected">Thymus pseudolaginosus</option><option value="5">Thymus serpyllum</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" id="rows1.seedsPerCell" name="rows[1].seedsPerCell" value="15" />
+                  </td>
+                  <td>
+                    <button type="submit" name="removeRow" value="1">Remove row</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+    
+          <div class="submit">
+            <button type="submit" name="save">Add Seed Starter</button>    
+          </div>
+        
+        </fieldset>
+          
+      </form>
+        
+    </div>
+
+  </body>
+</html>

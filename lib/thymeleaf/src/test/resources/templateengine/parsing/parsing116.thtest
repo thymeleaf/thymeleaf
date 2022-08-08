@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<body>
+<script th:inline="javascript">
+  var text1 = '*/';
+  var text2 = "*/";
+</script>
+</body>
+# ------------------------------------------------------------
+%OUTPUT
+<body>
+<script>
+  var text1 = '*/';
+  var text2 = "*/";
+</script>
+</body>

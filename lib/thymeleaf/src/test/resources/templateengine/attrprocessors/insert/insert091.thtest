@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div th:insert="frag(cond=false,a=~{::title.a},b=~{::title.b})">
+  <title class="a">A title</title>
+  <title class="b">B title</title>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<span th:insert="${cond} ? ${a} : ${b}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<div><span><title class="b">B title</title></span></div>

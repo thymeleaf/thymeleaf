@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<ul th:remove="all-but-first">
+  <li th:each="num : ${#numbers.sequence(1,3)}" th:text="${num}"/>
+</ul>
+# ------------------------------------------------------------
+%OUTPUT
+<ul>
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+</ul>

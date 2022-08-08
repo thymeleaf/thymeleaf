@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT H2%two/text()
+# ------------------------------------------------------------
+%OUTPUT
+Standard and SpringStandard Dialects

@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+fragment1 = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('fragA')
+fragment2 = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('fragB')
+cond = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="(!${cond} ? ${fragment1} : ${fragment2}) :: f">...</div>
+%INPUT[fragA]
+<p th:fragment="f">Fragment A!</p>
+%INPUT[fragB]
+<p th:fragment="f">Fragment B!</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Fragment A!</p>

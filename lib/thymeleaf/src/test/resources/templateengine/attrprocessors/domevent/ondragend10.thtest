@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragend="[['hello']]">..</div>
+<div th:ondragend="[[${null}]]">..</div>
+<div th:ondragend="[[${one}]]">..</div>
+<div th:ondragend="[[${two}]]">..</div>
+<div th:ondragend="[[${three}]]">..</div>
+<div th:ondragend="[('hello')]">..</div>
+<div th:ondragend="[(${null})]">..</div>
+<div th:ondragend="[(${one})]">..</div>
+<div th:ondragend="[(${two})]">..</div>
+<div th:ondragend="[(${three})]">..</div>
+<div th:ondragend="a${a}a[['hello']]a${a}a">..</div>
+<div th:ondragend="a${a}a[[${null}]]a${a}a">..</div>
+<div th:ondragend="a${a}a[[${one}]]a${a}a">..</div>
+<div th:ondragend="a${a}a[[${two}]]a${a}a">..</div>
+<div th:ondragend="a${a}a[[${three}]]a${a}a">..</div>
+<div th:ondragend="a${a}a[('hello')]a${a}a">..</div>
+<div th:ondragend="a${a}a[(${null})]a${a}a">..</div>
+<div th:ondragend="a${a}a[(${one})]a${a}a">..</div>
+<div th:ondragend="a${a}a[(${two})]a${a}a">..</div>
+<div th:ondragend="a${a}a[(${three})]a${a}a">..</div>
+
+<div ondragend="old" th:ondragend="[['hello']]">..</div>
+<div ondragend="old" th:ondragend="[[${null}]]">..</div>
+<div ondragend="old" th:ondragend="[[${one}]]">..</div>
+<div ondragend="old" th:ondragend="[[${two}]]">..</div>
+<div ondragend="old" th:ondragend="[[${three}]]">..</div>
+<div ondragend="old" th:ondragend="[('hello')]">..</div>
+<div ondragend="old" th:ondragend="[(${null})]">..</div>
+<div ondragend="old" th:ondragend="[(${one})]">..</div>
+<div ondragend="old" th:ondragend="[(${two})]">..</div>
+<div ondragend="old" th:ondragend="[(${three})]">..</div>
+<div ondragend="old" th:ondragend="a${a}a[['hello']]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[[${null}]]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[[${one}]]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[[${two}]]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[[${three}]]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[('hello')]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[(${null})]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[(${one})]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[(${two})]a${a}a">..</div>
+<div ondragend="old" th:ondragend="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragend="&quot;hello&quot;">..</div>
+<div ondragend="null">..</div>
+<div ondragend="2">..</div>
+<div ondragend="&quot;two&quot;">..</div>
+<div ondragend="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragend="hello">..</div>
+<div>..</div>
+<div ondragend="2">..</div>
+<div ondragend="two">..</div>
+<div ondragend="two &quot;plus&quot; one">..</div>
+<div ondragend="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragend="a${a}anulla${a}a">..</div>
+<div ondragend="a${a}a2a${a}a">..</div>
+<div ondragend="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragend="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragend="a${a}ahelloa${a}a">..</div>
+<div ondragend="a${a}aa${a}a">..</div>
+<div ondragend="a${a}a2a${a}a">..</div>
+<div ondragend="a${a}atwoa${a}a">..</div>
+<div ondragend="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div ondragend="&quot;hello&quot;">..</div>
+<div ondragend="null">..</div>
+<div ondragend="2">..</div>
+<div ondragend="&quot;two&quot;">..</div>
+<div ondragend="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragend="hello">..</div>
+<div>..</div>
+<div ondragend="2">..</div>
+<div ondragend="two">..</div>
+<div ondragend="two &quot;plus&quot; one">..</div>
+<div ondragend="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragend="a${a}anulla${a}a">..</div>
+<div ondragend="a${a}a2a${a}a">..</div>
+<div ondragend="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragend="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragend="a${a}ahelloa${a}a">..</div>
+<div ondragend="a${a}aa${a}a">..</div>
+<div ondragend="a${a}a2a${a}a">..</div>
+<div ondragend="a${a}atwoa${a}a">..</div>
+<div ondragend="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

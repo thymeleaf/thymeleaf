@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onoffline="[['hello']]">..</div>
+<div th:onoffline="[[${null}]]">..</div>
+<div th:onoffline="[[${one}]]">..</div>
+<div th:onoffline="[[${two}]]">..</div>
+<div th:onoffline="[[${three}]]">..</div>
+<div th:onoffline="[('hello')]">..</div>
+<div th:onoffline="[(${null})]">..</div>
+<div th:onoffline="[(${one})]">..</div>
+<div th:onoffline="[(${two})]">..</div>
+<div th:onoffline="[(${three})]">..</div>
+<div th:onoffline="a${a}a[['hello']]a${a}a">..</div>
+<div th:onoffline="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onoffline="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onoffline="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onoffline="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onoffline="a${a}a[('hello')]a${a}a">..</div>
+<div th:onoffline="a${a}a[(${null})]a${a}a">..</div>
+<div th:onoffline="a${a}a[(${one})]a${a}a">..</div>
+<div th:onoffline="a${a}a[(${two})]a${a}a">..</div>
+<div th:onoffline="a${a}a[(${three})]a${a}a">..</div>
+
+<div onoffline="old" th:onoffline="[['hello']]">..</div>
+<div onoffline="old" th:onoffline="[[${null}]]">..</div>
+<div onoffline="old" th:onoffline="[[${one}]]">..</div>
+<div onoffline="old" th:onoffline="[[${two}]]">..</div>
+<div onoffline="old" th:onoffline="[[${three}]]">..</div>
+<div onoffline="old" th:onoffline="[('hello')]">..</div>
+<div onoffline="old" th:onoffline="[(${null})]">..</div>
+<div onoffline="old" th:onoffline="[(${one})]">..</div>
+<div onoffline="old" th:onoffline="[(${two})]">..</div>
+<div onoffline="old" th:onoffline="[(${three})]">..</div>
+<div onoffline="old" th:onoffline="a${a}a[['hello']]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[[${null}]]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[[${one}]]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[[${two}]]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[[${three}]]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[('hello')]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[(${null})]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[(${one})]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[(${two})]a${a}a">..</div>
+<div onoffline="old" th:onoffline="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onoffline="&quot;hello&quot;">..</div>
+<div onoffline="null">..</div>
+<div onoffline="2">..</div>
+<div onoffline="&quot;two&quot;">..</div>
+<div onoffline="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onoffline="hello">..</div>
+<div>..</div>
+<div onoffline="2">..</div>
+<div onoffline="two">..</div>
+<div onoffline="two &quot;plus&quot; one">..</div>
+<div onoffline="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onoffline="a${a}anulla${a}a">..</div>
+<div onoffline="a${a}a2a${a}a">..</div>
+<div onoffline="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onoffline="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onoffline="a${a}ahelloa${a}a">..</div>
+<div onoffline="a${a}aa${a}a">..</div>
+<div onoffline="a${a}a2a${a}a">..</div>
+<div onoffline="a${a}atwoa${a}a">..</div>
+<div onoffline="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onoffline="&quot;hello&quot;">..</div>
+<div onoffline="null">..</div>
+<div onoffline="2">..</div>
+<div onoffline="&quot;two&quot;">..</div>
+<div onoffline="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onoffline="hello">..</div>
+<div>..</div>
+<div onoffline="2">..</div>
+<div onoffline="two">..</div>
+<div onoffline="two &quot;plus&quot; one">..</div>
+<div onoffline="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onoffline="a${a}anulla${a}a">..</div>
+<div onoffline="a${a}a2a${a}a">..</div>
+<div onoffline="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onoffline="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onoffline="a${a}ahelloa${a}a">..</div>
+<div onoffline="a${a}aa${a}a">..</div>
+<div onoffline="a${a}a2a${a}a">..</div>
+<div onoffline="a${a}atwoa${a}a">..</div>
+<div onoffline="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

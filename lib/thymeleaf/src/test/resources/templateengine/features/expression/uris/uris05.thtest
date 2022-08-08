@@ -1,0 +1,17 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+text01 = 'Is this a text? We can have symbols like #, ~, / and also accented chars like \u00E1'
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${#uris.escapePath(text01,'ISO-8859-1')}">...</span>
+<span th:text="${#uris.escapePathSegment(text01,'ISO-8859-1')}">...</span>
+<span th:text="${#uris.escapeQueryParam(text01,'ISO-8859-1')}">...</span>
+<span th:text="${#uris.escapeFragmentId(text01,'ISO-8859-1')}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>Is%20this%20a%20text%3F%20We%20can%20have%20symbols%20like%20%23,%20~,%20/%20and%20also%20accented%20chars%20like%20%E1</span>
+<span>Is%20this%20a%20text%3F%20We%20can%20have%20symbols%20like%20%23,%20~,%20%2F%20and%20also%20accented%20chars%20like%20%E1</span>
+<span>Is%20this%20a%20text?%20We%20can%20have%20symbols%20like%20%23,%20~,%20/%20and%20also%20accented%20chars%20like%20%E1</span>
+<span>Is%20this%20a%20text?%20We%20can%20have%20symbols%20like%20%23,%20~,%20/%20and%20also%20accented%20chars%20like%20%E1</span>
+

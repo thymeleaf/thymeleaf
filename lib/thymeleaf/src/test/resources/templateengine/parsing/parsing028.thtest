@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript">
+    <span th:text="Executed">Not executed</span>
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+# Note <script type="text/javascript"> are CDATA, so they are not processed
+<script type="text/javascript">
+    <span th:text="Executed">Not executed</span>
+</script>

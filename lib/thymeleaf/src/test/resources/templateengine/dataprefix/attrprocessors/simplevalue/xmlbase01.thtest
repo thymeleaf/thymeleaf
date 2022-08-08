@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-xmlbase="${one}">..</div>
+<div data-th-xmlbase="'hello'">..</div>
+<div data-th-xmlbase="${null}">..</div>
+<div data-th-xmlbase="''">..</div>
+
+<div xml:base="old" data-th-xmlbase="${one}">..</div>
+<div xml:base="old" data-th-xmlbase="'hello'">..</div>
+<div xml:base="old" data-th-xmlbase="${null}">..</div>
+<div xml:base="old" data-th-xmlbase="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div xml:base="one!">..</div>
+<div xml:base="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div xml:base="one!">..</div>
+<div xml:base="hello">..</div>
+<div>..</div>
+<div>..</div>

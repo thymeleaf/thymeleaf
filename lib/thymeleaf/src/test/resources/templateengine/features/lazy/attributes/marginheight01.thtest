@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:marginheight="${one}">..</div>
+<div marginheight="old" th:marginheight="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div marginheight="one!">..</div>
+<div marginheight="one!">..</div>

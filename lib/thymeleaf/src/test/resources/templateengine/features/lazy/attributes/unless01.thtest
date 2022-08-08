@@ -1,0 +1,39 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+user = #{ 'age': 24 }
+# ------------------------------------------------------------
+%INPUT
+Text before
+<div th:unless="${user.age > 24}"> 
+    Bigger
+</div>
+<div th:unless="${user.age} > 24"> 
+    Bigger
+</div>
+<div th:unless="${user.age} > 24.0"> 
+    Bigger
+</div>
+<div th:unless="${user.age >= 24}"> 
+    Or equal
+</div>
+<div th:unless="${user.age} >= 24"> 
+    Or equal
+</div>
+<div th:unless="${user.age} >= 24.0"> 
+    Or equal
+</div>
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+<div> 
+    Bigger
+</div>
+<div> 
+    Bigger
+</div>
+<div> 
+    Bigger
+</div>
+Text after 

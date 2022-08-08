@@ -1,0 +1,8 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div ctxvar:setvar="one" th:id="'anid'" ctxvar:writevar />
+# ------------------------------------------------------------
+%OUTPUT
+<div id="anid">one</div>
+

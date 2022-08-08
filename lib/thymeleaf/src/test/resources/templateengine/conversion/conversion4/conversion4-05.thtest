@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<p th:inline="text">
+  This is [['hello']]
+</p>
+<p th:inline="text">
+  This is [[43]]
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+# Conversion service should NOT be applied in inlining
+<p>
+  This is hello
+</p>
+<p>
+  This is 43
+</p>
+

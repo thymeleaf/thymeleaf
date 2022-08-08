@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragleave="'hello'">..</div>
+<div th:ondragleave="${null}">..</div>
+<div th:ondragleave="${one}">..</div>
+<div th:ondragleave="${2+3}">..</div>
+<div th:ondragleave="${true}">..</div>
+<div th:ondragleave="${false}">..</div>
+<div th:ondragleave="*{null}">..</div>
+<div th:ondragleave="*{one}">..</div>
+<div th:ondragleave="*{2+3}">..</div>
+<div th:ondragleave="*{true}">..</div>
+<div th:ondragleave="*{false}">..</div>
+
+<div ondragleave="old" th:ondragleave="'hello'">..</div>
+<div ondragleave="old" th:ondragleave="${null}">..</div>
+<div ondragleave="old" th:ondragleave="${one}">..</div>
+<div ondragleave="old" th:ondragleave="${2+3}">..</div>
+<div ondragleave="old" th:ondragleave="${true}">..</div>
+<div ondragleave="old" th:ondragleave="${false}">..</div>
+<div ondragleave="old" th:ondragleave="*{null}">..</div>
+<div ondragleave="old" th:ondragleave="*{one}">..</div>
+<div ondragleave="old" th:ondragleave="*{2+3}">..</div>
+<div ondragleave="old" th:ondragleave="*{true}">..</div>
+<div ondragleave="old" th:ondragleave="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragleave="hello">..</div>
+<div>..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="5">..</div>
+<div ondragleave="true">..</div>
+<div ondragleave="false">..</div>
+<div>..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="5">..</div>
+<div ondragleave="true">..</div>
+<div ondragleave="false">..</div>
+
+<div ondragleave="hello">..</div>
+<div>..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="5">..</div>
+<div ondragleave="true">..</div>
+<div ondragleave="false">..</div>
+<div>..</div>
+<div ondragleave="2">..</div>
+<div ondragleave="5">..</div>
+<div ondragleave="true">..</div>
+<div ondragleave="false">..</div>

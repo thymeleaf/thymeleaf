@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onkeyup="[['hello']]">..</div>
+<div th:onkeyup="[[${null}]]">..</div>
+<div th:onkeyup="[[${one}]]">..</div>
+<div th:onkeyup="[[${two}]]">..</div>
+<div th:onkeyup="[[${three}]]">..</div>
+<div th:onkeyup="[('hello')]">..</div>
+<div th:onkeyup="[(${null})]">..</div>
+<div th:onkeyup="[(${one})]">..</div>
+<div th:onkeyup="[(${two})]">..</div>
+<div th:onkeyup="[(${three})]">..</div>
+<div th:onkeyup="a${a}a[['hello']]a${a}a">..</div>
+<div th:onkeyup="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onkeyup="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onkeyup="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onkeyup="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onkeyup="a${a}a[('hello')]a${a}a">..</div>
+<div th:onkeyup="a${a}a[(${null})]a${a}a">..</div>
+<div th:onkeyup="a${a}a[(${one})]a${a}a">..</div>
+<div th:onkeyup="a${a}a[(${two})]a${a}a">..</div>
+<div th:onkeyup="a${a}a[(${three})]a${a}a">..</div>
+
+<div onkeyup="old" th:onkeyup="[['hello']]">..</div>
+<div onkeyup="old" th:onkeyup="[[${null}]]">..</div>
+<div onkeyup="old" th:onkeyup="[[${one}]]">..</div>
+<div onkeyup="old" th:onkeyup="[[${two}]]">..</div>
+<div onkeyup="old" th:onkeyup="[[${three}]]">..</div>
+<div onkeyup="old" th:onkeyup="[('hello')]">..</div>
+<div onkeyup="old" th:onkeyup="[(${null})]">..</div>
+<div onkeyup="old" th:onkeyup="[(${one})]">..</div>
+<div onkeyup="old" th:onkeyup="[(${two})]">..</div>
+<div onkeyup="old" th:onkeyup="[(${three})]">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[['hello']]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[[${null}]]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[[${one}]]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[[${two}]]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[[${three}]]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[('hello')]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[(${null})]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[(${one})]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[(${two})]a${a}a">..</div>
+<div onkeyup="old" th:onkeyup="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onkeyup="&quot;hello&quot;">..</div>
+<div onkeyup="null">..</div>
+<div onkeyup="2">..</div>
+<div onkeyup="&quot;two&quot;">..</div>
+<div onkeyup="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onkeyup="hello">..</div>
+<div>..</div>
+<div onkeyup="2">..</div>
+<div onkeyup="two">..</div>
+<div onkeyup="two &quot;plus&quot; one">..</div>
+<div onkeyup="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onkeyup="a${a}anulla${a}a">..</div>
+<div onkeyup="a${a}a2a${a}a">..</div>
+<div onkeyup="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onkeyup="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onkeyup="a${a}ahelloa${a}a">..</div>
+<div onkeyup="a${a}aa${a}a">..</div>
+<div onkeyup="a${a}a2a${a}a">..</div>
+<div onkeyup="a${a}atwoa${a}a">..</div>
+<div onkeyup="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onkeyup="&quot;hello&quot;">..</div>
+<div onkeyup="null">..</div>
+<div onkeyup="2">..</div>
+<div onkeyup="&quot;two&quot;">..</div>
+<div onkeyup="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onkeyup="hello">..</div>
+<div>..</div>
+<div onkeyup="2">..</div>
+<div onkeyup="two">..</div>
+<div onkeyup="two &quot;plus&quot; one">..</div>
+<div onkeyup="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onkeyup="a${a}anulla${a}a">..</div>
+<div onkeyup="a${a}a2a${a}a">..</div>
+<div onkeyup="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onkeyup="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onkeyup="a${a}ahelloa${a}a">..</div>
+<div onkeyup="a${a}aa${a}a">..</div>
+<div onkeyup="a${a}a2a${a}a">..</div>
+<div onkeyup="a${a}atwoa${a}a">..</div>
+<div onkeyup="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

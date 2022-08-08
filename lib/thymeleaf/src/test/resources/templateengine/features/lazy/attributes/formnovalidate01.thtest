@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:formnovalidate="${t}">..</div>
+<div th:formnovalidate="${f}">..</div>
+<div th:formnovalidate="${one}">..</div>
+<div formnovalidate="old" th:formnovalidate="${t}">..</div>
+<div formnovalidate="old" th:formnovalidate="${f}">..</div>
+<div formnovalidate="old" th:formnovalidate="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div formnovalidate="formnovalidate">..</div>
+<div>..</div>
+<div formnovalidate="formnovalidate">..</div>
+<div formnovalidate="formnovalidate">..</div>
+<div>..</div>
+<div formnovalidate="formnovalidate">..</div>

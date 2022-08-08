@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onwaiting="[['hello']]">..</div>
+<div th:onwaiting="[[${null}]]">..</div>
+<div th:onwaiting="[[${one}]]">..</div>
+<div th:onwaiting="[[${two}]]">..</div>
+<div th:onwaiting="[[${three}]]">..</div>
+<div th:onwaiting="[('hello')]">..</div>
+<div th:onwaiting="[(${null})]">..</div>
+<div th:onwaiting="[(${one})]">..</div>
+<div th:onwaiting="[(${two})]">..</div>
+<div th:onwaiting="[(${three})]">..</div>
+<div th:onwaiting="a${a}a[['hello']]a${a}a">..</div>
+<div th:onwaiting="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onwaiting="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onwaiting="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onwaiting="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onwaiting="a${a}a[('hello')]a${a}a">..</div>
+<div th:onwaiting="a${a}a[(${null})]a${a}a">..</div>
+<div th:onwaiting="a${a}a[(${one})]a${a}a">..</div>
+<div th:onwaiting="a${a}a[(${two})]a${a}a">..</div>
+<div th:onwaiting="a${a}a[(${three})]a${a}a">..</div>
+
+<div onwaiting="old" th:onwaiting="[['hello']]">..</div>
+<div onwaiting="old" th:onwaiting="[[${null}]]">..</div>
+<div onwaiting="old" th:onwaiting="[[${one}]]">..</div>
+<div onwaiting="old" th:onwaiting="[[${two}]]">..</div>
+<div onwaiting="old" th:onwaiting="[[${three}]]">..</div>
+<div onwaiting="old" th:onwaiting="[('hello')]">..</div>
+<div onwaiting="old" th:onwaiting="[(${null})]">..</div>
+<div onwaiting="old" th:onwaiting="[(${one})]">..</div>
+<div onwaiting="old" th:onwaiting="[(${two})]">..</div>
+<div onwaiting="old" th:onwaiting="[(${three})]">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[['hello']]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[[${null}]]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[[${one}]]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[[${two}]]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[[${three}]]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[('hello')]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[(${null})]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[(${one})]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[(${two})]a${a}a">..</div>
+<div onwaiting="old" th:onwaiting="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onwaiting="&quot;hello&quot;">..</div>
+<div onwaiting="null">..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="&quot;two&quot;">..</div>
+<div onwaiting="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onwaiting="hello">..</div>
+<div>..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="two">..</div>
+<div onwaiting="two &quot;plus&quot; one">..</div>
+<div onwaiting="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onwaiting="a${a}anulla${a}a">..</div>
+<div onwaiting="a${a}a2a${a}a">..</div>
+<div onwaiting="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onwaiting="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onwaiting="a${a}ahelloa${a}a">..</div>
+<div onwaiting="a${a}aa${a}a">..</div>
+<div onwaiting="a${a}a2a${a}a">..</div>
+<div onwaiting="a${a}atwoa${a}a">..</div>
+<div onwaiting="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onwaiting="&quot;hello&quot;">..</div>
+<div onwaiting="null">..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="&quot;two&quot;">..</div>
+<div onwaiting="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onwaiting="hello">..</div>
+<div>..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="two">..</div>
+<div onwaiting="two &quot;plus&quot; one">..</div>
+<div onwaiting="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onwaiting="a${a}anulla${a}a">..</div>
+<div onwaiting="a${a}a2a${a}a">..</div>
+<div onwaiting="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onwaiting="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onwaiting="a${a}ahelloa${a}a">..</div>
+<div onwaiting="a${a}aa${a}a">..</div>
+<div onwaiting="a${a}a2a${a}a">..</div>
+<div onwaiting="a${a}atwoa${a}a">..</div>
+<div onwaiting="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

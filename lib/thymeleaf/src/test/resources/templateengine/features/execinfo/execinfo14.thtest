@@ -1,0 +1,24 @@
+%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE[somefrag] CSS
+%TEMPLATE_MODE[somefrag2] HTML
+%NAME execinfotest14
+# ------------------------------------------------------------
+%INPUT
+[# th:text="${#execInfo.templateNames}"]the template name will be used[/]
+...[# th:insert="somefrag"]to be replaced by the fragment[/]...
+[# th:text="${#execInfo.templateNames}"]the template name will be used[/]
+# ------------------------------------------------------------
+%INPUT[somefrag]
+[# th:text="${#execInfo.templateNames}"]the fragment name will be used[/]
+([# th:insert="somefrag2"]to be replaced by the secondfragment[/])
+[# th:text="${#execInfo.templateNames}"]the fragment name will be used[/]
+# ------------------------------------------------------------
+%INPUT[somefrag2]
+<span th:text="${#execInfo.templateNames}">the fragment name will be used</span>
+# ------------------------------------------------------------
+%OUTPUT
+[execinfotest14-001]
+...\[execinfotest14-001\,\ somefrag\]
+(<span>[execinfotest14-001, somefrag, somefrag2]</span>)
+\[execinfotest14-001\,\ somefrag\]...
+[execinfotest14-001]

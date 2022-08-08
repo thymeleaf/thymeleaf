@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onunload="${one}">..</div>
+<div onunload="old" th:onunload="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onunload="2">..</div>
+<div onunload="2">..</div>

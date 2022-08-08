@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-hidden="${t}">..</div>
+<div data-th-hidden="${f}">..</div>
+<div data-th-hidden="${one}">..</div>
+<div data-th-hidden="'hello'">..</div>
+<div data-th-hidden="${null}">..</div>
+<div data-th-hidden="''">..</div>
+
+<div hidden="old" data-th-hidden="${t}">..</div>
+<div hidden="old" data-th-hidden="${f}">..</div>
+<div hidden="old" data-th-hidden="${one}">..</div>
+<div hidden="old" data-th-hidden="'hello'">..</div>
+<div hidden="old" data-th-hidden="${null}">..</div>
+<div hidden="old" data-th-hidden="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div hidden="hidden">..</div>
+<div>..</div>
+<div hidden="hidden">..</div>
+<div hidden="hidden">..</div>
+<div>..</div>
+<div hidden="hidden">..</div>
+
+<div hidden="hidden">..</div>
+<div>..</div>
+<div hidden="hidden">..</div>
+<div hidden="hidden">..</div>
+<div>..</div>
+<div hidden="hidden">..</div>

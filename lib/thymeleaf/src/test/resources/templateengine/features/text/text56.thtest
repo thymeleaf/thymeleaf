@@ -1,0 +1,20 @@
+%TEMPLATE_MODE CSS
+# ------------------------------------------------------------
+%INPUT
+[# th:text="'one' lt 'two'"]Some text[/]
+[# th:text="'two' gt 'three'"]Some text[/]
+[# th:text="'two' lt 'three'"]Some text[/]
+[# th:text="one lt two"]Some text[/]
+[# th:text="two gt three"]Some text[/]
+[# th:text="two lt three"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+# Note these booleans are not surrounded by quotes because
+# the results of evaluating these expressions are booleans,
+# which should be output in this case precisely as such, booleans.
+true
+true
+false
+true
+true
+false

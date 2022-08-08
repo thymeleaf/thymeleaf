@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:draggable="${one}">..</div>
+<div th:draggable="'hello'">..</div>
+<div th:draggable="${null}">..</div>
+<div th:draggable="''">..</div>
+
+<div draggable="old" th:draggable="${one}">..</div>
+<div draggable="old" th:draggable="'hello'">..</div>
+<div draggable="old" th:draggable="${null}">..</div>
+<div draggable="old" th:draggable="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div draggable="one!">..</div>
+<div draggable="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div draggable="one!">..</div>
+<div draggable="hello">..</div>
+<div>..</div>
+<div>..</div>

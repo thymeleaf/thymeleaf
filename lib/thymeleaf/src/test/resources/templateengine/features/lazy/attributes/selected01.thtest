@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:selected="${t}">..</div>
+<div th:selected="${f}">..</div>
+<div th:selected="${one}">..</div>
+<div selected="old" th:selected="${t}">..</div>
+<div selected="old" th:selected="${f}">..</div>
+<div selected="old" th:selected="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div selected="selected">..</div>
+<div>..</div>
+<div selected="selected">..</div>
+<div selected="selected">..</div>
+<div>..</div>
+<div selected="selected">..</div>

@@ -1,0 +1,29 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="0.0 div 2">...</p>
+<p data-th-text="1.0 div 2">...</p>
+<p data-th-text="1234.0 div 2">...</p>
+<p data-th-text="-351.0 div 2">...</p>
+<p data-th-text="-1000.0 div 2">...</p>
+<p data-th-text="-0.0 div 2">...</p>
+<p data-th-text="351.0 div -2">...</p>
+<p data-th-text="1000.0 div -2">...</p>
+<p data-th-text="0.0 div -2">...</p>
+<p data-th-text="-351.0 div -2">...</p>
+<p data-th-text="-1000.0 div -2">...</p>
+<p data-th-text="-0.0 div -2">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>0.0</p>
+<p>0.5</p>
+<p>617.0</p>
+<p>-175.5</p>
+<p>-500.0</p>
+<p>0.0</p>
+<p>-175.5</p>
+<p>-500.0</p>
+<p>0.0</p>
+<p>175.5</p>
+<p>500.0</p>
+<p>0.0</p>

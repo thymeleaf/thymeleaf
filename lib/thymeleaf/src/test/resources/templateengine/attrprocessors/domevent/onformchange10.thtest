@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onformchange="[['hello']]">..</div>
+<div th:onformchange="[[${null}]]">..</div>
+<div th:onformchange="[[${one}]]">..</div>
+<div th:onformchange="[[${two}]]">..</div>
+<div th:onformchange="[[${three}]]">..</div>
+<div th:onformchange="[('hello')]">..</div>
+<div th:onformchange="[(${null})]">..</div>
+<div th:onformchange="[(${one})]">..</div>
+<div th:onformchange="[(${two})]">..</div>
+<div th:onformchange="[(${three})]">..</div>
+<div th:onformchange="a${a}a[['hello']]a${a}a">..</div>
+<div th:onformchange="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onformchange="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onformchange="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onformchange="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onformchange="a${a}a[('hello')]a${a}a">..</div>
+<div th:onformchange="a${a}a[(${null})]a${a}a">..</div>
+<div th:onformchange="a${a}a[(${one})]a${a}a">..</div>
+<div th:onformchange="a${a}a[(${two})]a${a}a">..</div>
+<div th:onformchange="a${a}a[(${three})]a${a}a">..</div>
+
+<div onformchange="old" th:onformchange="[['hello']]">..</div>
+<div onformchange="old" th:onformchange="[[${null}]]">..</div>
+<div onformchange="old" th:onformchange="[[${one}]]">..</div>
+<div onformchange="old" th:onformchange="[[${two}]]">..</div>
+<div onformchange="old" th:onformchange="[[${three}]]">..</div>
+<div onformchange="old" th:onformchange="[('hello')]">..</div>
+<div onformchange="old" th:onformchange="[(${null})]">..</div>
+<div onformchange="old" th:onformchange="[(${one})]">..</div>
+<div onformchange="old" th:onformchange="[(${two})]">..</div>
+<div onformchange="old" th:onformchange="[(${three})]">..</div>
+<div onformchange="old" th:onformchange="a${a}a[['hello']]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[[${null}]]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[[${one}]]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[[${two}]]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[[${three}]]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[('hello')]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[(${null})]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[(${one})]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[(${two})]a${a}a">..</div>
+<div onformchange="old" th:onformchange="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onformchange="&quot;hello&quot;">..</div>
+<div onformchange="null">..</div>
+<div onformchange="2">..</div>
+<div onformchange="&quot;two&quot;">..</div>
+<div onformchange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onformchange="hello">..</div>
+<div>..</div>
+<div onformchange="2">..</div>
+<div onformchange="two">..</div>
+<div onformchange="two &quot;plus&quot; one">..</div>
+<div onformchange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onformchange="a${a}anulla${a}a">..</div>
+<div onformchange="a${a}a2a${a}a">..</div>
+<div onformchange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onformchange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onformchange="a${a}ahelloa${a}a">..</div>
+<div onformchange="a${a}aa${a}a">..</div>
+<div onformchange="a${a}a2a${a}a">..</div>
+<div onformchange="a${a}atwoa${a}a">..</div>
+<div onformchange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onformchange="&quot;hello&quot;">..</div>
+<div onformchange="null">..</div>
+<div onformchange="2">..</div>
+<div onformchange="&quot;two&quot;">..</div>
+<div onformchange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onformchange="hello">..</div>
+<div>..</div>
+<div onformchange="2">..</div>
+<div onformchange="two">..</div>
+<div onformchange="two &quot;plus&quot; one">..</div>
+<div onformchange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onformchange="a${a}anulla${a}a">..</div>
+<div onformchange="a${a}a2a${a}a">..</div>
+<div onformchange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onformchange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onformchange="a${a}ahelloa${a}a">..</div>
+<div onformchange="a${a}aa${a}a">..</div>
+<div onformchange="a${a}a2a${a}a">..</div>
+<div onformchange="a${a}atwoa${a}a">..</div>
+<div onformchange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

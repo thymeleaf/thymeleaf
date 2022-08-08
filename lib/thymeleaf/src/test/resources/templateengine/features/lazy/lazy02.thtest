@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var1 = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('hello')
+var2 = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('goodbye')
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${var1}">...</span>
+<p>[[${var1}]]</p>
+<span th:text="${var2}">...</span>
+<p>[[${var2}]]</p>
+# ------------------------------------------------------------
+%OUTPUT
+<span>hello</span>
+<p>hello</p>
+<span>goodbye</span>
+<p>goodbye</p>
+

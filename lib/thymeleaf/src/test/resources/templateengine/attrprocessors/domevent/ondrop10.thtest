@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondrop="[['hello']]">..</div>
+<div th:ondrop="[[${null}]]">..</div>
+<div th:ondrop="[[${one}]]">..</div>
+<div th:ondrop="[[${two}]]">..</div>
+<div th:ondrop="[[${three}]]">..</div>
+<div th:ondrop="[('hello')]">..</div>
+<div th:ondrop="[(${null})]">..</div>
+<div th:ondrop="[(${one})]">..</div>
+<div th:ondrop="[(${two})]">..</div>
+<div th:ondrop="[(${three})]">..</div>
+<div th:ondrop="a${a}a[['hello']]a${a}a">..</div>
+<div th:ondrop="a${a}a[[${null}]]a${a}a">..</div>
+<div th:ondrop="a${a}a[[${one}]]a${a}a">..</div>
+<div th:ondrop="a${a}a[[${two}]]a${a}a">..</div>
+<div th:ondrop="a${a}a[[${three}]]a${a}a">..</div>
+<div th:ondrop="a${a}a[('hello')]a${a}a">..</div>
+<div th:ondrop="a${a}a[(${null})]a${a}a">..</div>
+<div th:ondrop="a${a}a[(${one})]a${a}a">..</div>
+<div th:ondrop="a${a}a[(${two})]a${a}a">..</div>
+<div th:ondrop="a${a}a[(${three})]a${a}a">..</div>
+
+<div ondrop="old" th:ondrop="[['hello']]">..</div>
+<div ondrop="old" th:ondrop="[[${null}]]">..</div>
+<div ondrop="old" th:ondrop="[[${one}]]">..</div>
+<div ondrop="old" th:ondrop="[[${two}]]">..</div>
+<div ondrop="old" th:ondrop="[[${three}]]">..</div>
+<div ondrop="old" th:ondrop="[('hello')]">..</div>
+<div ondrop="old" th:ondrop="[(${null})]">..</div>
+<div ondrop="old" th:ondrop="[(${one})]">..</div>
+<div ondrop="old" th:ondrop="[(${two})]">..</div>
+<div ondrop="old" th:ondrop="[(${three})]">..</div>
+<div ondrop="old" th:ondrop="a${a}a[['hello']]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[[${null}]]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[[${one}]]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[[${two}]]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[[${three}]]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[('hello')]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[(${null})]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[(${one})]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[(${two})]a${a}a">..</div>
+<div ondrop="old" th:ondrop="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondrop="&quot;hello&quot;">..</div>
+<div ondrop="null">..</div>
+<div ondrop="2">..</div>
+<div ondrop="&quot;two&quot;">..</div>
+<div ondrop="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondrop="hello">..</div>
+<div>..</div>
+<div ondrop="2">..</div>
+<div ondrop="two">..</div>
+<div ondrop="two &quot;plus&quot; one">..</div>
+<div ondrop="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondrop="a${a}anulla${a}a">..</div>
+<div ondrop="a${a}a2a${a}a">..</div>
+<div ondrop="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondrop="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondrop="a${a}ahelloa${a}a">..</div>
+<div ondrop="a${a}aa${a}a">..</div>
+<div ondrop="a${a}a2a${a}a">..</div>
+<div ondrop="a${a}atwoa${a}a">..</div>
+<div ondrop="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div ondrop="&quot;hello&quot;">..</div>
+<div ondrop="null">..</div>
+<div ondrop="2">..</div>
+<div ondrop="&quot;two&quot;">..</div>
+<div ondrop="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondrop="hello">..</div>
+<div>..</div>
+<div ondrop="2">..</div>
+<div ondrop="two">..</div>
+<div ondrop="two &quot;plus&quot; one">..</div>
+<div ondrop="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondrop="a${a}anulla${a}a">..</div>
+<div ondrop="a${a}a2a${a}a">..</div>
+<div ondrop="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondrop="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondrop="a${a}ahelloa${a}a">..</div>
+<div ondrop="a${a}aa${a}a">..</div>
+<div ondrop="a${a}a2a${a}a">..</div>
+<div ondrop="a${a}atwoa${a}a">..</div>
+<div ondrop="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

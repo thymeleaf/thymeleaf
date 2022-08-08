@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+texts={ 'hello', 'goodbye' }
+# ------------------------------------------------------------
+%INPUT
+<p id="msg">A message</p>
+<div th:each="t : ${texts}">
+  <div th:insert="~{::#msg/text()}">...</div>
+  <div th:text="${t}">...</div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<p id="msg">A message</p>
+<div>
+  <div>A message</div>
+  <div>hello</div>
+</div><div>
+  <div>A message</div>
+  <div>goodbye</div>
+</div>

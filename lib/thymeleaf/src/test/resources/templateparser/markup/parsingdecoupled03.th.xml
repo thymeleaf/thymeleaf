@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<thlogic>
+  <attr sel="form" th:class="greatclass" this='that' whatever=those th:another="${lala}">
+    <attr sel="div[0]/label" thefirstlabel />
+    <attr sel=".block/div[a='23']">
+      <attr sel="label" th:text="${'MegaCovered'}"/>
+    </attr>
+  </attr>
+  <attr sel="abbr[1]/a" id="fset">
+    <attr sel='/lele' lala="oe" lala2="122"/>
+  </attr>
+</thlogic>

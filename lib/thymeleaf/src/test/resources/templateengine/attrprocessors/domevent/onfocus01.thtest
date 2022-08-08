@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onfocus="'hello'">..</div>
+<div th:onfocus="${null}">..</div>
+<div th:onfocus="${one}">..</div>
+<div th:onfocus="${2+3}">..</div>
+<div th:onfocus="${true}">..</div>
+<div th:onfocus="${false}">..</div>
+<div th:onfocus="*{null}">..</div>
+<div th:onfocus="*{one}">..</div>
+<div th:onfocus="*{2+3}">..</div>
+<div th:onfocus="*{true}">..</div>
+<div th:onfocus="*{false}">..</div>
+
+<div onfocus="old" th:onfocus="'hello'">..</div>
+<div onfocus="old" th:onfocus="${null}">..</div>
+<div onfocus="old" th:onfocus="${one}">..</div>
+<div onfocus="old" th:onfocus="${2+3}">..</div>
+<div onfocus="old" th:onfocus="${true}">..</div>
+<div onfocus="old" th:onfocus="${false}">..</div>
+<div onfocus="old" th:onfocus="*{null}">..</div>
+<div onfocus="old" th:onfocus="*{one}">..</div>
+<div onfocus="old" th:onfocus="*{2+3}">..</div>
+<div onfocus="old" th:onfocus="*{true}">..</div>
+<div onfocus="old" th:onfocus="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onfocus="hello">..</div>
+<div>..</div>
+<div onfocus="2">..</div>
+<div onfocus="5">..</div>
+<div onfocus="true">..</div>
+<div onfocus="false">..</div>
+<div>..</div>
+<div onfocus="2">..</div>
+<div onfocus="5">..</div>
+<div onfocus="true">..</div>
+<div onfocus="false">..</div>
+
+<div onfocus="hello">..</div>
+<div>..</div>
+<div onfocus="2">..</div>
+<div onfocus="5">..</div>
+<div onfocus="true">..</div>
+<div onfocus="false">..</div>
+<div>..</div>
+<div onfocus="2">..</div>
+<div onfocus="5">..</div>
+<div onfocus="true">..</div>
+<div onfocus="false">..</div>

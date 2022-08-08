@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onmouseup="'hello'">..</div>
+<div th:onmouseup="${null}">..</div>
+<div th:onmouseup="${one}">..</div>
+<div th:onmouseup="${2+3}">..</div>
+<div th:onmouseup="${true}">..</div>
+<div th:onmouseup="${false}">..</div>
+<div th:onmouseup="*{null}">..</div>
+<div th:onmouseup="*{one}">..</div>
+<div th:onmouseup="*{2+3}">..</div>
+<div th:onmouseup="*{true}">..</div>
+<div th:onmouseup="*{false}">..</div>
+
+<div onmouseup="old" th:onmouseup="'hello'">..</div>
+<div onmouseup="old" th:onmouseup="${null}">..</div>
+<div onmouseup="old" th:onmouseup="${one}">..</div>
+<div onmouseup="old" th:onmouseup="${2+3}">..</div>
+<div onmouseup="old" th:onmouseup="${true}">..</div>
+<div onmouseup="old" th:onmouseup="${false}">..</div>
+<div onmouseup="old" th:onmouseup="*{null}">..</div>
+<div onmouseup="old" th:onmouseup="*{one}">..</div>
+<div onmouseup="old" th:onmouseup="*{2+3}">..</div>
+<div onmouseup="old" th:onmouseup="*{true}">..</div>
+<div onmouseup="old" th:onmouseup="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmouseup="hello">..</div>
+<div>..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="5">..</div>
+<div onmouseup="true">..</div>
+<div onmouseup="false">..</div>
+<div>..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="5">..</div>
+<div onmouseup="true">..</div>
+<div onmouseup="false">..</div>
+
+<div onmouseup="hello">..</div>
+<div>..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="5">..</div>
+<div onmouseup="true">..</div>
+<div onmouseup="false">..</div>
+<div>..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="5">..</div>
+<div onmouseup="true">..</div>
+<div onmouseup="false">..</div>

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%MESSAGES
+msg = Message is {0}.
+# ------------------------------------------------------------
+%CONTEXT
+value = new java.lang.String[] { 'hello', 'goodbye' }
+# ------------------------------------------------------------
+%INPUT
+<p th:with="txt=#{msg(${value})}" th:text="${#strings.substringBefore(txt,'@')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Message is [Ljava.lang.String;</p>

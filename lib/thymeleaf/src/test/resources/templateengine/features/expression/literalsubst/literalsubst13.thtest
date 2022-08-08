@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="$|{onevar}">...</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QCould not parse as expression\E(.*)
+

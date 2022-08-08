@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onmessage="[['hello']]">..</div>
+<div th:onmessage="[[${null}]]">..</div>
+<div th:onmessage="[[${one}]]">..</div>
+<div th:onmessage="[[${two}]]">..</div>
+<div th:onmessage="[[${three}]]">..</div>
+<div th:onmessage="[('hello')]">..</div>
+<div th:onmessage="[(${null})]">..</div>
+<div th:onmessage="[(${one})]">..</div>
+<div th:onmessage="[(${two})]">..</div>
+<div th:onmessage="[(${three})]">..</div>
+<div th:onmessage="a${a}a[['hello']]a${a}a">..</div>
+<div th:onmessage="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onmessage="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onmessage="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onmessage="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onmessage="a${a}a[('hello')]a${a}a">..</div>
+<div th:onmessage="a${a}a[(${null})]a${a}a">..</div>
+<div th:onmessage="a${a}a[(${one})]a${a}a">..</div>
+<div th:onmessage="a${a}a[(${two})]a${a}a">..</div>
+<div th:onmessage="a${a}a[(${three})]a${a}a">..</div>
+
+<div onmessage="old" th:onmessage="[['hello']]">..</div>
+<div onmessage="old" th:onmessage="[[${null}]]">..</div>
+<div onmessage="old" th:onmessage="[[${one}]]">..</div>
+<div onmessage="old" th:onmessage="[[${two}]]">..</div>
+<div onmessage="old" th:onmessage="[[${three}]]">..</div>
+<div onmessage="old" th:onmessage="[('hello')]">..</div>
+<div onmessage="old" th:onmessage="[(${null})]">..</div>
+<div onmessage="old" th:onmessage="[(${one})]">..</div>
+<div onmessage="old" th:onmessage="[(${two})]">..</div>
+<div onmessage="old" th:onmessage="[(${three})]">..</div>
+<div onmessage="old" th:onmessage="a${a}a[['hello']]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[[${null}]]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[[${one}]]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[[${two}]]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[[${three}]]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[('hello')]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[(${null})]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[(${one})]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[(${two})]a${a}a">..</div>
+<div onmessage="old" th:onmessage="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmessage="&quot;hello&quot;">..</div>
+<div onmessage="null">..</div>
+<div onmessage="2">..</div>
+<div onmessage="&quot;two&quot;">..</div>
+<div onmessage="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onmessage="hello">..</div>
+<div>..</div>
+<div onmessage="2">..</div>
+<div onmessage="two">..</div>
+<div onmessage="two &quot;plus&quot; one">..</div>
+<div onmessage="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onmessage="a${a}anulla${a}a">..</div>
+<div onmessage="a${a}a2a${a}a">..</div>
+<div onmessage="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onmessage="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onmessage="a${a}ahelloa${a}a">..</div>
+<div onmessage="a${a}aa${a}a">..</div>
+<div onmessage="a${a}a2a${a}a">..</div>
+<div onmessage="a${a}atwoa${a}a">..</div>
+<div onmessage="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onmessage="&quot;hello&quot;">..</div>
+<div onmessage="null">..</div>
+<div onmessage="2">..</div>
+<div onmessage="&quot;two&quot;">..</div>
+<div onmessage="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onmessage="hello">..</div>
+<div>..</div>
+<div onmessage="2">..</div>
+<div onmessage="two">..</div>
+<div onmessage="two &quot;plus&quot; one">..</div>
+<div onmessage="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onmessage="a${a}anulla${a}a">..</div>
+<div onmessage="a${a}a2a${a}a">..</div>
+<div onmessage="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onmessage="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onmessage="a${a}ahelloa${a}a">..</div>
+<div onmessage="a${a}aa${a}a">..</div>
+<div onmessage="a${a}a2a${a}a">..</div>
+<div onmessage="a${a}atwoa${a}a">..</div>
+<div onmessage="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

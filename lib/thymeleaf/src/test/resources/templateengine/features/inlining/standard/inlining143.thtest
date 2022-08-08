@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    var url = "[(@{'/someUrl'})]";
+    var url = '[(@{'/someUrl'})]';
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    var url = "/testing/someUrl";
+    var url = '/testing/someUrl';
+</script>

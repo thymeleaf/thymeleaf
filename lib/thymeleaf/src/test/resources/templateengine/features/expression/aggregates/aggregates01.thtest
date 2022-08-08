@@ -1,0 +1,26 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+nums01 = { 5, 5}
+nums02 = { 10, 0, 0, 0}
+nums03 = { 10}
+nums04 = { 5, 5, 0}
+nums05 = { 10, 10, 0}
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${#aggregates.avg(nums01)}">...</span>
+<span th:text="${#aggregates.avg(nums02)}">...</span>
+<span th:text="${#aggregates.avg(nums03)}">...</span>
+<span th:text="${#aggregates.avg(nums04)}">...</span>
+<span th:text="${#aggregates.avg(nums05)}">...</span>
+<span th:text="${#numbers.formatDecimal(#aggregates.avg(nums04),0,2)}">...</span>
+<span th:text="${#numbers.formatDecimal(#aggregates.avg(nums05),0,2)}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>5</span>
+<span>2.5</span>
+<span>10</span>
+<span>3.3333333333</span>
+<span>6.6666666667</span>
+<span>3.33</span>
+<span>6.67</span>

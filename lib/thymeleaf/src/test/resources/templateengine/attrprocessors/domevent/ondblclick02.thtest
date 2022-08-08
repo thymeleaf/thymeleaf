@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+param.one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondblclick="${param.one}">..</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

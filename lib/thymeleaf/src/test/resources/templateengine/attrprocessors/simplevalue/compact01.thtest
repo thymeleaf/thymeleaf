@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:compact="${one}">..</div>
+<div th:compact="'hello'">..</div>
+<div th:compact="${null}">..</div>
+<div th:compact="''">..</div>
+<div compact="old" th:compact="${one}">..</div>
+<div compact="old" th:compact="'hello'">..</div>
+<div compact="old" th:compact="${null}">..</div>
+<div compact="old" th:compact="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div compact="one!">..</div>
+<div compact="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div compact="one!">..</div>
+<div compact="hello">..</div>
+<div>..</div>
+<div>..</div>

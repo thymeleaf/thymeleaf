@@ -1,0 +1,14 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+# We are checking the behaviour of the expressions when a non-existing variable is accessed
+<p th:text="${a}">...</p>
+<p th:text="${param.a}">...</p>
+<p th:text="${session.a}">...</p>
+<p th:text="${application.a}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p></p>
+<p></p>
+<p></p>
+<p></p>

@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onchange="[['hello']]">..</div>
+<div th:onchange="[[${null}]]">..</div>
+<div th:onchange="[[${one}]]">..</div>
+<div th:onchange="[[${two}]]">..</div>
+<div th:onchange="[[${three}]]">..</div>
+<div th:onchange="[('hello')]">..</div>
+<div th:onchange="[(${null})]">..</div>
+<div th:onchange="[(${one})]">..</div>
+<div th:onchange="[(${two})]">..</div>
+<div th:onchange="[(${three})]">..</div>
+<div th:onchange="a${a}a[['hello']]a${a}a">..</div>
+<div th:onchange="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onchange="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onchange="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onchange="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onchange="a${a}a[('hello')]a${a}a">..</div>
+<div th:onchange="a${a}a[(${null})]a${a}a">..</div>
+<div th:onchange="a${a}a[(${one})]a${a}a">..</div>
+<div th:onchange="a${a}a[(${two})]a${a}a">..</div>
+<div th:onchange="a${a}a[(${three})]a${a}a">..</div>
+
+<div onchange="old" th:onchange="[['hello']]">..</div>
+<div onchange="old" th:onchange="[[${null}]]">..</div>
+<div onchange="old" th:onchange="[[${one}]]">..</div>
+<div onchange="old" th:onchange="[[${two}]]">..</div>
+<div onchange="old" th:onchange="[[${three}]]">..</div>
+<div onchange="old" th:onchange="[('hello')]">..</div>
+<div onchange="old" th:onchange="[(${null})]">..</div>
+<div onchange="old" th:onchange="[(${one})]">..</div>
+<div onchange="old" th:onchange="[(${two})]">..</div>
+<div onchange="old" th:onchange="[(${three})]">..</div>
+<div onchange="old" th:onchange="a${a}a[['hello']]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[[${null}]]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[[${one}]]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[[${two}]]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[[${three}]]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[('hello')]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[(${null})]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[(${one})]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[(${two})]a${a}a">..</div>
+<div onchange="old" th:onchange="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onchange="&quot;hello&quot;">..</div>
+<div onchange="null">..</div>
+<div onchange="2">..</div>
+<div onchange="&quot;two&quot;">..</div>
+<div onchange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onchange="hello">..</div>
+<div>..</div>
+<div onchange="2">..</div>
+<div onchange="two">..</div>
+<div onchange="two &quot;plus&quot; one">..</div>
+<div onchange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onchange="a${a}anulla${a}a">..</div>
+<div onchange="a${a}a2a${a}a">..</div>
+<div onchange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onchange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onchange="a${a}ahelloa${a}a">..</div>
+<div onchange="a${a}aa${a}a">..</div>
+<div onchange="a${a}a2a${a}a">..</div>
+<div onchange="a${a}atwoa${a}a">..</div>
+<div onchange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onchange="&quot;hello&quot;">..</div>
+<div onchange="null">..</div>
+<div onchange="2">..</div>
+<div onchange="&quot;two&quot;">..</div>
+<div onchange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onchange="hello">..</div>
+<div>..</div>
+<div onchange="2">..</div>
+<div onchange="two">..</div>
+<div onchange="two &quot;plus&quot; one">..</div>
+<div onchange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onchange="a${a}anulla${a}a">..</div>
+<div onchange="a${a}a2a${a}a">..</div>
+<div onchange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onchange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onchange="a${a}ahelloa${a}a">..</div>
+<div onchange="a${a}aa${a}a">..</div>
+<div onchange="a${a}a2a${a}a">..</div>
+<div onchange="a${a}atwoa${a}a">..</div>
+<div onchange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

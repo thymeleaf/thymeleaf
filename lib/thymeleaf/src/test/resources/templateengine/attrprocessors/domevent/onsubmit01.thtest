@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onsubmit="'hello'">..</div>
+<div th:onsubmit="${null}">..</div>
+<div th:onsubmit="${one}">..</div>
+<div th:onsubmit="${2+3}">..</div>
+<div th:onsubmit="${true}">..</div>
+<div th:onsubmit="${false}">..</div>
+<div th:onsubmit="*{null}">..</div>
+<div th:onsubmit="*{one}">..</div>
+<div th:onsubmit="*{2+3}">..</div>
+<div th:onsubmit="*{true}">..</div>
+<div th:onsubmit="*{false}">..</div>
+
+<div onsubmit="old" th:onsubmit="'hello'">..</div>
+<div onsubmit="old" th:onsubmit="${null}">..</div>
+<div onsubmit="old" th:onsubmit="${one}">..</div>
+<div onsubmit="old" th:onsubmit="${2+3}">..</div>
+<div onsubmit="old" th:onsubmit="${true}">..</div>
+<div onsubmit="old" th:onsubmit="${false}">..</div>
+<div onsubmit="old" th:onsubmit="*{null}">..</div>
+<div onsubmit="old" th:onsubmit="*{one}">..</div>
+<div onsubmit="old" th:onsubmit="*{2+3}">..</div>
+<div onsubmit="old" th:onsubmit="*{true}">..</div>
+<div onsubmit="old" th:onsubmit="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onsubmit="hello">..</div>
+<div>..</div>
+<div onsubmit="2">..</div>
+<div onsubmit="5">..</div>
+<div onsubmit="true">..</div>
+<div onsubmit="false">..</div>
+<div>..</div>
+<div onsubmit="2">..</div>
+<div onsubmit="5">..</div>
+<div onsubmit="true">..</div>
+<div onsubmit="false">..</div>
+
+<div onsubmit="hello">..</div>
+<div>..</div>
+<div onsubmit="2">..</div>
+<div onsubmit="5">..</div>
+<div onsubmit="true">..</div>
+<div onsubmit="false">..</div>
+<div>..</div>
+<div onsubmit="2">..</div>
+<div onsubmit="5">..</div>
+<div onsubmit="true">..</div>
+<div onsubmit="false">..</div>

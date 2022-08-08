@@ -1,0 +1,9 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+[# th:text="thisisatoken"]Some text[/]
+[# th:text="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[].-_"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+thisisatoken
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[].-_

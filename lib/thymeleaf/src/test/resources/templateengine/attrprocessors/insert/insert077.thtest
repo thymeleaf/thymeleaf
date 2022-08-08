@@ -1,0 +1,23 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<title>main</title>
+<span th:insert="fragg">...</span>
+# ------------------------------------------------------------
+%INPUT[fragg]
+<div th:with="tit=~{:://title}" th:remove="tag">
+  <div th:insert="frag::f (title=${tit})">...</div>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<div th:fragment="f" class="a">
+    <title>inner</title><div th:insert="${title}"></div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<title>main</title>
+<span>
+<div><div class="a">
+    <title>inner</title><div><title>main</title></div>
+</div></div>
+</span>

@@ -1,0 +1,9 @@
+%TEMPLATE_MODE CSS
+# ------------------------------------------------------------
+%INPUT
+[# th:text="thisisatoken"]Some text[/]
+[# th:text="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[].-_"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+thisisatoken
+\30 123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\[\]\.-_

@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:open="${t}">..</div>
+<div th:open="${f}">..</div>
+<div th:open="${one}">..</div>
+<div th:open="'hello'">..</div>
+<div th:open="${null}">..</div>
+<div th:open="''">..</div>
+
+<div open="old" th:open="${t}">..</div>
+<div open="old" th:open="${f}">..</div>
+<div open="old" th:open="${one}">..</div>
+<div open="old" th:open="'hello'">..</div>
+<div open="old" th:open="${null}">..</div>
+<div open="old" th:open="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div open="open">..</div>
+<div>..</div>
+<div open="open">..</div>
+<div open="open">..</div>
+<div>..</div>
+<div open="open">..</div>
+
+<div open="open">..</div>
+<div>..</div>
+<div open="open">..</div>
+<div open="open">..</div>
+<div>..</div>
+<div open="open">..</div>

@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+user = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+<div th:inline="javascript">
+  /* The user is: [[${user}]] */
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  /* The user is: "John Apricot" */
+</div>

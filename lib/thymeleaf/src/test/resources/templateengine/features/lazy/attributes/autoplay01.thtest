@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:autoplay="${t}">..</div>
+<div th:autoplay="${f}">..</div>
+<div th:autoplay="${one}">..</div>
+<div autoplay="old" th:autoplay="${t}">..</div>
+<div autoplay="old" th:autoplay="${f}">..</div>
+<div autoplay="old" th:autoplay="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div autoplay="autoplay">..</div>
+<div>..</div>
+<div autoplay="autoplay">..</div>
+<div autoplay="autoplay">..</div>
+<div>..</div>
+<div autoplay="autoplay">..</div>

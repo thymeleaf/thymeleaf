@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 10
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  [(|${var} is &gt; \'9\'|)]
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+# We are testing here that in JAVASCRIPT mode that &gt; will
+# NOT be unescaped because JAVASCRIPT unescape is performed,
+# and that won't modify a &gt;
+<script>
+  10 is &gt; '9'
+</script>

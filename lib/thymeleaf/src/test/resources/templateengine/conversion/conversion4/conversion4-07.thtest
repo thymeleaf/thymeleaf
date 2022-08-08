@@ -1,0 +1,43 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+bool = true
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${'Hello'}">...</p>
+<p th:utext="${'Hello'} + ${''}">...</p>
+<p th:utext="${'Hello'} + ${2}">...</p>
+<p th:utext="|${'Hello'} ${2}|">...</p>
+<p th:utext="|${'Hello'} ${bool}|">...</p>
+<p th:utext="|${'Hello'} false|">...</p>
+<p th:utext="false">...</p>
+<p th:utext="2314">...</p>
+
+<p th:utext="${{'Hello'}}">...</p>
+<p th:utext="${{'Hello'}} + ${{''}}">...</p>
+<p th:utext="${{'Hello'}} + ${{2}}">...</p>
+<p th:utext="|${{'Hello'}} ${{2}}|">...</p>
+<p th:utext="|${{'Hello'}} ${{bool}}|">...</p>
+<p th:utext="|${{'Hello'}} false|">...</p>
+<p th:utext="false">...</p>
+<p th:utext="2314">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Hello</p>
+<p>Hello</p>
+<p>Hello2</p>
+<p>Hello 2</p>
+<p>Hello true</p>
+<p>Hello false</p>
+<p>false</p>
+<p>2314</p>
+
+<p>Hello</p>
+<p>Hello</p>
+<p>Hello[2]</p>
+<p>Hello [2]</p>
+<p>Hello [true]</p>
+<p>Hello false</p>
+<p>false</p>
+<p>2314</p>
+

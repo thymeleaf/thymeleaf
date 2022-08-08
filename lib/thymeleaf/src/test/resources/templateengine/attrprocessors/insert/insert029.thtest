@@ -1,0 +1,20 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+m2 = '...and for you too!'
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <p>This is some text before</p>
+  <div th:insert="templates/template-1 :: frag-1 (mesg='Message for you!')">...</div>
+  <p>This is some text after</p>
+</div>
+# ------------------------------------------------------------
+%INPUT[templates/template-1]
+<footer th:fragment="frag-1(mesg, mss2)">
+  <p th:text="${mesg}">Here goes the message</p>
+  <p th:text="${mss2}">Here goes the message</p>
+</footer>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+

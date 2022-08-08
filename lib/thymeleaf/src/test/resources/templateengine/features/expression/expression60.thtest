@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+pageNumber=6
+# ------------------------------------------------------------
+%INPUT
+<div th:with="batchSize=10">
+  <li><a th:text="${pageNumber}+'/'+${batchSize}+'='+(${pageNumber/batchSize})"></a></li>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <li><a>6/10=0</a></li>
+</div>

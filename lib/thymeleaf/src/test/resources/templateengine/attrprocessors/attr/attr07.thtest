@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+sel = true 
+# ------------------------------------------------------------
+%INPUT
+<span th:attr="data-special=${sel},data-special2='something'">..</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span data-special="true" data-special2="something">..</span>

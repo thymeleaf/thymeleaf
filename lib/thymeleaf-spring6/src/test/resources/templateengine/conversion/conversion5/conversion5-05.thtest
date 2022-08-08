@@ -1,0 +1,12 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+[# th:text="${#conversions.convert('Hello','String')}"]...[/]
+[# th:text="${#conversions.convert(23,'String')}"]...[/]
+[# th:text="${#conversions.convert(23,'String') + 'a'}"]...[/]
+# ------------------------------------------------------------
+%OUTPUT
+Hello
+[23]
+[23]a
+

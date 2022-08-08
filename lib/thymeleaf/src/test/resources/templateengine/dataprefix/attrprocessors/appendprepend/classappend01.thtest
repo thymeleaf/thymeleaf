@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-classappend="${one}">..</div>
+<div data-th-classappend="'hello'">..</div>
+<div data-th-classappend="${null}">..</div>
+<div data-th-classappend="''">..</div>
+
+<div class="old" data-th-classappend="${one}">..</div>
+<div class="old" data-th-classappend="'hello'">..</div>
+<div class="old" data-th-classappend="${null}">..</div>
+<div class="old" data-th-classappend="''">..</div>
+
+<div class="" data-th-classappend="${one}">..</div>
+<div class="" data-th-classappend="'hello'">..</div>
+<div class="" data-th-classappend="${null}">..</div>
+<div class="" data-th-classappend="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div class="one!">..</div>
+<div class="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div class="old one!">..</div>
+<div class="old hello">..</div>
+<div class="old">..</div>
+<div class="old">..</div>
+
+<div class="one!">..</div>
+<div class="hello">..</div>
+<div class="">..</div>
+<div class="">..</div>

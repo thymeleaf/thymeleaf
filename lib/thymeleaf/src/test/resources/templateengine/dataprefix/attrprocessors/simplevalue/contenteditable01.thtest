@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-contenteditable="${one}">..</div>
+<div data-th-contenteditable="'hello'">..</div>
+<div data-th-contenteditable="${null}">..</div>
+<div data-th-contenteditable="''">..</div>
+<div contenteditable="old" data-th-contenteditable="${one}">..</div>
+<div contenteditable="old" data-th-contenteditable="'hello'">..</div>
+<div contenteditable="old" data-th-contenteditable="${null}">..</div>
+<div contenteditable="old" data-th-contenteditable="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div contenteditable="one!">..</div>
+<div contenteditable="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div contenteditable="one!">..</div>
+<div contenteditable="hello">..</div>
+<div>..</div>
+<div>..</div>

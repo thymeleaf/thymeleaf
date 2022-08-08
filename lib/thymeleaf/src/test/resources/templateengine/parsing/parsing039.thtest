@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+msg = 'Hello, World!'
+# ------------------------------------------------------------
+%INPUT
+<span>before</span>
+<!--/*/
+  <div th:text="W R O N G">
+     Some message here just to test it is reported in the
+     correct line (3, not 2)
+  </div>
+/*/-->
+<span>after</span>
+# ------------------------------------------------------------
+%EXCEPTION
+org.thymeleaf.exceptions.TemplateProcessingException
+# ------------------------------------------------------------
+# The line must be 3, not 2
+%EXCEPTION_MESSAGE_PATTERN
+(.*?)parsing039\.thtest\-001\" - line 3, col 8\)

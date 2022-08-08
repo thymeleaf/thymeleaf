@@ -1,0 +1,17 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+text01 = 'Is this a text? We can have symbols like #, ~, / and also accented chars like \u00E1'
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${#uris.unescapePath(#uris.escapePath(text01))}">...</span>
+<span th:text="${#uris.unescapePathSegment(#uris.escapePathSegment(text01))}">...</span>
+<span th:text="${#uris.unescapeQueryParam(#uris.escapeQueryParam(text01))}">...</span>
+<span th:text="${#uris.unescapeFragmentId(#uris.escapeFragmentId(text01))}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>Is this a text? We can have symbols like #, ~, / and also accented chars like \u00E1</span>
+<span>Is this a text? We can have symbols like #, ~, / and also accented chars like \u00E1</span>
+<span>Is this a text? We can have symbols like #, ~, / and also accented chars like \u00E1</span>
+<span>Is this a text? We can have symbols like #, ~, / and also accented chars like \u00E1</span>
+

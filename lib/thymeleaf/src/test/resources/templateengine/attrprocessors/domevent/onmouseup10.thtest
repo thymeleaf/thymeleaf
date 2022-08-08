@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onmouseup="[['hello']]">..</div>
+<div th:onmouseup="[[${null}]]">..</div>
+<div th:onmouseup="[[${one}]]">..</div>
+<div th:onmouseup="[[${two}]]">..</div>
+<div th:onmouseup="[[${three}]]">..</div>
+<div th:onmouseup="[('hello')]">..</div>
+<div th:onmouseup="[(${null})]">..</div>
+<div th:onmouseup="[(${one})]">..</div>
+<div th:onmouseup="[(${two})]">..</div>
+<div th:onmouseup="[(${three})]">..</div>
+<div th:onmouseup="a${a}a[['hello']]a${a}a">..</div>
+<div th:onmouseup="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onmouseup="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onmouseup="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onmouseup="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onmouseup="a${a}a[('hello')]a${a}a">..</div>
+<div th:onmouseup="a${a}a[(${null})]a${a}a">..</div>
+<div th:onmouseup="a${a}a[(${one})]a${a}a">..</div>
+<div th:onmouseup="a${a}a[(${two})]a${a}a">..</div>
+<div th:onmouseup="a${a}a[(${three})]a${a}a">..</div>
+
+<div onmouseup="old" th:onmouseup="[['hello']]">..</div>
+<div onmouseup="old" th:onmouseup="[[${null}]]">..</div>
+<div onmouseup="old" th:onmouseup="[[${one}]]">..</div>
+<div onmouseup="old" th:onmouseup="[[${two}]]">..</div>
+<div onmouseup="old" th:onmouseup="[[${three}]]">..</div>
+<div onmouseup="old" th:onmouseup="[('hello')]">..</div>
+<div onmouseup="old" th:onmouseup="[(${null})]">..</div>
+<div onmouseup="old" th:onmouseup="[(${one})]">..</div>
+<div onmouseup="old" th:onmouseup="[(${two})]">..</div>
+<div onmouseup="old" th:onmouseup="[(${three})]">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[['hello']]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[[${null}]]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[[${one}]]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[[${two}]]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[[${three}]]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[('hello')]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[(${null})]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[(${one})]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[(${two})]a${a}a">..</div>
+<div onmouseup="old" th:onmouseup="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmouseup="&quot;hello&quot;">..</div>
+<div onmouseup="null">..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="&quot;two&quot;">..</div>
+<div onmouseup="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onmouseup="hello">..</div>
+<div>..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="two">..</div>
+<div onmouseup="two &quot;plus&quot; one">..</div>
+<div onmouseup="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onmouseup="a${a}anulla${a}a">..</div>
+<div onmouseup="a${a}a2a${a}a">..</div>
+<div onmouseup="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onmouseup="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onmouseup="a${a}ahelloa${a}a">..</div>
+<div onmouseup="a${a}aa${a}a">..</div>
+<div onmouseup="a${a}a2a${a}a">..</div>
+<div onmouseup="a${a}atwoa${a}a">..</div>
+<div onmouseup="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onmouseup="&quot;hello&quot;">..</div>
+<div onmouseup="null">..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="&quot;two&quot;">..</div>
+<div onmouseup="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onmouseup="hello">..</div>
+<div>..</div>
+<div onmouseup="2">..</div>
+<div onmouseup="two">..</div>
+<div onmouseup="two &quot;plus&quot; one">..</div>
+<div onmouseup="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onmouseup="a${a}anulla${a}a">..</div>
+<div onmouseup="a${a}a2a${a}a">..</div>
+<div onmouseup="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onmouseup="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onmouseup="a${a}ahelloa${a}a">..</div>
+<div onmouseup="a${a}aa${a}a">..</div>
+<div onmouseup="a${a}a2a${a}a">..</div>
+<div onmouseup="a${a}atwoa${a}a">..</div>
+<div onmouseup="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

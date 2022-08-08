@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <!--/* This code will be removed at thymeleaf parsing time! */-->
+  <span>Something here!</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <span>Something here!</span>
+</div>

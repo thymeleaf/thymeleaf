@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:oninvalid="'hello'">..</div>
+<div th:oninvalid="${null}">..</div>
+<div th:oninvalid="${one}">..</div>
+<div th:oninvalid="${2+3}">..</div>
+<div th:oninvalid="${true}">..</div>
+<div th:oninvalid="${false}">..</div>
+<div th:oninvalid="*{null}">..</div>
+<div th:oninvalid="*{one}">..</div>
+<div th:oninvalid="*{2+3}">..</div>
+<div th:oninvalid="*{true}">..</div>
+<div th:oninvalid="*{false}">..</div>
+
+<div oninvalid="old" th:oninvalid="'hello'">..</div>
+<div oninvalid="old" th:oninvalid="${null}">..</div>
+<div oninvalid="old" th:oninvalid="${one}">..</div>
+<div oninvalid="old" th:oninvalid="${2+3}">..</div>
+<div oninvalid="old" th:oninvalid="${true}">..</div>
+<div oninvalid="old" th:oninvalid="${false}">..</div>
+<div oninvalid="old" th:oninvalid="*{null}">..</div>
+<div oninvalid="old" th:oninvalid="*{one}">..</div>
+<div oninvalid="old" th:oninvalid="*{2+3}">..</div>
+<div oninvalid="old" th:oninvalid="*{true}">..</div>
+<div oninvalid="old" th:oninvalid="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div oninvalid="hello">..</div>
+<div>..</div>
+<div oninvalid="2">..</div>
+<div oninvalid="5">..</div>
+<div oninvalid="true">..</div>
+<div oninvalid="false">..</div>
+<div>..</div>
+<div oninvalid="2">..</div>
+<div oninvalid="5">..</div>
+<div oninvalid="true">..</div>
+<div oninvalid="false">..</div>
+
+<div oninvalid="hello">..</div>
+<div>..</div>
+<div oninvalid="2">..</div>
+<div oninvalid="5">..</div>
+<div oninvalid="true">..</div>
+<div oninvalid="false">..</div>
+<div>..</div>
+<div oninvalid="2">..</div>
+<div oninvalid="5">..</div>
+<div oninvalid="true">..</div>
+<div oninvalid="false">..</div>

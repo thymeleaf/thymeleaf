@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+<a href="a" id=2 th:href='@{/something}' alt="a link">some text</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/something" id=2 alt="a link">some text</a>

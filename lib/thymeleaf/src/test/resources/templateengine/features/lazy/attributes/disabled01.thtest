@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:disabled="${t}">..</div>
+<div th:disabled="${f}">..</div>
+<div th:disabled="${one}">..</div>
+<div disabled="old" th:disabled="${t}">..</div>
+<div disabled="old" th:disabled="${f}">..</div>
+<div disabled="old" th:disabled="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>

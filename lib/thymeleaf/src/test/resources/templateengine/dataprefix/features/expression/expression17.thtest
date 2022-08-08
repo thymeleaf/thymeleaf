@@ -1,0 +1,193 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+a1 = 'a'
+a2 = true
+a3 = false
+a4 = 'aa'
+b1 = 1
+b2 = 'one'
+c1 = 2
+c2 = 'two'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${a1} ? ${b1}">...</p>
+<p data-th-text="${a1} ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} == 'a') ? ${b1}">...</p>
+<p data-th-text="(${a1} == 'a') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} != 'a') ? ${b1}">...</p>
+<p data-th-text="(${a1} != 'a') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} == 'b') ? ${b1}">...</p>
+<p data-th-text="(${a1} == 'b') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} != 'b') ? ${b1}">...</p>
+<p data-th-text="(${a1} != 'b') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} == 'aa') ? ${b1}">...</p>
+<p data-th-text="(${a1} == 'aa') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} != 'aa') ? ${b1}">...</p>
+<p data-th-text="(${a1} != 'aa') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} == 'ba') ? ${b1}">...</p>
+<p data-th-text="(${a1} == 'ba') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a1} != 'ba') ? ${b1}">...</p>
+<p data-th-text="(${a1} != 'ba') ? ${b1} : ${c1}">...</p>
+
+<p data-th-text="${a4} ? ${b1}">...</p>
+<p data-th-text="${a4} ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} == 'a') ? ${b1}">...</p>
+<p data-th-text="(${a4} == 'a') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} != 'a') ? ${b1}">...</p>
+<p data-th-text="(${a4} != 'a') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} == 'b') ? ${b1}">...</p>
+<p data-th-text="(${a4} == 'b') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} != 'b') ? ${b1}">...</p>
+<p data-th-text="(${a4} != 'b') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} == 'aa') ? ${b1}">...</p>
+<p data-th-text="(${a4} == 'aa') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} != 'aa') ? ${b1}">...</p>
+<p data-th-text="(${a4} != 'aa') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} == 'ba') ? ${b1}">...</p>
+<p data-th-text="(${a4} == 'ba') ? ${b1} : ${c1}">...</p>
+<p data-th-text="(${a4} != 'ba') ? ${b1}">...</p>
+<p data-th-text="(${a4} != 'ba') ? ${b1} : ${c1}">...</p>
+
+<p data-th-text="${a2} ? ${b1}">...</p>
+<p data-th-text="${a2} ? ${b1} : ${c1}">...</p>
+
+<p data-th-text="${a3} ? ${b1}">...</p>
+<p data-th-text="${a3} ? ${b1} : ${c1}">...</p>
+
+
+
+<p data-th-text="${a1} ? ${b2}">...</p>
+<p data-th-text="${a1} ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} == 'a') ? ${b2}">...</p>
+<p data-th-text="(${a1} == 'a') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} != 'a') ? ${b2}">...</p>
+<p data-th-text="(${a1} != 'a') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} == 'b') ? ${b2}">...</p>
+<p data-th-text="(${a1} == 'b') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} != 'b') ? ${b2}">...</p>
+<p data-th-text="(${a1} != 'b') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} == 'aa') ? ${b2}">...</p>
+<p data-th-text="(${a1} == 'aa') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} != 'aa') ? ${b2}">...</p>
+<p data-th-text="(${a1} != 'aa') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} == 'ba') ? ${b2}">...</p>
+<p data-th-text="(${a1} == 'ba') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a1} != 'ba') ? ${b2}">...</p>
+<p data-th-text="(${a1} != 'ba') ? ${b2} : ${c2}">...</p>
+
+<p data-th-text="${a4} ? ${b2}">...</p>
+<p data-th-text="${a4} ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} == 'a') ? ${b2}">...</p>
+<p data-th-text="(${a4} == 'a') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} != 'a') ? ${b2}">...</p>
+<p data-th-text="(${a4} != 'a') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} == 'b') ? ${b2}">...</p>
+<p data-th-text="(${a4} == 'b') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} != 'b') ? ${b2}">...</p>
+<p data-th-text="(${a4} != 'b') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} == 'aa') ? ${b2}">...</p>
+<p data-th-text="(${a4} == 'aa') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} != 'aa') ? ${b2}">...</p>
+<p data-th-text="(${a4} != 'aa') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} == 'ba') ? ${b2}">...</p>
+<p data-th-text="(${a4} == 'ba') ? ${b2} : ${c2}">...</p>
+<p data-th-text="(${a4} != 'ba') ? ${b2}">...</p>
+<p data-th-text="(${a4} != 'ba') ? ${b2} : ${c2}">...</p>
+
+<p data-th-text="${a2} ? ${b2}">...</p>
+<p data-th-text="${a2} ? ${b2} : ${c2}">...</p>
+
+<p data-th-text="${a3} ? ${b2}">...</p>
+<p data-th-text="${a3} ? ${b2} : ${c2}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>1</p>
+<p>1</p>
+<p>1</p>
+<p>1</p>
+<p></p>
+<p>2</p>
+<p></p>
+<p>2</p>
+<p>1</p>
+<p>1</p>
+<p></p>
+<p>2</p>
+<p>1</p>
+<p>1</p>
+<p></p>
+<p>2</p>
+<p>1</p>
+<p>1</p>
+
+<p>1</p>
+<p>1</p>
+<p></p>
+<p>2</p>
+<p>1</p>
+<p>1</p>
+<p></p>
+<p>2</p>
+<p>1</p>
+<p>1</p>
+<p>1</p>
+<p>1</p>
+<p></p>
+<p>2</p>
+<p></p>
+<p>2</p>
+<p>1</p>
+<p>1</p>
+
+<p>1</p>
+<p>1</p>
+
+<p></p>
+<p>2</p>
+
+
+
+<p>one</p>
+<p>one</p>
+<p>one</p>
+<p>one</p>
+<p></p>
+<p>two</p>
+<p></p>
+<p>two</p>
+<p>one</p>
+<p>one</p>
+<p></p>
+<p>two</p>
+<p>one</p>
+<p>one</p>
+<p></p>
+<p>two</p>
+<p>one</p>
+<p>one</p>
+
+<p>one</p>
+<p>one</p>
+<p></p>
+<p>two</p>
+<p>one</p>
+<p>one</p>
+<p></p>
+<p>two</p>
+<p>one</p>
+<p>one</p>
+<p>one</p>
+<p>one</p>
+<p></p>
+<p>two</p>
+<p></p>
+<p>two</p>
+<p>one</p>
+<p>one</p>
+
+<p>one</p>
+<p>one</p>
+
+<p></p>
+<p>two</p>

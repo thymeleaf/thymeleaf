@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 'one'
+# ------------------------------------------------------------
+%INPUT
+<p>something<span th:replace="f :: fr">...</span>something else</p>
+# ------------------------------------------------------------
+%INPUT[f]
+<div><b th:fragment="fr">hello</b></div>
+# ------------------------------------------------------------
+%OUTPUT
+<p stack="p">something p<b stack="p, span th:replace, b th:fragment">hello p, span th:replace, b th:fragment</b>something else p</p>
+
+

@@ -1,0 +1,17 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+text01 = 'This is a text'
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${#uris.unescapePath(#uris.escapePath(text01))}">...</span>
+<span th:text="${#uris.unescapePathSegment(#uris.escapePathSegment(text01))}">...</span>
+<span th:text="${#uris.unescapeQueryParam(#uris.escapeQueryParam(text01))}">...</span>
+<span th:text="${#uris.unescapeFragmentId(#uris.escapeFragmentId(text01))}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>This is a text</span>
+<span>This is a text</span>
+<span>This is a text</span>
+<span>This is a text</span>
+

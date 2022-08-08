@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    something // that's a comment
+    something else
+    something // that's a comment
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    something // that's a comment
+    something else
+    something // that's a comment
+</script>

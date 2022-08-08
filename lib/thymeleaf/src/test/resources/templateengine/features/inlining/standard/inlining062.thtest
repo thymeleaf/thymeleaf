@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 10
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="text">
+  [# th:utext="|${var} is &gt; 9|"/]
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+# We are testing here that in TEXT mode that &gt; will be
+# unescaped because HTML unescaping is performed in TEXT mode
+<script>
+  10 is > 9
+</script>

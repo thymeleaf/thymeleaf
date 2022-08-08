@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-disabled="${t}">..</div>
+<div data-th-disabled="${f}">..</div>
+<div data-th-disabled="${one}">..</div>
+<div data-th-disabled="'hello'">..</div>
+<div data-th-disabled="${null}">..</div>
+<div data-th-disabled="''">..</div>
+
+<div disabled="old" data-th-disabled="${t}">..</div>
+<div disabled="old" data-th-disabled="${f}">..</div>
+<div disabled="old" data-th-disabled="${one}">..</div>
+<div disabled="old" data-th-disabled="'hello'">..</div>
+<div disabled="old" data-th-disabled="${null}">..</div>
+<div disabled="old" data-th-disabled="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>

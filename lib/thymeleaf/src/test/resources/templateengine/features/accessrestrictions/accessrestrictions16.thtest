@@ -1,0 +1,14 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+param.templateFrag = '#frag'
+# ------------------------------------------------------------
+%INPUT
+<div th:insert="other :: ${param.templateFrag[0]}">...</div>
+# ------------------------------------------------------------
+%INPUT[other]
+<p id="frag">some text over here, that should never be included...</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)
+

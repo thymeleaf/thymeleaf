@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+%TEMPLATE_MODE[frag] RAW
+# ------------------------------------------------------------
+%CONTEXT
+user = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+<p>[[${user}]]</p>
+<div th:replace="frag">...</div>
+<p>[[${user}]]</p>
+# ------------------------------------------------------------
+%INPUT[frag]
+<p th:text="${user}">[[${user}]]</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>John Apricot</p>
+<p th:text="${user}">[[${user}]]</p>
+<p>John Apricot</p>

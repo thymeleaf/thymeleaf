@@ -1,0 +1,13 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+[# th:text="do + it"]Some text[/]
+[# th:text="do + it + now"]Some text[/]
+[# th:text="do + ' it ' + now"]Some text[/]
+[# th:text="60 + now"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+doit
+doitnow
+do it now
+60now

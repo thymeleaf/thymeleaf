@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT %aOa
+# ------------------------------------------------------------
+%OUTPUT
+<li>Developers can extend and create custom dialects.</li>

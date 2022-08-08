@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:pubdate="${t}">..</div>
+<div th:pubdate="${f}">..</div>
+<div th:pubdate="${one}">..</div>
+<div th:pubdate="'hello'">..</div>
+<div th:pubdate="${null}">..</div>
+<div th:pubdate="''">..</div>
+
+<div pubdate="old" th:pubdate="${t}">..</div>
+<div pubdate="old" th:pubdate="${f}">..</div>
+<div pubdate="old" th:pubdate="${one}">..</div>
+<div pubdate="old" th:pubdate="'hello'">..</div>
+<div pubdate="old" th:pubdate="${null}">..</div>
+<div pubdate="old" th:pubdate="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div pubdate="pubdate">..</div>
+<div>..</div>
+<div pubdate="pubdate">..</div>
+<div pubdate="pubdate">..</div>
+<div>..</div>
+<div pubdate="pubdate">..</div>
+
+<div pubdate="pubdate">..</div>
+<div>..</div>
+<div pubdate="pubdate">..</div>
+<div pubdate="pubdate">..</div>
+<div>..</div>
+<div pubdate="pubdate">..</div>

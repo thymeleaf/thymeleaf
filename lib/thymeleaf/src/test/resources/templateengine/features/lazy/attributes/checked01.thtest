@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:checked="${t}">..</div>
+<div th:checked="${f}">..</div>
+<div th:checked="${one}">..</div>
+<div checked="old" th:checked="${t}">..</div>
+<div checked="old" th:checked="${f}">..</div>
+<div checked="old" th:checked="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div checked="checked">..</div>
+<div>..</div>
+<div checked="checked">..</div>
+<div checked="checked">..</div>
+<div>..</div>
+<div checked="checked">..</div>

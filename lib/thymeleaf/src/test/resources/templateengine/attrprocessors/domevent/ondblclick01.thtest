@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondblclick="'hello'">..</div>
+<div th:ondblclick="${null}">..</div>
+<div th:ondblclick="${one}">..</div>
+<div th:ondblclick="${2+3}">..</div>
+<div th:ondblclick="${true}">..</div>
+<div th:ondblclick="${false}">..</div>
+<div th:ondblclick="*{null}">..</div>
+<div th:ondblclick="*{one}">..</div>
+<div th:ondblclick="*{2+3}">..</div>
+<div th:ondblclick="*{true}">..</div>
+<div th:ondblclick="*{false}">..</div>
+
+<div ondblclick="old" th:ondblclick="'hello'">..</div>
+<div ondblclick="old" th:ondblclick="${null}">..</div>
+<div ondblclick="old" th:ondblclick="${one}">..</div>
+<div ondblclick="old" th:ondblclick="${2+3}">..</div>
+<div ondblclick="old" th:ondblclick="${true}">..</div>
+<div ondblclick="old" th:ondblclick="${false}">..</div>
+<div ondblclick="old" th:ondblclick="*{null}">..</div>
+<div ondblclick="old" th:ondblclick="*{one}">..</div>
+<div ondblclick="old" th:ondblclick="*{2+3}">..</div>
+<div ondblclick="old" th:ondblclick="*{true}">..</div>
+<div ondblclick="old" th:ondblclick="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondblclick="hello">..</div>
+<div>..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="5">..</div>
+<div ondblclick="true">..</div>
+<div ondblclick="false">..</div>
+<div>..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="5">..</div>
+<div ondblclick="true">..</div>
+<div ondblclick="false">..</div>
+
+<div ondblclick="hello">..</div>
+<div>..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="5">..</div>
+<div ondblclick="true">..</div>
+<div ondblclick="false">..</div>
+<div>..</div>
+<div ondblclick="2">..</div>
+<div ondblclick="5">..</div>
+<div ondblclick="true">..</div>
+<div ondblclick="false">..</div>

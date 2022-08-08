@@ -1,0 +1,14 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd">
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>inline js test</title>
+</head>
+<body>
+<div>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/[['hello' + ', world!']]/*]]>*/
+</script>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+list = { "one", "two", "three" }
+# ------------------------------------------------------------
+%INPUT
+Hello
+<tbody>
+<td th:each="e : ${list}" th:text="${e}">...</td>
+</tbody>
+Goodbye
+# ------------------------------------------------------------
+%OUTPUT
+Hello
+<tbody>
+<td>one</td>
+<td>two</td>
+<td>three</td>
+</tbody>
+Goodbye

@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onpopstate="'hello'">..</div>
+<div th:onpopstate="${null}">..</div>
+<div th:onpopstate="${one}">..</div>
+<div th:onpopstate="${2+3}">..</div>
+<div th:onpopstate="${true}">..</div>
+<div th:onpopstate="${false}">..</div>
+<div th:onpopstate="*{null}">..</div>
+<div th:onpopstate="*{one}">..</div>
+<div th:onpopstate="*{2+3}">..</div>
+<div th:onpopstate="*{true}">..</div>
+<div th:onpopstate="*{false}">..</div>
+
+<div onpopstate="old" th:onpopstate="'hello'">..</div>
+<div onpopstate="old" th:onpopstate="${null}">..</div>
+<div onpopstate="old" th:onpopstate="${one}">..</div>
+<div onpopstate="old" th:onpopstate="${2+3}">..</div>
+<div onpopstate="old" th:onpopstate="${true}">..</div>
+<div onpopstate="old" th:onpopstate="${false}">..</div>
+<div onpopstate="old" th:onpopstate="*{null}">..</div>
+<div onpopstate="old" th:onpopstate="*{one}">..</div>
+<div onpopstate="old" th:onpopstate="*{2+3}">..</div>
+<div onpopstate="old" th:onpopstate="*{true}">..</div>
+<div onpopstate="old" th:onpopstate="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onpopstate="hello">..</div>
+<div>..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="5">..</div>
+<div onpopstate="true">..</div>
+<div onpopstate="false">..</div>
+<div>..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="5">..</div>
+<div onpopstate="true">..</div>
+<div onpopstate="false">..</div>
+
+<div onpopstate="hello">..</div>
+<div>..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="5">..</div>
+<div onpopstate="true">..</div>
+<div onpopstate="false">..</div>
+<div>..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="5">..</div>
+<div onpopstate="true">..</div>
+<div onpopstate="false">..</div>

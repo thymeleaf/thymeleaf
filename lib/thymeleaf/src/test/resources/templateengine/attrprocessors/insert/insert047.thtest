@@ -1,0 +1,23 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 10
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:inline="text">
+  [# th:insert="frag"/]
+</div>
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+...
+...
+...
+<p th:inline="text">
+  <span>[[${var.do()}]]</span>
+</p>
+...
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)\"frag\"\ \-\ line\ 5\,\ col\ 11(.*?)

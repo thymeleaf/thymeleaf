@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+user = new org.thymeleaf.templateengine.features.User(null, 'John', 'Apricot', 'Antarctica')
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  var a = [[${user}]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+  var a = {"age":null,"firstName":"John","lastName":"Apricot","nationality":"Antarctica","name":"John Apricot"};
+</script>

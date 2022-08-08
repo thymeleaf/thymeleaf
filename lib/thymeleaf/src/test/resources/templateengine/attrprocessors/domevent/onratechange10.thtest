@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onratechange="[['hello']]">..</div>
+<div th:onratechange="[[${null}]]">..</div>
+<div th:onratechange="[[${one}]]">..</div>
+<div th:onratechange="[[${two}]]">..</div>
+<div th:onratechange="[[${three}]]">..</div>
+<div th:onratechange="[('hello')]">..</div>
+<div th:onratechange="[(${null})]">..</div>
+<div th:onratechange="[(${one})]">..</div>
+<div th:onratechange="[(${two})]">..</div>
+<div th:onratechange="[(${three})]">..</div>
+<div th:onratechange="a${a}a[['hello']]a${a}a">..</div>
+<div th:onratechange="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onratechange="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onratechange="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onratechange="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onratechange="a${a}a[('hello')]a${a}a">..</div>
+<div th:onratechange="a${a}a[(${null})]a${a}a">..</div>
+<div th:onratechange="a${a}a[(${one})]a${a}a">..</div>
+<div th:onratechange="a${a}a[(${two})]a${a}a">..</div>
+<div th:onratechange="a${a}a[(${three})]a${a}a">..</div>
+
+<div onratechange="old" th:onratechange="[['hello']]">..</div>
+<div onratechange="old" th:onratechange="[[${null}]]">..</div>
+<div onratechange="old" th:onratechange="[[${one}]]">..</div>
+<div onratechange="old" th:onratechange="[[${two}]]">..</div>
+<div onratechange="old" th:onratechange="[[${three}]]">..</div>
+<div onratechange="old" th:onratechange="[('hello')]">..</div>
+<div onratechange="old" th:onratechange="[(${null})]">..</div>
+<div onratechange="old" th:onratechange="[(${one})]">..</div>
+<div onratechange="old" th:onratechange="[(${two})]">..</div>
+<div onratechange="old" th:onratechange="[(${three})]">..</div>
+<div onratechange="old" th:onratechange="a${a}a[['hello']]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[[${null}]]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[[${one}]]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[[${two}]]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[[${three}]]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[('hello')]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[(${null})]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[(${one})]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[(${two})]a${a}a">..</div>
+<div onratechange="old" th:onratechange="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onratechange="&quot;hello&quot;">..</div>
+<div onratechange="null">..</div>
+<div onratechange="2">..</div>
+<div onratechange="&quot;two&quot;">..</div>
+<div onratechange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onratechange="hello">..</div>
+<div>..</div>
+<div onratechange="2">..</div>
+<div onratechange="two">..</div>
+<div onratechange="two &quot;plus&quot; one">..</div>
+<div onratechange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onratechange="a${a}anulla${a}a">..</div>
+<div onratechange="a${a}a2a${a}a">..</div>
+<div onratechange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onratechange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onratechange="a${a}ahelloa${a}a">..</div>
+<div onratechange="a${a}aa${a}a">..</div>
+<div onratechange="a${a}a2a${a}a">..</div>
+<div onratechange="a${a}atwoa${a}a">..</div>
+<div onratechange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onratechange="&quot;hello&quot;">..</div>
+<div onratechange="null">..</div>
+<div onratechange="2">..</div>
+<div onratechange="&quot;two&quot;">..</div>
+<div onratechange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onratechange="hello">..</div>
+<div>..</div>
+<div onratechange="2">..</div>
+<div onratechange="two">..</div>
+<div onratechange="two &quot;plus&quot; one">..</div>
+<div onratechange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onratechange="a${a}anulla${a}a">..</div>
+<div onratechange="a${a}a2a${a}a">..</div>
+<div onratechange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onratechange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onratechange="a${a}ahelloa${a}a">..</div>
+<div onratechange="a${a}aa${a}a">..</div>
+<div onratechange="a${a}a2a${a}a">..</div>
+<div onratechange="a${a}atwoa${a}a">..</div>
+<div onratechange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

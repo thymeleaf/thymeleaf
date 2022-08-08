@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+str01 = 'Hello'
+str02 = null
+str03 = ''
+str04 = '    '
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#strings.defaultString(str01,'Bye')}">...</p>
+<p th:text="${#strings.defaultString(str02,'Bye')}">...</p>
+<p th:text="${#strings.defaultString(str03,'Bye')}">...</p>
+<p th:text="${#strings.defaultString(str04,'Bye')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Hello</p>
+<p>Bye</p>
+<p>Bye</p>
+<p>Bye</p>

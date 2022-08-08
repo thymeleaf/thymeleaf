@@ -1,0 +1,45 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div th:with="index=0">
+    <p>This is some text</p>
+    <div th:replace="frag::f">...</div>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+#
+# Note we will use a th:block below because th:repleace has more
+# precedence than th:if, and we would therefore have an infinite
+# recursive fragment insertion loop if we don't
+#
+<div th:fragment="f" class="a">
+    <div th:with="index=(${index}+1)">
+        <p>before<span th:text="${index}"></span></p>
+        <th:block th:if="${index &lt; 3}"><div th:replace="frag :: f">...</div></th:block>
+        <p>after</p>
+    </div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+    <p>This is some text</p>
+    <div class="a">
+        <div>
+            <p>before<span>1</span></p>
+            <div class="a">
+                <div>
+                    <p>before<span>2</span></p>
+                    <div class="a">
+                        <div>
+                            <p>before<span>3</span></p>
+
+                            <p>after</p>
+                        </div>
+                    </div>
+                    <p>after</p>
+                </div>
+            </div>
+            <p>after</p>
+        </div>
+    </div>
+</div>

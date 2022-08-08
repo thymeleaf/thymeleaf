@@ -1,0 +1,22 @@
+%TEMPLATE_MODE TEXT
+%NAME execinfotest21
+# ------------------------------------------------------------
+%INPUT
+[# th:text="${#execInfo.processedTemplateName}"]the template name will be used[/]
+...[# th:replace="somefrag"]to be replaced by the fragment[/]...
+[# th:text="${#execInfo.processedTemplateName}"]the template name will be used[/]
+# ------------------------------------------------------------
+%INPUT[somefrag]
+[# th:text="${#execInfo.processedTemplateName}"]the fragment name will be used[/]
+([# th:replace="somefrag2"]to be replaced by the secondfragment[/])
+[# th:text="${#execInfo.processedTemplateName}"]the fragment name will be used[/]
+# ------------------------------------------------------------
+%INPUT[somefrag2]
+[# th:text="${#execInfo.processedTemplateName}"]the fragment name will be used[/]
+# ------------------------------------------------------------
+%OUTPUT
+execinfotest21-001
+...execinfotest21-001
+(execinfotest21-001)
+execinfotest21-001...
+execinfotest21-001

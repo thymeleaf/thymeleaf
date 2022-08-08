@@ -1,0 +1,34 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+product1 = #{ 'name': 'Lettuce',\
+              'price': 12.0 }
+product2 = #{ 'name': 'Apricot',\
+              'price': 8.0 }
+products = { product1, product2 }
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr th:each="product : ${products}" th:insert="product :: productTemplate"
+      th:with="productName=${product.name}, productPrice=${product.price}" />
+</table>
+# ------------------------------------------------------------
+%INPUT[product]
+<th:block th:fragment="productTemplate">
+    <td th:text="${productName}">product name</td>
+    <td th:text="${productPrice}">product price</td>
+</th:block>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tr>
+    <td>Lettuce</td>
+    <td>12.0</td>
+  </tr>
+  <tr>
+    <td>Apricot</td>
+    <td>8.0</td>
+  </tr>
+</table>
+
+

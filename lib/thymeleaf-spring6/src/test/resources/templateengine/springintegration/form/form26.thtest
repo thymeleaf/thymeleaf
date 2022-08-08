@@ -1,0 +1,18 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+bean = new org.thymeleaf.templateengine.springintegration.model.FormBean08()
+bean.somethings['some.key1'] = 'some value'
+bean.somethings['some.key2'] = 'some other value'
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${bean}" th:action="'/url'">
+   <input type="text" th:field="*{somethings['some.key1']}">
+   <input type="text" th:field="*{somethings['some.key2']}">
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <input type="text" id="somethings'some.key1'" name="somethings['some.key1']" value="some value">
+   <input type="text" id="somethings'some.key2'" name="somethings['some.key2']" value="some other value">
+</form>

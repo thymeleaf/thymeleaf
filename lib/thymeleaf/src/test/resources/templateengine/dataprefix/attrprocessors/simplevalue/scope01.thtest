@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-scope="${one}">..</div>
+<div data-th-scope="'hello'">..</div>
+<div data-th-scope="${null}">..</div>
+<div data-th-scope="''">..</div>
+
+<div scope="old" data-th-scope="${one}">..</div>
+<div scope="old" data-th-scope="'hello'">..</div>
+<div scope="old" data-th-scope="${null}">..</div>
+<div scope="old" data-th-scope="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div scope="one!">..</div>
+<div scope="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div scope="one!">..</div>
+<div scope="hello">..</div>
+<div>..</div>
+<div>..</div>

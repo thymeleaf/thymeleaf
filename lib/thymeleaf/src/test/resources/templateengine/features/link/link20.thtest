@@ -1,0 +1,7 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%INPUT
+<link href="[[@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}]]" rel="stylesheet"/>
+# ------------------------------------------------------------
+%OUTPUT
+<link href="/testing/webjars/bootstrap/2.3.0/css/bootstrap.min.css" rel="stylesheet"/>

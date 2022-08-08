@@ -1,0 +1,93 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+product1 = #{ 'name': 'Lettuce',\
+              'price': 12.0 }
+
+product2 = #{ 'name': 'Apricot',\
+              'price': 8.0 }
+
+product3 = #{ 'name': 'Thyme',\
+              'price': 1.23 }
+
+product4 = #{ 'name': 'Carrot',\
+              'price': 2.0 }
+
+products = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable({ product1, product2, product3, product4 })
+
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr th:each="product : ${products}">
+    <td th:text="${productStat.index}">index</td>
+    <td th:text="${productStat.count}">count</td>
+    <td th:text="${productStat.size}">size</td>
+    <td th:text="${productStat.current['name']}">name</td>
+    <td th:text="${productStat.current['price']}">price</td>
+    <td th:text="${productStat.even} ? 'T' : 'F'">even</td>
+    <td th:text="${productStat.odd} ? 'T' : 'F'">odd</td>
+    <td th:text="${productStat.first} ? 'T' : 'F'">first</td>
+    <td th:text="${productStat.last} ? 'T' : 'F'">last</td>
+    <td th:text="${product['name']}">name</td>
+    <td th:text="${product['price']}">price</td>
+  </tr>
+</table>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tr>
+    <td>0</td>
+    <td>1</td>
+    <td>4</td>
+    <td>Lettuce</td>
+    <td>12.0</td>
+    <td>F</td>
+    <td>T</td>
+    <td>T</td>
+    <td>F</td>
+    <td>Lettuce</td>
+    <td>12.0</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>2</td>
+    <td>4</td>
+    <td>Apricot</td>
+    <td>8.0</td>
+    <td>T</td>
+    <td>F</td>
+    <td>F</td>
+    <td>F</td>
+    <td>Apricot</td>
+    <td>8.0</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>3</td>
+    <td>4</td>
+    <td>Thyme</td>
+    <td>1.23</td>
+    <td>F</td>
+    <td>T</td>
+    <td>F</td>
+    <td>F</td>
+    <td>Thyme</td>
+    <td>1.23</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>4</td>
+    <td>4</td>
+    <td>Carrot</td>
+    <td>2.0</td>
+    <td>T</td>
+    <td>F</td>
+    <td>F</td>
+    <td>T</td>
+    <td>Carrot</td>
+    <td>2.0</td>
+  </tr>
+</table>
+
+

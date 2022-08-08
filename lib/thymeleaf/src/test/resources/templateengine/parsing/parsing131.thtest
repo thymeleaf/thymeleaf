@@ -1,0 +1,9 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%INPUT
+In XML template mode, this should pose no issues...
+<tag->whatever</tag->
+# ------------------------------------------------------------
+%OUTPUT
+In XML template mode, this should pose no issues...
+<tag->whatever</tag->

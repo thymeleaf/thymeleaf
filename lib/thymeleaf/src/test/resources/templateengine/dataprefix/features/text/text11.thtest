@@ -1,0 +1,17 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<div data-th-object="${user}">
+  <p data-th-text="*{name + ' - ' + nationality}">
+    Some text
+  </p>
+  <p data-th-utext="*{name + ' - ' + nationality}">
+    Some text
+  </p>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>John Apricot - Antarctica</p>
+  <p>John Apricot - Antarctica</p>
+</div>

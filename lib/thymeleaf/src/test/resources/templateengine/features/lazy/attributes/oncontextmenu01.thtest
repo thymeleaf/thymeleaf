@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:oncontextmenu="${one}">..</div>
+<div oncontextmenu="old" th:oncontextmenu="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div oncontextmenu="2">..</div>
+<div oncontextmenu="2">..</div>

@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onblur="[['hello']]">..</div>
+<div th:onblur="[[${null}]]">..</div>
+<div th:onblur="[[${one}]]">..</div>
+<div th:onblur="[[${two}]]">..</div>
+<div th:onblur="[[${three}]]">..</div>
+<div th:onblur="[('hello')]">..</div>
+<div th:onblur="[(${null})]">..</div>
+<div th:onblur="[(${one})]">..</div>
+<div th:onblur="[(${two})]">..</div>
+<div th:onblur="[(${three})]">..</div>
+<div th:onblur="a${a}a[['hello']]a${a}a">..</div>
+<div th:onblur="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onblur="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onblur="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onblur="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onblur="a${a}a[('hello')]a${a}a">..</div>
+<div th:onblur="a${a}a[(${null})]a${a}a">..</div>
+<div th:onblur="a${a}a[(${one})]a${a}a">..</div>
+<div th:onblur="a${a}a[(${two})]a${a}a">..</div>
+<div th:onblur="a${a}a[(${three})]a${a}a">..</div>
+
+<div onblur="old" th:onblur="[['hello']]">..</div>
+<div onblur="old" th:onblur="[[${null}]]">..</div>
+<div onblur="old" th:onblur="[[${one}]]">..</div>
+<div onblur="old" th:onblur="[[${two}]]">..</div>
+<div onblur="old" th:onblur="[[${three}]]">..</div>
+<div onblur="old" th:onblur="[('hello')]">..</div>
+<div onblur="old" th:onblur="[(${null})]">..</div>
+<div onblur="old" th:onblur="[(${one})]">..</div>
+<div onblur="old" th:onblur="[(${two})]">..</div>
+<div onblur="old" th:onblur="[(${three})]">..</div>
+<div onblur="old" th:onblur="a${a}a[['hello']]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[[${null}]]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[[${one}]]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[[${two}]]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[[${three}]]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[('hello')]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[(${null})]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[(${one})]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[(${two})]a${a}a">..</div>
+<div onblur="old" th:onblur="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onblur="&quot;hello&quot;">..</div>
+<div onblur="null">..</div>
+<div onblur="2">..</div>
+<div onblur="&quot;two&quot;">..</div>
+<div onblur="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onblur="hello">..</div>
+<div>..</div>
+<div onblur="2">..</div>
+<div onblur="two">..</div>
+<div onblur="two &quot;plus&quot; one">..</div>
+<div onblur="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onblur="a${a}anulla${a}a">..</div>
+<div onblur="a${a}a2a${a}a">..</div>
+<div onblur="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onblur="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onblur="a${a}ahelloa${a}a">..</div>
+<div onblur="a${a}aa${a}a">..</div>
+<div onblur="a${a}a2a${a}a">..</div>
+<div onblur="a${a}atwoa${a}a">..</div>
+<div onblur="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onblur="&quot;hello&quot;">..</div>
+<div onblur="null">..</div>
+<div onblur="2">..</div>
+<div onblur="&quot;two&quot;">..</div>
+<div onblur="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onblur="hello">..</div>
+<div>..</div>
+<div onblur="2">..</div>
+<div onblur="two">..</div>
+<div onblur="two &quot;plus&quot; one">..</div>
+<div onblur="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onblur="a${a}anulla${a}a">..</div>
+<div onblur="a${a}a2a${a}a">..</div>
+<div onblur="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onblur="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onblur="a${a}ahelloa${a}a">..</div>
+<div onblur="a${a}aa${a}a">..</div>
+<div onblur="a${a}a2a${a}a">..</div>
+<div onblur="a${a}atwoa${a}a">..</div>
+<div onblur="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

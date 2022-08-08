@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onplay="[['hello']]">..</div>
+<div th:onplay="[[${null}]]">..</div>
+<div th:onplay="[[${one}]]">..</div>
+<div th:onplay="[[${two}]]">..</div>
+<div th:onplay="[[${three}]]">..</div>
+<div th:onplay="[('hello')]">..</div>
+<div th:onplay="[(${null})]">..</div>
+<div th:onplay="[(${one})]">..</div>
+<div th:onplay="[(${two})]">..</div>
+<div th:onplay="[(${three})]">..</div>
+<div th:onplay="a${a}a[['hello']]a${a}a">..</div>
+<div th:onplay="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onplay="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onplay="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onplay="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onplay="a${a}a[('hello')]a${a}a">..</div>
+<div th:onplay="a${a}a[(${null})]a${a}a">..</div>
+<div th:onplay="a${a}a[(${one})]a${a}a">..</div>
+<div th:onplay="a${a}a[(${two})]a${a}a">..</div>
+<div th:onplay="a${a}a[(${three})]a${a}a">..</div>
+
+<div onplay="old" th:onplay="[['hello']]">..</div>
+<div onplay="old" th:onplay="[[${null}]]">..</div>
+<div onplay="old" th:onplay="[[${one}]]">..</div>
+<div onplay="old" th:onplay="[[${two}]]">..</div>
+<div onplay="old" th:onplay="[[${three}]]">..</div>
+<div onplay="old" th:onplay="[('hello')]">..</div>
+<div onplay="old" th:onplay="[(${null})]">..</div>
+<div onplay="old" th:onplay="[(${one})]">..</div>
+<div onplay="old" th:onplay="[(${two})]">..</div>
+<div onplay="old" th:onplay="[(${three})]">..</div>
+<div onplay="old" th:onplay="a${a}a[['hello']]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[[${null}]]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[[${one}]]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[[${two}]]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[[${three}]]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[('hello')]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[(${null})]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[(${one})]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[(${two})]a${a}a">..</div>
+<div onplay="old" th:onplay="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onplay="&quot;hello&quot;">..</div>
+<div onplay="null">..</div>
+<div onplay="2">..</div>
+<div onplay="&quot;two&quot;">..</div>
+<div onplay="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onplay="hello">..</div>
+<div>..</div>
+<div onplay="2">..</div>
+<div onplay="two">..</div>
+<div onplay="two &quot;plus&quot; one">..</div>
+<div onplay="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onplay="a${a}anulla${a}a">..</div>
+<div onplay="a${a}a2a${a}a">..</div>
+<div onplay="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onplay="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onplay="a${a}ahelloa${a}a">..</div>
+<div onplay="a${a}aa${a}a">..</div>
+<div onplay="a${a}a2a${a}a">..</div>
+<div onplay="a${a}atwoa${a}a">..</div>
+<div onplay="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onplay="&quot;hello&quot;">..</div>
+<div onplay="null">..</div>
+<div onplay="2">..</div>
+<div onplay="&quot;two&quot;">..</div>
+<div onplay="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onplay="hello">..</div>
+<div>..</div>
+<div onplay="2">..</div>
+<div onplay="two">..</div>
+<div onplay="two &quot;plus&quot; one">..</div>
+<div onplay="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onplay="a${a}anulla${a}a">..</div>
+<div onplay="a${a}a2a${a}a">..</div>
+<div onplay="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onplay="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onplay="a${a}ahelloa${a}a">..</div>
+<div onplay="a${a}aa${a}a">..</div>
+<div onplay="a${a}a2a${a}a">..</div>
+<div onplay="a${a}atwoa${a}a">..</div>
+<div onplay="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onpopstate="[['hello']]">..</div>
+<div th:onpopstate="[[${null}]]">..</div>
+<div th:onpopstate="[[${one}]]">..</div>
+<div th:onpopstate="[[${two}]]">..</div>
+<div th:onpopstate="[[${three}]]">..</div>
+<div th:onpopstate="[('hello')]">..</div>
+<div th:onpopstate="[(${null})]">..</div>
+<div th:onpopstate="[(${one})]">..</div>
+<div th:onpopstate="[(${two})]">..</div>
+<div th:onpopstate="[(${three})]">..</div>
+<div th:onpopstate="a${a}a[['hello']]a${a}a">..</div>
+<div th:onpopstate="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onpopstate="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onpopstate="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onpopstate="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onpopstate="a${a}a[('hello')]a${a}a">..</div>
+<div th:onpopstate="a${a}a[(${null})]a${a}a">..</div>
+<div th:onpopstate="a${a}a[(${one})]a${a}a">..</div>
+<div th:onpopstate="a${a}a[(${two})]a${a}a">..</div>
+<div th:onpopstate="a${a}a[(${three})]a${a}a">..</div>
+
+<div onpopstate="old" th:onpopstate="[['hello']]">..</div>
+<div onpopstate="old" th:onpopstate="[[${null}]]">..</div>
+<div onpopstate="old" th:onpopstate="[[${one}]]">..</div>
+<div onpopstate="old" th:onpopstate="[[${two}]]">..</div>
+<div onpopstate="old" th:onpopstate="[[${three}]]">..</div>
+<div onpopstate="old" th:onpopstate="[('hello')]">..</div>
+<div onpopstate="old" th:onpopstate="[(${null})]">..</div>
+<div onpopstate="old" th:onpopstate="[(${one})]">..</div>
+<div onpopstate="old" th:onpopstate="[(${two})]">..</div>
+<div onpopstate="old" th:onpopstate="[(${three})]">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[['hello']]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[[${null}]]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[[${one}]]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[[${two}]]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[[${three}]]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[('hello')]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[(${null})]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[(${one})]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[(${two})]a${a}a">..</div>
+<div onpopstate="old" th:onpopstate="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onpopstate="&quot;hello&quot;">..</div>
+<div onpopstate="null">..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="&quot;two&quot;">..</div>
+<div onpopstate="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onpopstate="hello">..</div>
+<div>..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="two">..</div>
+<div onpopstate="two &quot;plus&quot; one">..</div>
+<div onpopstate="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onpopstate="a${a}anulla${a}a">..</div>
+<div onpopstate="a${a}a2a${a}a">..</div>
+<div onpopstate="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onpopstate="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onpopstate="a${a}ahelloa${a}a">..</div>
+<div onpopstate="a${a}aa${a}a">..</div>
+<div onpopstate="a${a}a2a${a}a">..</div>
+<div onpopstate="a${a}atwoa${a}a">..</div>
+<div onpopstate="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onpopstate="&quot;hello&quot;">..</div>
+<div onpopstate="null">..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="&quot;two&quot;">..</div>
+<div onpopstate="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onpopstate="hello">..</div>
+<div>..</div>
+<div onpopstate="2">..</div>
+<div onpopstate="two">..</div>
+<div onpopstate="two &quot;plus&quot; one">..</div>
+<div onpopstate="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onpopstate="a${a}anulla${a}a">..</div>
+<div onpopstate="a${a}a2a${a}a">..</div>
+<div onpopstate="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onpopstate="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onpopstate="a${a}ahelloa${a}a">..</div>
+<div onpopstate="a${a}aa${a}a">..</div>
+<div onpopstate="a${a}a2a${a}a">..</div>
+<div onpopstate="a${a}atwoa${a}a">..</div>
+<div onpopstate="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

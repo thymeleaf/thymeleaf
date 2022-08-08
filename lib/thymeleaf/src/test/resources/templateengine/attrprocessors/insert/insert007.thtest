@@ -1,0 +1,68 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+atext = 'Lorem ipsum blah blah'
+# ------------------------------------------------------------
+%INPUT
+<div class="one" th:insert="frag" th:each="i : ${#numbers.sequence(1,10)}">
+  <p>Some text over here: <span th:text="${i}">i</span></p>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<p>
+  This is a text <b>with some parts in bold</b> and a text: <span th:text="${atext + ' (' + i + ')'}">bluh bluh</span>.
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (1)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (2)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (3)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (4)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (5)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (6)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (7)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (8)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (9)</span>.
+	</p>
+</div>
+<div class="one">
+	<p>
+	  This is a text <b>with some parts in bold</b> and a text: <span>Lorem ipsum blah blah (10)</span>.
+	</p>
+</div>
+
+

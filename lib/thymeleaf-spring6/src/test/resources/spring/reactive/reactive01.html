@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <title>Thymeleaf Sandbox: Spring Reactive</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <h2>Albums</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Album ID</th>
+          <th>Album Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="a : ${albums}">
+          <td th:text="${a.id}">...</td>
+          <td th:text="${a.name}">...</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </body>
+
+</html>

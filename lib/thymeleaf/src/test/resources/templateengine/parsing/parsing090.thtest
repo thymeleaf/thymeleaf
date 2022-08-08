@@ -1,0 +1,30 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr>
+    <td th:ref="city">City</td>
+  </tr>
+  <tr>
+    <td>Country</td>
+  </tr>
+  <tr>
+    <td th:ref="city">Another city</td>
+  </tr>
+  <tr>
+    <td>Another country</td>
+  </tr>
+  <tr>
+    <td th:ref="city"><strong>Another</strong> city more</td>
+  </tr>
+  <tr>
+    <td>Another country more</td>
+  </tr>
+</table>
+# ------------------------------------------------------------
+%FRAGMENT city
+# ------------------------------------------------------------
+%OUTPUT
+<td>City</td>
+<td>Another city</td>
+<td><strong>Another</strong> city more</td>

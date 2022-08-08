@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-autofocus="${t}">..</div>
+<div data-th-autofocus="${f}">..</div>
+<div data-th-autofocus="${one}">..</div>
+<div data-th-autofocus="'hello'">..</div>
+<div data-th-autofocus="${null}">..</div>
+<div data-th-autofocus="''">..</div>
+
+<div autofocus="old" data-th-autofocus="${t}">..</div>
+<div autofocus="old" data-th-autofocus="${f}">..</div>
+<div autofocus="old" data-th-autofocus="${one}">..</div>
+<div autofocus="old" data-th-autofocus="'hello'">..</div>
+<div autofocus="old" data-th-autofocus="${null}">..</div>
+<div autofocus="old" data-th-autofocus="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div autofocus="autofocus">..</div>
+<div>..</div>
+<div autofocus="autofocus">..</div>
+<div autofocus="autofocus">..</div>
+<div>..</div>
+<div autofocus="autofocus">..</div>
+
+<div autofocus="autofocus">..</div>
+<div>..</div>
+<div autofocus="autofocus">..</div>
+<div autofocus="autofocus">..</div>
+<div>..</div>
+<div autofocus="autofocus">..</div>

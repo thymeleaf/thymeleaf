@@ -1,0 +1,13 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%CONTEXT
+var1 = "something & 'something'"
+var2 = 'something & "something"'
+# ------------------------------------------------------------
+%INPUT
+/*[[${var1}]]*/
+/*[[${var2}]]*/
+# ------------------------------------------------------------
+%OUTPUT
+"something \\u0026 'something'"
+"something \\u0026 \"something\""

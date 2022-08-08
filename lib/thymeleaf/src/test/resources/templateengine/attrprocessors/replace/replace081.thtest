@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<span th:replace="~{frag}">...</span>
+# ------------------------------------------------------------
+%INPUT[frag]
+<span th:replace="~{fraggo}">...</span>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException
+%EXCEPTION_MESSAGE_PATTERN (.*)?Error resolving(.*?)

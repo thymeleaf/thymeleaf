@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-novalidate="${t}">..</div>
+<div data-th-novalidate="${f}">..</div>
+<div data-th-novalidate="${one}">..</div>
+<div data-th-novalidate="'hello'">..</div>
+<div data-th-novalidate="${null}">..</div>
+<div data-th-novalidate="''">..</div>
+
+<div novalidate="old" data-th-novalidate="${t}">..</div>
+<div novalidate="old" data-th-novalidate="${f}">..</div>
+<div novalidate="old" data-th-novalidate="${one}">..</div>
+<div novalidate="old" data-th-novalidate="'hello'">..</div>
+<div novalidate="old" data-th-novalidate="${null}">..</div>
+<div novalidate="old" data-th-novalidate="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div novalidate="novalidate">..</div>
+<div>..</div>
+<div novalidate="novalidate">..</div>
+<div novalidate="novalidate">..</div>
+<div>..</div>
+<div novalidate="novalidate">..</div>
+
+<div novalidate="novalidate">..</div>
+<div>..</div>
+<div novalidate="novalidate">..</div>
+<div novalidate="novalidate">..</div>
+<div>..</div>
+<div novalidate="novalidate">..</div>

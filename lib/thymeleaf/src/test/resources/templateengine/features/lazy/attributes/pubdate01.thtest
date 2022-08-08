@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:pubdate="${t}">..</div>
+<div th:pubdate="${f}">..</div>
+<div th:pubdate="${one}">..</div>
+<div pubdate="old" th:pubdate="${t}">..</div>
+<div pubdate="old" th:pubdate="${f}">..</div>
+<div pubdate="old" th:pubdate="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div pubdate="pubdate">..</div>
+<div>..</div>
+<div pubdate="pubdate">..</div>
+<div pubdate="pubdate">..</div>
+<div>..</div>
+<div pubdate="pubdate">..</div>

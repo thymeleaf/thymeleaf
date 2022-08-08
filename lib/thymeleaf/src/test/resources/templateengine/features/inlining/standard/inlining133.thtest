@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+user = 'Sebastian "Fruity" Applejuice'
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  var a = [[${user}]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script>
+  var a = "Sebastian \"Fruity\" Applejuice";
+</script>

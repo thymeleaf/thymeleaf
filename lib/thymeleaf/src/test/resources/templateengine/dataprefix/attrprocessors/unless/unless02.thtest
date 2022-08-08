@@ -1,0 +1,23 @@
+%EXTENDS booleans.common 
+# ------------------------------------------------------------
+%INPUT
+Text before
+
+<div data-th-unless="${value01}">
+    First value
+</div>
+
+<div data-th-unless="${value02}">
+    Second value
+</div>
+
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+<div> 
+    First value
+</div>
+
+Text after 

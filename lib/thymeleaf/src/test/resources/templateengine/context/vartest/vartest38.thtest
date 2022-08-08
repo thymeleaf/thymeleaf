@@ -1,0 +1,8 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div><div th:with="one='a value'" th:text="${one}"/><span th:text="${one} ?: _">...</span></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div><div>a value</div><span>...</span></div>
+

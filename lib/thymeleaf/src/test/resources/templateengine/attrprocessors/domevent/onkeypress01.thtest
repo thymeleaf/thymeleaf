@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onkeypress="'hello'">..</div>
+<div th:onkeypress="${null}">..</div>
+<div th:onkeypress="${one}">..</div>
+<div th:onkeypress="${2+3}">..</div>
+<div th:onkeypress="${true}">..</div>
+<div th:onkeypress="${false}">..</div>
+<div th:onkeypress="*{null}">..</div>
+<div th:onkeypress="*{one}">..</div>
+<div th:onkeypress="*{2+3}">..</div>
+<div th:onkeypress="*{true}">..</div>
+<div th:onkeypress="*{false}">..</div>
+
+<div onkeypress="old" th:onkeypress="'hello'">..</div>
+<div onkeypress="old" th:onkeypress="${null}">..</div>
+<div onkeypress="old" th:onkeypress="${one}">..</div>
+<div onkeypress="old" th:onkeypress="${2+3}">..</div>
+<div onkeypress="old" th:onkeypress="${true}">..</div>
+<div onkeypress="old" th:onkeypress="${false}">..</div>
+<div onkeypress="old" th:onkeypress="*{null}">..</div>
+<div onkeypress="old" th:onkeypress="*{one}">..</div>
+<div onkeypress="old" th:onkeypress="*{2+3}">..</div>
+<div onkeypress="old" th:onkeypress="*{true}">..</div>
+<div onkeypress="old" th:onkeypress="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onkeypress="hello">..</div>
+<div>..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="5">..</div>
+<div onkeypress="true">..</div>
+<div onkeypress="false">..</div>
+<div>..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="5">..</div>
+<div onkeypress="true">..</div>
+<div onkeypress="false">..</div>
+
+<div onkeypress="hello">..</div>
+<div>..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="5">..</div>
+<div onkeypress="true">..</div>
+<div onkeypress="false">..</div>
+<div>..</div>
+<div onkeypress="2">..</div>
+<div onkeypress="5">..</div>
+<div onkeypress="true">..</div>
+<div onkeypress="false">..</div>

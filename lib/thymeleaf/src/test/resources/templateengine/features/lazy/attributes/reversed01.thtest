@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:reversed="${t}">..</div>
+<div th:reversed="${f}">..</div>
+<div th:reversed="${one}">..</div>
+<div reversed="old" th:reversed="${t}">..</div>
+<div reversed="old" th:reversed="${f}">..</div>
+<div reversed="old" th:reversed="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div reversed="reversed">..</div>
+<div>..</div>
+<div reversed="reversed">..</div>
+<div reversed="reversed">..</div>
+<div>..</div>
+<div reversed="reversed">..</div>

@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:formenctype="${one}">..</div>
+<div formenctype="old" th:formenctype="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div formenctype="one!">..</div>
+<div formenctype="one!">..</div>

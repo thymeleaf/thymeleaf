@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-scrolling="${one}">..</div>
+<div data-th-scrolling="'hello'">..</div>
+<div data-th-scrolling="${null}">..</div>
+<div data-th-scrolling="''">..</div>
+
+<div scrolling="old" data-th-scrolling="${one}">..</div>
+<div scrolling="old" data-th-scrolling="'hello'">..</div>
+<div scrolling="old" data-th-scrolling="${null}">..</div>
+<div scrolling="old" data-th-scrolling="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div scrolling="one!">..</div>
+<div scrolling="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div scrolling="one!">..</div>
+<div scrolling="hello">..</div>
+<div>..</div>
+<div>..</div>

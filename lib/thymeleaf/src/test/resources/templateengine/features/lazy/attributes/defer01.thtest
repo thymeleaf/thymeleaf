@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:defer="${t}">..</div>
+<div th:defer="${f}">..</div>
+<div th:defer="${one}">..</div>
+<div defer="old" th:defer="${t}">..</div>
+<div defer="old" th:defer="${f}">..</div>
+<div defer="old" th:defer="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div defer="defer">..</div>
+<div>..</div>
+<div defer="defer">..</div>
+<div defer="defer">..</div>
+<div>..</div>
+<div defer="defer">..</div>

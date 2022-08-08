@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+test = #{ 'text': 'Hi there!' }
+# ------------------------------------------------------------
+%INPUT
+<div th:object="${test}" th:remove="tags">
+    <span th:text="*{text}">Text</span> 
+</div> 
+# ------------------------------------------------------------
+%OUTPUT
+    <span>Hi there!</span> 

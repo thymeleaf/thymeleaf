@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onloadedmetadata="[['hello']]">..</div>
+<div th:onloadedmetadata="[[${null}]]">..</div>
+<div th:onloadedmetadata="[[${one}]]">..</div>
+<div th:onloadedmetadata="[[${two}]]">..</div>
+<div th:onloadedmetadata="[[${three}]]">..</div>
+<div th:onloadedmetadata="[('hello')]">..</div>
+<div th:onloadedmetadata="[(${null})]">..</div>
+<div th:onloadedmetadata="[(${one})]">..</div>
+<div th:onloadedmetadata="[(${two})]">..</div>
+<div th:onloadedmetadata="[(${three})]">..</div>
+<div th:onloadedmetadata="a${a}a[['hello']]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[('hello')]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[(${null})]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[(${one})]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[(${two})]a${a}a">..</div>
+<div th:onloadedmetadata="a${a}a[(${three})]a${a}a">..</div>
+
+<div onloadedmetadata="old" th:onloadedmetadata="[['hello']]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[[${null}]]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[[${one}]]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[[${two}]]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[[${three}]]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[('hello')]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[(${null})]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[(${one})]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[(${two})]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="[(${three})]">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[['hello']]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[[${null}]]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[[${one}]]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[[${two}]]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[[${three}]]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[('hello')]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[(${null})]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[(${one})]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[(${two})]a${a}a">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onloadedmetadata="&quot;hello&quot;">..</div>
+<div onloadedmetadata="null">..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="&quot;two&quot;">..</div>
+<div onloadedmetadata="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onloadedmetadata="hello">..</div>
+<div>..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="two">..</div>
+<div onloadedmetadata="two &quot;plus&quot; one">..</div>
+<div onloadedmetadata="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onloadedmetadata="a${a}anulla${a}a">..</div>
+<div onloadedmetadata="a${a}a2a${a}a">..</div>
+<div onloadedmetadata="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onloadedmetadata="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onloadedmetadata="a${a}ahelloa${a}a">..</div>
+<div onloadedmetadata="a${a}aa${a}a">..</div>
+<div onloadedmetadata="a${a}a2a${a}a">..</div>
+<div onloadedmetadata="a${a}atwoa${a}a">..</div>
+<div onloadedmetadata="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onloadedmetadata="&quot;hello&quot;">..</div>
+<div onloadedmetadata="null">..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="&quot;two&quot;">..</div>
+<div onloadedmetadata="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onloadedmetadata="hello">..</div>
+<div>..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="two">..</div>
+<div onloadedmetadata="two &quot;plus&quot; one">..</div>
+<div onloadedmetadata="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onloadedmetadata="a${a}anulla${a}a">..</div>
+<div onloadedmetadata="a${a}a2a${a}a">..</div>
+<div onloadedmetadata="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onloadedmetadata="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onloadedmetadata="a${a}ahelloa${a}a">..</div>
+<div onloadedmetadata="a${a}aa${a}a">..</div>
+<div onloadedmetadata="a${a}a2a${a}a">..</div>
+<div onloadedmetadata="a${a}atwoa${a}a">..</div>
+<div onloadedmetadata="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

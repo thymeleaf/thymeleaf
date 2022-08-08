@@ -1,0 +1,215 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    "something/*this should not be touched*/something"
+    "something /*this should not be touched*/ something"
+    "something /* this should not be touched */ something"
+    "something/*[[${true}]]*/something"
+    "something /*[[${true}]]*/ something"
+    "something /* [[${true}]] */ something"
+    "something/*[# th:text='${true}'/]*/something"
+    "something /*[# th:text='${true}'/]*/ something"
+    "something /* [# th:text='${true}'/] */ something"
+
+    'something/*this should not be touched*/something'
+    'something /*this should not be touched*/ something'
+    'something /* this should not be touched */ something'
+    'something/*[[${true}]]*/something'
+    'something /*[[${true}]]*/ something'
+    'something /* [[${true}]] */ something'
+    'something/*[# th:text="${true}"/]*/something'
+    'something /*[# th:text="${true}"/]*/ something'
+    'something /* [# th:text="${true}"/] */ something'
+
+    "so'mething/*this should not be touched*/something"
+    "so'mething /*this should not be touched*/ something"
+    "so'mething /* this should not be touched */ something"
+    "so'mething/*[[${true}]]*/something"
+    "so'mething /*[[${true}]]*/ something"
+    "so'mething /* [[${true}]] */ something"
+    "so'mething/*[# th:text='${true}'/]*/something"
+    "so'mething /*[# th:text='${true}'/]*/ something"
+    "so'mething /* [# th:text='${true}'/] */ something"
+
+    'so"mething/*this should not be touched*/something'
+    'so"mething /*this should not be touched*/ something'
+    'so"mething /* this should not be touched */ something'
+    'so"mething/*[[${true}]]*/something'
+    'so"mething /*[[${true}]]*/ something'
+    'so"mething /* [[${true}]] */ something'
+    'so"mething/*[# th:text="${true}"/]*/something'
+    'so"mething /*[# th:text="${true}"/]*/ something'
+    'so"mething /* [# th:text="${true}"/] */ something'
+
+    "so\"mething/*this should not be touched*/something"
+    "so\"mething /*this should not be touched*/ something"
+    "so\"mething /* this should not be touched */ something"
+    "so\"mething/*[[${true}]]*/something"
+    "so\"mething /*[[${true}]]*/ something"
+    "so\"mething /* [[${true}]] */ something"
+    "so\"mething/*[# th:text='${true}'/]*/something"
+    "so\"mething /*[# th:text='${true}'/]*/ something"
+    "so\"mething /* [# th:text='${true}'/] */ something"
+
+    'so\'mething/*this should not be touched*/something'
+    'so\'mething /*this should not be touched*/ something'
+    'so\'mething /* this should not be touched */ something'
+    'so\'mething/*[[${true}]]*/something'
+    'so\'mething /*[[${true}]]*/ something'
+    'so\'mething /* [[${true}]] */ something'
+    'so\'mething/*[# th:text="${true}"/]*/something'
+    'so\'mething /*[# th:text="${true}"/]*/ something'
+    'so\'mething /* [# th:text="${true}"/] */ something'
+
+    "so\\\"mething/*this should not be touched*/something"
+    "so\\\"mething /*this should not be touched*/ something"
+    "so\\\"mething /* this should not be touched */ something"
+    "so\\\"mething/*[[${true}]]*/something"
+    "so\\\"mething /*[[${true}]]*/ something"
+    "so\\\"mething /* [[${true}]] */ something"
+    "so\\\"mething/*[# th:text='${true}'/]*/something"
+    "so\\\"mething /*[# th:text='${true}'/]*/ something"
+    "so\\\"mething /* [# th:text='${true}'/] */ something"
+
+    'so\\\'mething/*this should not be touched*/something'
+    'so\\\'mething /*this should not be touched*/ something'
+    'so\\\'mething /* this should not be touched */ something'
+    'so\\\'mething/*[[${true}]]*/something'
+    'so\\\'mething /*[[${true}]]*/ something'
+    'so\\\'mething /* [[${true}]] */ something'
+    'so\\\'mething/*[# th:text="${true}"/]*/something'
+    'so\\\'mething /*[# th:text="${true}"/]*/ something'
+    'so\\\'mething /* [# th:text="${true}"/] */ something'
+
+    "so\\"mething/*this should not be touched*/something""
+    "so\\"mething /*this should not be touched*/ something""
+    "so\\"mething /* this should not be touched */ something""
+    "so\\"mething/*[[${true}]]*/something""
+    "so\\"mething /*[[${true}]]*/ something""
+    "so\\"mething /* [[${true}]] */ something""
+    "so\\"mething/*[# th:text='${true}'/]*/something""
+    "so\\"mething /*[# th:text='${true}'/]*/ something""
+    "so\\"mething /* [# th:text='${true}'/] */ something""
+
+    'so\\'mething/*this should not be touched*/something''
+    'so\\'mething /*this should not be touched*/ something''
+    'so\\'mething /* this should not be touched */ something''
+    'so\\'mething/*[[${true}]]*/something''
+    'so\\'mething /*[[${true}]]*/ something''
+    'so\\'mething /* [[${true}]] */ something''
+    'so\\'mething/*[# th:text="${true}"/]*/something''
+    'so\\'mething /*[# th:text="${true}"/]*/ something''
+    'so\\'mething /* [# th:text="${true}"/] */ something''
+</script>
+# ------------------------------------------------------------
+# NOTE inlined output expressions are allowed inside literals, but element
+#      structures ([#...]) are not. Besides there being a limitation at
+#      the Text Parser for allowing element structures, it would be anyway DANGEROUS
+#      given we could be opening an element inside a literal and closing it outside, so
+#      it is better to NOT allow it, and allow only inlined output expressions.
+#
+# NOTE also that comments are not interpreted inside literals, so "/* */" always go unchanged.
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    "something/*this should not be touched*/something"
+    "something /*this should not be touched*/ something"
+    "something /* this should not be touched */ something"
+    "something/*true*/something"
+    "something /*true*/ something"
+    "something /* true */ something"
+    "something/*[# th:text='${true}'/]*/something"
+    "something /*[# th:text='${true}'/]*/ something"
+    "something /* [# th:text='${true}'/] */ something"
+
+    'something/*this should not be touched*/something'
+    'something /*this should not be touched*/ something'
+    'something /* this should not be touched */ something'
+    'something/*true*/something'
+    'something /*true*/ something'
+    'something /* true */ something'
+    'something/*[# th:text="${true}"/]*/something'
+    'something /*[# th:text="${true}"/]*/ something'
+    'something /* [# th:text="${true}"/] */ something'
+
+    "so'mething/*this should not be touched*/something"
+    "so'mething /*this should not be touched*/ something"
+    "so'mething /* this should not be touched */ something"
+    "so'mething/*true*/something"
+    "so'mething /*true*/ something"
+    "so'mething /* true */ something"
+    "so'mething/*[# th:text='${true}'/]*/something"
+    "so'mething /*[# th:text='${true}'/]*/ something"
+    "so'mething /* [# th:text='${true}'/] */ something"
+
+    'so"mething/*this should not be touched*/something'
+    'so"mething /*this should not be touched*/ something'
+    'so"mething /* this should not be touched */ something'
+    'so"mething/*true*/something'
+    'so"mething /*true*/ something'
+    'so"mething /* true */ something'
+    'so"mething/*[# th:text="${true}"/]*/something'
+    'so"mething /*[# th:text="${true}"/]*/ something'
+    'so"mething /* [# th:text="${true}"/] */ something'
+
+    "so\"mething/*this should not be touched*/something"
+    "so\"mething /*this should not be touched*/ something"
+    "so\"mething /* this should not be touched */ something"
+    "so\"mething/*true*/something"
+    "so\"mething /*true*/ something"
+    "so\"mething /* true */ something"
+    "so\"mething/*[# th:text='${true}'/]*/something"
+    "so\"mething /*[# th:text='${true}'/]*/ something"
+    "so\"mething /* [# th:text='${true}'/] */ something"
+
+    'so\'mething/*this should not be touched*/something'
+    'so\'mething /*this should not be touched*/ something'
+    'so\'mething /* this should not be touched */ something'
+    'so\'mething/*true*/something'
+    'so\'mething /*true*/ something'
+    'so\'mething /* true */ something'
+    'so\'mething/*[# th:text="${true}"/]*/something'
+    'so\'mething /*[# th:text="${true}"/]*/ something'
+    'so\'mething /* [# th:text="${true}"/] */ something'
+
+    "so\\\"mething/*this should not be touched*/something"
+    "so\\\"mething /*this should not be touched*/ something"
+    "so\\\"mething /* this should not be touched */ something"
+    "so\\\"mething/*true*/something"
+    "so\\\"mething /*true*/ something"
+    "so\\\"mething /* true */ something"
+    "so\\\"mething/*[# th:text='${true}'/]*/something"
+    "so\\\"mething /*[# th:text='${true}'/]*/ something"
+    "so\\\"mething /* [# th:text='${true}'/] */ something"
+
+    'so\\\'mething/*this should not be touched*/something'
+    'so\\\'mething /*this should not be touched*/ something'
+    'so\\\'mething /* this should not be touched */ something'
+    'so\\\'mething/*true*/something'
+    'so\\\'mething /*true*/ something'
+    'so\\\'mething /* true */ something'
+    'so\\\'mething/*[# th:text="${true}"/]*/something'
+    'so\\\'mething /*[# th:text="${true}"/]*/ something'
+    'so\\\'mething /* [# th:text="${true}"/] */ something'
+
+    "so\\"mething/*this should not be touched*/something""
+    "so\\"mething /*this should not be touched*/ something""
+    "so\\"mething /* this should not be touched */ something""
+    "so\\"methingtrue
+    "so\\"mething true
+    "so\\"mething /* true */ something""
+    "so\\"methingtruesomething""
+    "so\\"mething true something""
+    "so\\"mething /* [# th:text='${true}'/] */ something""
+
+    'so\\'mething/*this should not be touched*/something''
+    'so\\'mething /*this should not be touched*/ something''
+    'so\\'mething /* this should not be touched */ something''
+    'so\\'methingtrue
+    'so\\'mething true
+    'so\\'mething /* true */ something''
+    'so\\'methingtruesomething''
+    'so\\'mething true something''
+    'so\\'mething /* [# th:text="${true}"/] */ something''
+</script>

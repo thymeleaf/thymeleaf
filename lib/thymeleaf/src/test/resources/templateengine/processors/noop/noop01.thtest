@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+...<div noop:noop="whatever">hello</noop:noop>...
+# ------------------------------------------------------------
+%OUTPUT
+...<div noop:noop="whatever">processed!</noop:noop>...

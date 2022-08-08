@@ -1,0 +1,23 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <p>This is some text before</p>
+  <div th:replace="templates/template-1 :: frag-1 ('Message for you!')">...</div>
+  <p>This is some text after</p>
+</div>
+# ------------------------------------------------------------
+%INPUT[templates/template-1]
+<footer th:fragment="frag-1(mesg)">
+  <p th:text="${mesg}">Here goes the message</p>
+</footer>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>This is some text before</p>
+  <footer>
+    <p>Message for you!</p>
+  </footer>
+  <p>This is some text after</p>
+</div>
+

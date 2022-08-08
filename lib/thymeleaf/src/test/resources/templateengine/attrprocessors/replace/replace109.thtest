@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+usertype1='superadmin'
+usertype2='normal'
+usertype3='powerful'
+usertype4='admin'
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="~{commons :: |#base_${usertype1}|} ?: ~{commons :: #default}">...</div>
+<div th:replace="~{commons :: |#base_${usertype2}|} ?: ~{commons :: #default}">...</div>
+<div th:replace="~{commons :: |#base_${usertype3}|} ?: ~{commons :: #default}">...</div>
+<div th:replace="~{commons :: |#base_${usertype4}|} ?: ~{commons :: #default}">...</div>
+# ------------------------------------------------------------
+%INPUT[commons]
+<span id="base_normal">Normal!</span>
+<span id="base_admin">Admin!</span>
+<span id="base_superadmin">SuperAdmin!</span>
+<span id="default">Default :(</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span id="base_superadmin">SuperAdmin!</span>
+<span id="base_normal">Normal!</span>
+<span id="default">Default :(</span>
+<span id="base_admin">Admin!</span>

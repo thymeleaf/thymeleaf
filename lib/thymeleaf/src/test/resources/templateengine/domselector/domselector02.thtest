@@ -1,0 +1,7 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT /h2
+# ------------------------------------------------------------
+%OUTPUT
+<h2>Core Features</h2>
+<h2>Standard and SpringStandard Dialects</h2>

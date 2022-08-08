@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onprogress="'hello'">..</div>
+<div th:onprogress="${null}">..</div>
+<div th:onprogress="${one}">..</div>
+<div th:onprogress="${2+3}">..</div>
+<div th:onprogress="${true}">..</div>
+<div th:onprogress="${false}">..</div>
+<div th:onprogress="*{null}">..</div>
+<div th:onprogress="*{one}">..</div>
+<div th:onprogress="*{2+3}">..</div>
+<div th:onprogress="*{true}">..</div>
+<div th:onprogress="*{false}">..</div>
+
+<div onprogress="old" th:onprogress="'hello'">..</div>
+<div onprogress="old" th:onprogress="${null}">..</div>
+<div onprogress="old" th:onprogress="${one}">..</div>
+<div onprogress="old" th:onprogress="${2+3}">..</div>
+<div onprogress="old" th:onprogress="${true}">..</div>
+<div onprogress="old" th:onprogress="${false}">..</div>
+<div onprogress="old" th:onprogress="*{null}">..</div>
+<div onprogress="old" th:onprogress="*{one}">..</div>
+<div onprogress="old" th:onprogress="*{2+3}">..</div>
+<div onprogress="old" th:onprogress="*{true}">..</div>
+<div onprogress="old" th:onprogress="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onprogress="hello">..</div>
+<div>..</div>
+<div onprogress="2">..</div>
+<div onprogress="5">..</div>
+<div onprogress="true">..</div>
+<div onprogress="false">..</div>
+<div>..</div>
+<div onprogress="2">..</div>
+<div onprogress="5">..</div>
+<div onprogress="true">..</div>
+<div onprogress="false">..</div>
+
+<div onprogress="hello">..</div>
+<div>..</div>
+<div onprogress="2">..</div>
+<div onprogress="5">..</div>
+<div onprogress="true">..</div>
+<div onprogress="false">..</div>
+<div>..</div>
+<div onprogress="2">..</div>
+<div onprogress="5">..</div>
+<div onprogress="true">..</div>
+<div onprogress="false">..</div>

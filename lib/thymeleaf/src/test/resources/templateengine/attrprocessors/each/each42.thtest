@@ -1,0 +1,30 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<table th:remove="all-but-first">
+  <tr th:each="num : ${#numbers.sequence(1,5)}">
+    <td>[[${num}]]</td>
+  </tr>
+  <tr>
+    <td>should not appear!</td>
+  </tr>
+</table>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tr>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td>5</td>
+  </tr>
+</table>

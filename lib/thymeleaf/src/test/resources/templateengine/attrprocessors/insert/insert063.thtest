@@ -1,0 +1,11 @@
+#
+# We are going to test here what happens when the inserted template does not exist...
+#
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:insert="whatever :: it">,,,</div>
+...
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException

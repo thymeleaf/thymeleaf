@@ -1,0 +1,32 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+locale='en'
+# ------------------------------------------------------------
+%MESSAGES
+one.msg=The number is {0}
+one.msg2314=The big number is {0}
+one.msg[2314]=The [big] number is {0}
+# ------------------------------------------------------------
+%INPUT
+<p th:text="#{one.msg(2314)}">...</p>
+<p th:text="#{one.msg(${2314})}">...</p>
+<p th:text="#{one.msg(${{2314}})}">...</p>
+<p th:text="#{one.msg((2314 + 'a'))}">...</p>
+<p th:text="#{one.msg(${(2314 + 'a')})}">...</p>
+<p th:text="#{one.msg(${{(2314 + 'a')}})}">...</p>
+<p th:text="#{('one.msg' + 2314)((2314 + 'a'))}">...</p>
+<p th:text="#{('one.msg' + ${2314})(${(2314 + 'a')})}">...</p>
+<p th:text="#{('one.msg' + ${{2314}})(${{(2314 + 'a')}})}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>The number is 2,314</p>
+<p>The number is 2,314</p>
+<p>The number is [2314]</p>
+<p>The number is 2314a</p>
+<p>The number is 2314a</p>
+<p>The number is 2314a</p>
+<p>The big number is 2314a</p>
+<p>The big number is 2314a</p>
+<p>The [big] number is 2314a</p>
+

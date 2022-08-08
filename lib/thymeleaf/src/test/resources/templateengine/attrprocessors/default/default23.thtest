@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<html ng-app="myapp" th:ng-app="~{frag :: #content/text()}">
+# ------------------------------------------------------------
+%INPUT[frag]
+<span id="content">oneapp</span>
+# ------------------------------------------------------------
+%OUTPUT
+<html ng-app="oneapp">

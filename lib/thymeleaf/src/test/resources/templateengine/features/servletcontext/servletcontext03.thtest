@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+application.something1 = 'this value'
+application.something2 = 'that value'
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${application.size()}">some text</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>2</span>

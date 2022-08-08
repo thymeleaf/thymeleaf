@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-scoped="${t}">..</div>
+<div data-th-scoped="${f}">..</div>
+<div data-th-scoped="${one}">..</div>
+<div data-th-scoped="'hello'">..</div>
+<div data-th-scoped="${null}">..</div>
+<div data-th-scoped="''">..</div>
+
+<div scoped="old" data-th-scoped="${t}">..</div>
+<div scoped="old" data-th-scoped="${f}">..</div>
+<div scoped="old" data-th-scoped="${one}">..</div>
+<div scoped="old" data-th-scoped="'hello'">..</div>
+<div scoped="old" data-th-scoped="${null}">..</div>
+<div scoped="old" data-th-scoped="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>
+
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>

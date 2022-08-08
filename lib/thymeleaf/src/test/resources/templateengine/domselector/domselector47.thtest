@@ -1,0 +1,6 @@
+%EXTENDS domselector2.common
+# ------------------------------------------------------------
+%FRAGMENT a[href!='index.html']
+# ------------------------------------------------------------
+%OUTPUT
+<a href="index2.html">thymeleaf</a><a href="documentation.html">documentation</a>

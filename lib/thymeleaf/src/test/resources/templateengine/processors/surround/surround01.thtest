@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div surround:surround>
+   <some body elements>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<!--surround--><div>
+   <some body elements>
+</div><!--surround-->

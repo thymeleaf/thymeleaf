@@ -1,0 +1,22 @@
+%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE[frag] HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+name = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+...
+[# th:replace="frag :: f (thename=${name})"/]
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+<div>
+  <span th:fragment="f (thename)">Hello [[${thename}]]!</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+...
+<span>Hello John Apricot!</span>
+...

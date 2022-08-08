@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${''.getClass().getClass().getName()}">NOT ALLOWED</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>java.lang.Class</p>

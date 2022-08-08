@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<div markup:add-local-variable="...">
+  <p th:text="${local}"/>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>a local value</p>
+</div>

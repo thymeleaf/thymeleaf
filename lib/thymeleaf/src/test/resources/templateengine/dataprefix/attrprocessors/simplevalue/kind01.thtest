@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-kind="${one}">..</div>
+<div data-th-kind="'hello'">..</div>
+<div data-th-kind="${null}">..</div>
+<div data-th-kind="''">..</div>
+
+<div kind="old" data-th-kind="${one}">..</div>
+<div kind="old" data-th-kind="'hello'">..</div>
+<div kind="old" data-th-kind="${null}">..</div>
+<div kind="old" data-th-kind="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div kind="one!">..</div>
+<div kind="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div kind="one!">..</div>
+<div kind="hello">..</div>
+<div>..</div>
+<div>..</div>

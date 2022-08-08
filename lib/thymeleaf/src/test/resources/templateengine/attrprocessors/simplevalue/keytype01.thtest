@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:keytype="${one}">..</div>
+<div th:keytype="'hello'">..</div>
+<div th:keytype="${null}">..</div>
+<div th:keytype="''">..</div>
+
+<div keytype="old" th:keytype="${one}">..</div>
+<div keytype="old" th:keytype="'hello'">..</div>
+<div keytype="old" th:keytype="${null}">..</div>
+<div keytype="old" th:keytype="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div keytype="one!">..</div>
+<div keytype="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div keytype="one!">..</div>
+<div keytype="hello">..</div>
+<div>..</div>
+<div>..</div>

@@ -1,0 +1,10 @@
+%EXTENDS ../html5.01.common
+%NAME execinfotest05
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#execInfo.templateName}">the test name will be used...</p>
+<p th:if="${#execInfo.now != null}">there is a now</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>execinfotest05-001</p>
+<p>there is a now</p>

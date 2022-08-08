@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-max="${one}">..</div>
+<div data-th-max="'hello'">..</div>
+<div data-th-max="${null}">..</div>
+<div data-th-max="''">..</div>
+
+<div max="old" data-th-max="${one}">..</div>
+<div max="old" data-th-max="'hello'">..</div>
+<div max="old" data-th-max="${null}">..</div>
+<div max="old" data-th-max="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div max="one!">..</div>
+<div max="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div max="one!">..</div>
+<div max="hello">..</div>
+<div>..</div>
+<div>..</div>

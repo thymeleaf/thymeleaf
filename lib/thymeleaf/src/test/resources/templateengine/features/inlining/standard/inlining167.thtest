@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+   var template = `Some quote " will break everything`;
+   var template = "Some quote ` will break everything";
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+   var template = `Some quote " will break everything`;
+   var template = "Some quote ` will break everything";
+</script>

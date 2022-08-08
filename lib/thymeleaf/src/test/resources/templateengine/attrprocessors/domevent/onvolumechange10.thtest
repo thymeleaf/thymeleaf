@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onvolumechange="[['hello']]">..</div>
+<div th:onvolumechange="[[${null}]]">..</div>
+<div th:onvolumechange="[[${one}]]">..</div>
+<div th:onvolumechange="[[${two}]]">..</div>
+<div th:onvolumechange="[[${three}]]">..</div>
+<div th:onvolumechange="[('hello')]">..</div>
+<div th:onvolumechange="[(${null})]">..</div>
+<div th:onvolumechange="[(${one})]">..</div>
+<div th:onvolumechange="[(${two})]">..</div>
+<div th:onvolumechange="[(${three})]">..</div>
+<div th:onvolumechange="a${a}a[['hello']]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[('hello')]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[(${null})]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[(${one})]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[(${two})]a${a}a">..</div>
+<div th:onvolumechange="a${a}a[(${three})]a${a}a">..</div>
+
+<div onvolumechange="old" th:onvolumechange="[['hello']]">..</div>
+<div onvolumechange="old" th:onvolumechange="[[${null}]]">..</div>
+<div onvolumechange="old" th:onvolumechange="[[${one}]]">..</div>
+<div onvolumechange="old" th:onvolumechange="[[${two}]]">..</div>
+<div onvolumechange="old" th:onvolumechange="[[${three}]]">..</div>
+<div onvolumechange="old" th:onvolumechange="[('hello')]">..</div>
+<div onvolumechange="old" th:onvolumechange="[(${null})]">..</div>
+<div onvolumechange="old" th:onvolumechange="[(${one})]">..</div>
+<div onvolumechange="old" th:onvolumechange="[(${two})]">..</div>
+<div onvolumechange="old" th:onvolumechange="[(${three})]">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[['hello']]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[[${null}]]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[[${one}]]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[[${two}]]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[[${three}]]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[('hello')]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[(${null})]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[(${one})]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[(${two})]a${a}a">..</div>
+<div onvolumechange="old" th:onvolumechange="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onvolumechange="&quot;hello&quot;">..</div>
+<div onvolumechange="null">..</div>
+<div onvolumechange="2">..</div>
+<div onvolumechange="&quot;two&quot;">..</div>
+<div onvolumechange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onvolumechange="hello">..</div>
+<div>..</div>
+<div onvolumechange="2">..</div>
+<div onvolumechange="two">..</div>
+<div onvolumechange="two &quot;plus&quot; one">..</div>
+<div onvolumechange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onvolumechange="a${a}anulla${a}a">..</div>
+<div onvolumechange="a${a}a2a${a}a">..</div>
+<div onvolumechange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onvolumechange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onvolumechange="a${a}ahelloa${a}a">..</div>
+<div onvolumechange="a${a}aa${a}a">..</div>
+<div onvolumechange="a${a}a2a${a}a">..</div>
+<div onvolumechange="a${a}atwoa${a}a">..</div>
+<div onvolumechange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onvolumechange="&quot;hello&quot;">..</div>
+<div onvolumechange="null">..</div>
+<div onvolumechange="2">..</div>
+<div onvolumechange="&quot;two&quot;">..</div>
+<div onvolumechange="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onvolumechange="hello">..</div>
+<div>..</div>
+<div onvolumechange="2">..</div>
+<div onvolumechange="two">..</div>
+<div onvolumechange="two &quot;plus&quot; one">..</div>
+<div onvolumechange="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onvolumechange="a${a}anulla${a}a">..</div>
+<div onvolumechange="a${a}a2a${a}a">..</div>
+<div onvolumechange="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onvolumechange="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onvolumechange="a${a}ahelloa${a}a">..</div>
+<div onvolumechange="a${a}aa${a}a">..</div>
+<div onvolumechange="a${a}a2a${a}a">..</div>
+<div onvolumechange="a${a}atwoa${a}a">..</div>
+<div onvolumechange="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

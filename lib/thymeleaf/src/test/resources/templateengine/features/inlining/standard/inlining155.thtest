@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    something /* that's a comment */
+    [[1+1]]
+    something /* that's a comment */
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    something /* that's a comment */
+    2
+    something /* that's a comment */
+</script>

@@ -1,0 +1,35 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="null">...</p>
+
+<p th:text="null == null">...</p>
+<p th:text="'a' == null">...</p>
+<p th:text="'a' != null">...</p>
+<p th:text="${somevar} != null">...</p>
+<p th:text="${somevar} == null">...</p>
+
+<p th:text="null eq null">...</p>
+<p th:text="'a' eq null">...</p>
+<p th:text="'a' neq null">...</p>
+<p th:text="'a' ne null">...</p>
+<p th:text="${somevar} ne null">...</p>
+<p th:text="${somevar} neq null">...</p>
+<p th:text="${somevar} eq null">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p></p>
+
+<p>true</p>
+<p>false</p>
+<p>true</p>
+<p>false</p>
+<p>true</p>
+
+<p>true</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>

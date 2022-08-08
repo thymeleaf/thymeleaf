@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+...
+<!--/*/ This is a comment -->
+...
+# ------------------------------------------------------------
+%EXCEPTION java.io.IOException
+%EXCEPTION_MESSAGE_PATTERN Unfinished block structure(.*?)

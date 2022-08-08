@@ -1,0 +1,40 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<head th:insert="base :: common_header(~{::title/text()},~{::link})">
+
+  <title>Awesome - Main</title>
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="themes/smoothness/jquery-ui.css">
+
+</head>
+# ------------------------------------------------------------
+%INPUT[base]
+<th:block th:fragment="common_header(title,links)">
+
+  <title th:utext="${title}">The awesome application</title>
+
+  <!-- Common styles and scripts -->
+  <link rel="stylesheet" type="text/css" media="all" href="css/awesomeapp.css">
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <script type="text/javascript" src="sh/scripts/codebase.js"></script>
+
+  <!--/* Per-page placeholder for additional links */-->
+  <th:block th:insert="${links}" />
+
+</th:block>
+# ------------------------------------------------------------
+%OUTPUT
+<head>
+
+  <title>Awesome - Main</title>
+
+  <!-- Common styles and scripts -->
+  <link rel="stylesheet" type="text/css" media="all" href="css/awesomeapp.css">
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <script type="text/javascript" src="sh/scripts/codebase.js"></script>
+
+  <link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="themes/smoothness/jquery-ui.css">
+
+</head>

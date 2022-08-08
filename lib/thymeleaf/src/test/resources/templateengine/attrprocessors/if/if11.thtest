@@ -1,0 +1,42 @@
+%TEMPLATE_MODE CSS
+# ------------------------------------------------------------
+%CONTEXT
+user = #{ 'age': 24 }
+# ------------------------------------------------------------
+%INPUT
+Text before
+[# th:if="${user.age > 24}"]<div>
+    Bigger
+</div>[/]
+[# th:if="${user.age} > 24"]<div>
+    Bigger
+</div>[/]
+[# th:if="${user.age} > 24.0"]<div>
+    Bigger
+</div>[/]
+[# th:if="${user.age >= 24}"]<div>
+    Or equal
+</div>[/]
+[# th:if="${user.age} >= 24"]<div>
+    Or equal
+</div>[/]
+[# th:if="${user.age} >= 24.0"]<div>
+    Or equal
+</div>[/]
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+
+
+<div>
+    Or equal
+</div>
+<div>
+    Or equal
+</div>
+<div>
+    Or equal
+</div>
+Text after 

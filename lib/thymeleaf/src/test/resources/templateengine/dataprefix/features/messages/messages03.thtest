@@ -1,0 +1,45 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%MESSAGES
+msg01 = Hello!
+msg02 = Hello {0}!
+msg03 = Hello {0}, welcome to planet {1}!
+msg04 = Hello {0}, welcome to planet {1}!
+%MESSAGES[gl]
+msg01 = Ola!
+msg02 = Ola {0}!
+msg03 = Ola {0}, benvido ao planeta {1}!
+# ------------------------------------------------------------
+%CONTEXT
+locale = 'gl_ES'
+var01 = 'John Apricot'
+var02 = var01 + ' Jr.'
+var03 = 'Saturn'
+# ------------------------------------------------------------
+%INPUT
+<span data-th-text="#{msg01}">Some text</span>
+<span data-th-text="#{msg02('Jack Lettuce')}">Some text</span>
+<span data-th-text="#{msg02(${var01})}">Some text</span>
+<span data-th-text="#{msg02(${var02})}">Some text</span>
+<span data-th-text="#{msg02(${var01} + ' Jr.')}">Some text</span>
+<span data-th-text="#{msg02((${var01} + ' Jr.'))}">Some text</span>
+<span data-th-text="#{msg03(${var01} + ' Jr.', ${var03})}">Some text</span>
+<span data-th-text="#{msg03(${var01} + ' Jr.', 'Mars')}">Some text</span>
+<span data-th-text="#{msg03((${var01} + ' Jr.'), 'Mars')}">Some text</span>
+<span data-th-text="#{msg04(${var01} + ' Jr.', ${var03})}">Some text</span>
+<span data-th-text="#{msg04(${var01} + ' Jr.', 'Mars')}">Some text</span>
+<span data-th-text="#{msg04((${var01} + ' Jr.'), 'Mars')}">Some text</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>Ola!</span>
+<span>Ola Jack Lettuce!</span>
+<span>Ola John Apricot!</span>
+<span>Ola John Apricot Jr.!</span>
+<span>Ola John Apricot Jr.!</span>
+<span>Ola John Apricot Jr.!</span>
+<span>Ola John Apricot Jr., benvido ao planeta Saturn!</span>
+<span>Ola John Apricot Jr., benvido ao planeta Mars!</span>
+<span>Ola John Apricot Jr., benvido ao planeta Mars!</span>
+<span>Hello John Apricot Jr., welcome to planet Saturn!</span>
+<span>Hello John Apricot Jr., welcome to planet Mars!</span>
+<span>Hello John Apricot Jr., welcome to planet Mars!</span>

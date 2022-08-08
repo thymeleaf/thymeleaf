@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = {'one','two'}
+# ------------------------------------------------------------
+%INPUT
+<p th:each="v : ${var}"><span th:text="${v}">...</span></p>
+# ------------------------------------------------------------
+%OUTPUT
+<p stack="p th:each"><span stack="p th:each, span th:text">one</span></p><p stack="p th:each"><span stack="p th:each, span th:text">two</span></p>
+
+

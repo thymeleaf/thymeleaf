@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:nowrap="${t}">..</div>
+<div th:nowrap="${f}">..</div>
+<div th:nowrap="${one}">..</div>
+<div nowrap="old" th:nowrap="${t}">..</div>
+<div nowrap="old" th:nowrap="${f}">..</div>
+<div nowrap="old" th:nowrap="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div nowrap="nowrap">..</div>
+<div>..</div>
+<div nowrap="nowrap">..</div>
+<div nowrap="nowrap">..</div>
+<div>..</div>
+<div nowrap="nowrap">..</div>

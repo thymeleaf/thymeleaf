@@ -1,0 +1,10 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+param.something = 'hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${__${param.something[0]}__}">We should not allow accessing request parameters in pre-processing</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

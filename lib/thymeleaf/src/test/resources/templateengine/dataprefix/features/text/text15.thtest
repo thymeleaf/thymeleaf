@@ -1,0 +1,37 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="#{salute}">
+  Some text
+</p>
+<p data-th-text="#{salute(${user['firstName']})}">
+  Some text
+</p>
+<p data-th-text="#{salute(*{user['firstName']})}">
+  Some text
+</p>
+<p data-th-text="#{salute((*{user['firstName']} + ' Jr.'))}">
+  Some text
+</p>
+<p data-th-utext="#{salute}">
+  Some text
+</p>
+<p data-th-utext="#{salute(${user['firstName']})}">
+  Some text
+</p>
+<p data-th-utext="#{salute(*{user['firstName']})}">
+  Some text
+</p>
+<p data-th-utext="#{salute((*{user['firstName']} + ' Jr.'))}">
+  Some text
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>&lt;b&gt;Hello&lt;/b&gt;, {0} &#39;The Great&#39;!</p>
+<p>&lt;b&gt;Hello&lt;/b&gt;, John &#39;The Great&#39;!</p>
+<p>&lt;b&gt;Hello&lt;/b&gt;, John &#39;The Great&#39;!</p>
+<p>&lt;b&gt;Hello&lt;/b&gt;, John Jr. &#39;The Great&#39;!</p>
+<p><b>Hello</b>, {0} 'The Great'!</p>
+<p><b>Hello</b>, John 'The Great'!</p>
+<p><b>Hello</b>, John 'The Great'!</p>
+<p><b>Hello</b>, John Jr. 'The Great'!</p>

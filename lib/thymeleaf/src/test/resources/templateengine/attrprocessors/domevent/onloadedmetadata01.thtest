@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onloadedmetadata="'hello'">..</div>
+<div th:onloadedmetadata="${null}">..</div>
+<div th:onloadedmetadata="${one}">..</div>
+<div th:onloadedmetadata="${2+3}">..</div>
+<div th:onloadedmetadata="${true}">..</div>
+<div th:onloadedmetadata="${false}">..</div>
+<div th:onloadedmetadata="*{null}">..</div>
+<div th:onloadedmetadata="*{one}">..</div>
+<div th:onloadedmetadata="*{2+3}">..</div>
+<div th:onloadedmetadata="*{true}">..</div>
+<div th:onloadedmetadata="*{false}">..</div>
+
+<div onloadedmetadata="old" th:onloadedmetadata="'hello'">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="${null}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="${one}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="${2+3}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="${true}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="${false}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="*{null}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="*{one}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="*{2+3}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="*{true}">..</div>
+<div onloadedmetadata="old" th:onloadedmetadata="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onloadedmetadata="hello">..</div>
+<div>..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="5">..</div>
+<div onloadedmetadata="true">..</div>
+<div onloadedmetadata="false">..</div>
+<div>..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="5">..</div>
+<div onloadedmetadata="true">..</div>
+<div onloadedmetadata="false">..</div>
+
+<div onloadedmetadata="hello">..</div>
+<div>..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="5">..</div>
+<div onloadedmetadata="true">..</div>
+<div onloadedmetadata="false">..</div>
+<div>..</div>
+<div onloadedmetadata="2">..</div>
+<div onloadedmetadata="5">..</div>
+<div onloadedmetadata="true">..</div>
+<div onloadedmetadata="false">..</div>

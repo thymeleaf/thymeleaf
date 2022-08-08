@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    /* something [[${1+2}]] */
+    words =/"[[${'a'}]][^"]+"|[[${'a'}]][^ ]+/g;
+    /* something [[${1+2}]] */
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    /* something 3 */
+    words =/""a"[^"]+"|"a"[^ ]+/g;
+    /* something 3 */
+</script>

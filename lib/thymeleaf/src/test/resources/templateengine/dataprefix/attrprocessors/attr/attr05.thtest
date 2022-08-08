@@ -1,0 +1,31 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%CONTEXT
+sel = true 
+# ------------------------------------------------------------
+%INPUT
+<?xml version="1.0"?>
+<option data-th-attr="selected=${sel}">..</option>
+<option data-th-attr="multiple=${sel}">..</option>
+<option data-th-attr="selected=!${sel}">..</option>
+<option data-th-attr="multiple=!${sel}">..</option>
+<option data-th-attr="selected='a'">..</option>
+<option data-th-attr="multiple='a'">..</option>
+<option data-th-attr="selected=''">..</option>
+<option data-th-attr="multiple=''">..</option>
+<option data-th-attr="selected=${null}">..</option>
+<option data-th-attr="multiple=${null}">..</option>
+# ------------------------------------------------------------
+%OUTPUT
+# We are in XML mode! so the data-th-attr syntax does not apply, and these attributes are not recognized by the engine
+<?xml version="1.0"?>
+<option data-th-attr="selected=${sel}">..</option>
+<option data-th-attr="multiple=${sel}">..</option>
+<option data-th-attr="selected=!${sel}">..</option>
+<option data-th-attr="multiple=!${sel}">..</option>
+<option data-th-attr="selected='a'">..</option>
+<option data-th-attr="multiple='a'">..</option>
+<option data-th-attr="selected=''">..</option>
+<option data-th-attr="multiple=''">..</option>
+<option data-th-attr="selected=${null}">..</option>
+<option data-th-attr="multiple=${null}">..</option>

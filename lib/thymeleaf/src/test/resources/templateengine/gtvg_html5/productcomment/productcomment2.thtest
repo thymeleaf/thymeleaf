@@ -1,0 +1,36 @@
+%EXTENDS productcomment.common
+# ------------------------------------------------------------
+%CONTEXT
+prod = prod2
+# ------------------------------------------------------------
+%OUTPUT 
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
+  </head>
+
+  <body id="body">
+
+    <h1>Comments for product: <span>Italian Tomato</span></h1>
+  
+    <table>
+      <tr class="odd">
+        <td>I&#39;m so sad this product is no longer available!</td>
+      </tr><tr>
+        <td>When do you expect to have it back?</td>
+      </tr>
+    </table>
+  
+    <p>
+      <a href="/testing/product/list">Return to product list</a>
+    </p>
+    
+  </body>
+  
+</html>

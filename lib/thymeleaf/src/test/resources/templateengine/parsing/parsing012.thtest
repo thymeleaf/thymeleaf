@@ -1,0 +1,38 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+cap1 = #{'city' : 'Madrid', 'country' : 'Spain'}
+cap2 = #{'city' : 'Lisboa', 'country' : 'Portugal'}
+cap3 = #{'city' : 'Paris', 'country' : 'France'}
+caps = {cap1, cap2, cap3}
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr th:each="c : ${caps}">
+    <td th:text="${c['city']}">City</td>
+    <!--/* --><td th:text="${c['country']}">Country</td><!-- */-->
+  </tr>
+  <!--/*-->
+  <tr>
+    <td>Another city</td>
+    <td>Another country</td>
+  </tr>
+  <tr>
+    <td>Another city more</td>
+    <td>Another country more</td>
+  </tr>
+  <!--*/-->
+</table>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tr>
+    <td>Madrid</td>
+  </tr>
+  <tr>
+    <td>Lisboa</td>
+  </tr>
+  <tr>
+    <td>Paris</td>
+  </tr>
+</table>

@@ -1,0 +1,21 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%MESSAGES
+bools.true = Yes!
+bools.false = No!
+# ------------------------------------------------------------
+%CONTEXT
+value0 = true
+value1 = false
+# ------------------------------------------------------------
+%INPUT
+[# th:text="${value0} ? #{bools.true} : #{bools.false}"]Some text[/]
+[# th:text="${value1} ? #{bools.true} : #{bools.false}"]Some text[/]
+[# th:text="#{'bools.' + ${value0}}"]Some text[/]
+[# th:text="#{'bools.' + ${value1}}"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+Yes!
+No!
+Yes!
+No!

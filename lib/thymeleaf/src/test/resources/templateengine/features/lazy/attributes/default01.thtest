@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+var = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('a')
+# ------------------------------------------------------------
+%INPUT
+<html th:ng-app="${var}" a>
+
+# ------------------------------------------------------------
+%OUTPUT
+<html ng-app="a" a>

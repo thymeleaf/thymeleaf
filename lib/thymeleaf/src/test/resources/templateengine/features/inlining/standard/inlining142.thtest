@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    var url = [[@{'/someUrl'}]];
+    var a = [[60 * 1000]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    var url = "\/testing\/someUrl";
+    var a = 60000;
+</script>

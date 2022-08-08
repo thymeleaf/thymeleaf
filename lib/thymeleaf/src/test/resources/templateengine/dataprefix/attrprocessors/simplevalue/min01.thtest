@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-min="${one}">..</div>
+<div data-th-min="'hello'">..</div>
+<div data-th-min="${null}">..</div>
+<div data-th-min="''">..</div>
+
+<div min="old" data-th-min="${one}">..</div>
+<div min="old" data-th-min="'hello'">..</div>
+<div min="old" data-th-min="${null}">..</div>
+<div min="old" data-th-min="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div min="one!">..</div>
+<div min="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div min="one!">..</div>
+<div min="hello">..</div>
+<div>..</div>
+<div>..</div>

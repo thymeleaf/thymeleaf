@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+exp='\u0000T(org.thymeleaf.TemplateEngine).TIMER_LOGGER_NAME'
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${__${exp}__}">NOT ALLOWED</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

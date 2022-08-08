@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+items = { 'een', 'twee', 'drei' }
+# ------------------------------------------------------------
+%INPUT
+<div><img ctxvar:setvar="one" ctxvar:model th:each="i : ${items}" th:id="${i}"><span ctxvar:writevar>...</span></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div><ctx id="een"><ctx id="twee"><ctx id="drei"><span></span></div>
+

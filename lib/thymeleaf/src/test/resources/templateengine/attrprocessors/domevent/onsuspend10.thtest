@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:onsuspend="[['hello']]">..</div>
+<div th:onsuspend="[[${null}]]">..</div>
+<div th:onsuspend="[[${one}]]">..</div>
+<div th:onsuspend="[[${two}]]">..</div>
+<div th:onsuspend="[[${three}]]">..</div>
+<div th:onsuspend="[('hello')]">..</div>
+<div th:onsuspend="[(${null})]">..</div>
+<div th:onsuspend="[(${one})]">..</div>
+<div th:onsuspend="[(${two})]">..</div>
+<div th:onsuspend="[(${three})]">..</div>
+<div th:onsuspend="a${a}a[['hello']]a${a}a">..</div>
+<div th:onsuspend="a${a}a[[${null}]]a${a}a">..</div>
+<div th:onsuspend="a${a}a[[${one}]]a${a}a">..</div>
+<div th:onsuspend="a${a}a[[${two}]]a${a}a">..</div>
+<div th:onsuspend="a${a}a[[${three}]]a${a}a">..</div>
+<div th:onsuspend="a${a}a[('hello')]a${a}a">..</div>
+<div th:onsuspend="a${a}a[(${null})]a${a}a">..</div>
+<div th:onsuspend="a${a}a[(${one})]a${a}a">..</div>
+<div th:onsuspend="a${a}a[(${two})]a${a}a">..</div>
+<div th:onsuspend="a${a}a[(${three})]a${a}a">..</div>
+
+<div onsuspend="old" th:onsuspend="[['hello']]">..</div>
+<div onsuspend="old" th:onsuspend="[[${null}]]">..</div>
+<div onsuspend="old" th:onsuspend="[[${one}]]">..</div>
+<div onsuspend="old" th:onsuspend="[[${two}]]">..</div>
+<div onsuspend="old" th:onsuspend="[[${three}]]">..</div>
+<div onsuspend="old" th:onsuspend="[('hello')]">..</div>
+<div onsuspend="old" th:onsuspend="[(${null})]">..</div>
+<div onsuspend="old" th:onsuspend="[(${one})]">..</div>
+<div onsuspend="old" th:onsuspend="[(${two})]">..</div>
+<div onsuspend="old" th:onsuspend="[(${three})]">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[['hello']]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[[${null}]]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[[${one}]]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[[${two}]]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[[${three}]]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[('hello')]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[(${null})]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[(${one})]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[(${two})]a${a}a">..</div>
+<div onsuspend="old" th:onsuspend="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onsuspend="&quot;hello&quot;">..</div>
+<div onsuspend="null">..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="&quot;two&quot;">..</div>
+<div onsuspend="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onsuspend="hello">..</div>
+<div>..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="two">..</div>
+<div onsuspend="two &quot;plus&quot; one">..</div>
+<div onsuspend="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onsuspend="a${a}anulla${a}a">..</div>
+<div onsuspend="a${a}a2a${a}a">..</div>
+<div onsuspend="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onsuspend="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onsuspend="a${a}ahelloa${a}a">..</div>
+<div onsuspend="a${a}aa${a}a">..</div>
+<div onsuspend="a${a}a2a${a}a">..</div>
+<div onsuspend="a${a}atwoa${a}a">..</div>
+<div onsuspend="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div onsuspend="&quot;hello&quot;">..</div>
+<div onsuspend="null">..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="&quot;two&quot;">..</div>
+<div onsuspend="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div onsuspend="hello">..</div>
+<div>..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="two">..</div>
+<div onsuspend="two &quot;plus&quot; one">..</div>
+<div onsuspend="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div onsuspend="a${a}anulla${a}a">..</div>
+<div onsuspend="a${a}a2a${a}a">..</div>
+<div onsuspend="a${a}a&quot;two&quot;a${a}a">..</div>
+<div onsuspend="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div onsuspend="a${a}ahelloa${a}a">..</div>
+<div onsuspend="a${a}aa${a}a">..</div>
+<div onsuspend="a${a}a2a${a}a">..</div>
+<div onsuspend="a${a}atwoa${a}a">..</div>
+<div onsuspend="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

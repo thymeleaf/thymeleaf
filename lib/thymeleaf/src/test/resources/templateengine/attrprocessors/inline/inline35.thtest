@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+user = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+<p>[[${user}]]</p>
+<div th:inline="raw">
+  <p th:text="${user}">[[${user}]]</p>
+</div>
+<p>[[${user}]]</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)Unrecognized\ inline\ mode(.*?)

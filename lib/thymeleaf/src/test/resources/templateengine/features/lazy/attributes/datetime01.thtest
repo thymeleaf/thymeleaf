@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+# ------------------------------------------------------------
+%INPUT
+<div th:datetime="${one}">..</div>
+<div datetime="old" th:datetime="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div datetime="one!">..</div>
+<div datetime="one!">..</div>

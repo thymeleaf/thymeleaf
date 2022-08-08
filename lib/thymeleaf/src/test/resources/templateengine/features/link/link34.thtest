@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+param.one = '/something'
+param.two = 'Something'
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{/something(param=${param.two})}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/something?param=Something">go</a>

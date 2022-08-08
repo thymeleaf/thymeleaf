@@ -1,0 +1,25 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%INPUT
+<a data-th-href="@{${base_url}}">go</a>
+<a data-th-href="@{${base_url}(param1='one',param2='two')}">go</a>
+<a data-th-href="@{(${base_url})}">go</a>
+<a data-th-href="@{(${base_url})(param1='one',param2='two')}">go</a>
+<a data-th-href="@{(${base_url} + '/doit')(param1='one',param2='two')}">go</a>
+<a data-th-href="@{${base_url}(param1='one and two')}">go</a>
+<a data-th-href="@{${base_url}(param1='one=two')}">go</a>
+<a data-th-href="@{${base_url}(param='one',param='two')}">go</a>
+<a data-th-href="@{${base_url}(param='one',name=${user['name']})}">go</a>
+<a data-th-href="@{${base_url}(name=#{name_is(${user['name']})})}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/base/url">go</a>
+<a href="/testing/base/url?param1=one&amp;param2=two">go</a>
+<a href="/testing/base/url">go</a>
+<a href="/testing/base/url?param1=one&amp;param2=two">go</a>
+<a href="/testing/base/url/doit?param1=one&amp;param2=two">go</a>
+<a href="/testing/base/url?param1=one%20and%20two">go</a>
+<a href="/testing/base/url?param1=one%3Dtwo">go</a>
+<a href="/testing/base/url?param=one&amp;param=two">go</a>
+<a href="/testing/base/url?param=one&amp;name=John%20Apricot">go</a>
+<a href="/testing/base/url?name=The%20name%20is%20John%20Apricot">go</a>

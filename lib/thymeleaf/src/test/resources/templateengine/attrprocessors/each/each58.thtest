@@ -1,0 +1,18 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+list = { "one", "two", "three" }
+# ------------------------------------------------------------
+%INPUT
+Hello
+<tbody>
+[# th:each="e : ${list}"]<td class="[[${eStat.odd}? 'odd' : 'even']]">[[${eStat.count}]]</td>[/]
+</tbody>
+Goodbye
+# ------------------------------------------------------------
+%OUTPUT
+Hello
+<tbody>
+<td class="odd">1</td><td class="even">2</td><td class="odd">3</td>
+</tbody>
+Goodbye

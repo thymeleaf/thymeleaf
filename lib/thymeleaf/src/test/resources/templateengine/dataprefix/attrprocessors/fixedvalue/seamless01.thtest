@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-seamless="${t}">..</div>
+<div data-th-seamless="${f}">..</div>
+<div data-th-seamless="${one}">..</div>
+<div data-th-seamless="'hello'">..</div>
+<div data-th-seamless="${null}">..</div>
+<div data-th-seamless="''">..</div>
+
+<div seamless="old" data-th-seamless="${t}">..</div>
+<div seamless="old" data-th-seamless="${f}">..</div>
+<div seamless="old" data-th-seamless="${one}">..</div>
+<div seamless="old" data-th-seamless="'hello'">..</div>
+<div seamless="old" data-th-seamless="${null}">..</div>
+<div seamless="old" data-th-seamless="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div seamless="seamless">..</div>
+<div>..</div>
+<div seamless="seamless">..</div>
+<div seamless="seamless">..</div>
+<div>..</div>
+<div seamless="seamless">..</div>
+
+<div seamless="seamless">..</div>
+<div>..</div>
+<div seamless="seamless">..</div>
+<div seamless="seamless">..</div>
+<div>..</div>
+<div seamless="seamless">..</div>

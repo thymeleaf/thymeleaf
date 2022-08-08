@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT[template]
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="page">
+<head>
+</head>
+<body>
+<span>Before</span>
+<div th:replace="this::content/text()">Content</div>
+<span>After</span>
+</body>
+</html>
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="template :: page">
+<head>
+    <title></title>
+</head>
+<body>
+<div th:fragment="content">Expected Content</div>
+</body>
+</html>
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<span>Before</span>
+Expected Content
+<span>After</span>
+</body>
+</html>

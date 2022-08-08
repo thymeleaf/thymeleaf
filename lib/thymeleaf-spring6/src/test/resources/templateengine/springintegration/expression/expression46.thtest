@@ -1,0 +1,39 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+one = #{ 'value' : 'Container1 - value' }
+two = new org.thymeleaf.templateengine.features.expression.ExpContainer2()
+# ------------------------------------------------------------
+%INPUT
+<div th:object="${one}">
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+</div>
+
+<div th:object="${two}">
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+  <span th:text="*{value}">...</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <span>Container1 - value</span>
+  <span>Container1 - value</span>
+  <span>Container1 - value</span>
+  <span>Container1 - value</span>
+  <span>Container1 - value</span>
+</div>
+
+<div>
+  <span>1979</span>
+  <span>1979</span>
+  <span>1979</span>
+  <span>1979</span>
+  <span>1979</span>
+</div>

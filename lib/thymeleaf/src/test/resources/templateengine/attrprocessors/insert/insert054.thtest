@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+%TEMPLATE_MODE[frag] TEXT
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+name = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:insert="frag (${name})">...</div>
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+Hello [[${thename}]]!
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)?synthetic(.*)?

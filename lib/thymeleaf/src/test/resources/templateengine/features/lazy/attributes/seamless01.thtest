@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable('one!')
+t = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(true)
+f = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(false)
+# ------------------------------------------------------------
+%INPUT
+<div th:seamless="${t}">..</div>
+<div th:seamless="${f}">..</div>
+<div th:seamless="${one}">..</div>
+<div seamless="old" th:seamless="${t}">..</div>
+<div seamless="old" th:seamless="${f}">..</div>
+<div seamless="old" th:seamless="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div seamless="seamless">..</div>
+<div>..</div>
+<div seamless="seamless">..</div>
+<div seamless="seamless">..</div>
+<div>..</div>
+<div seamless="seamless">..</div>

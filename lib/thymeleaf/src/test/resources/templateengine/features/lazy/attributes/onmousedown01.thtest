@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:onmousedown="${one}">..</div>
+<div onmousedown="old" th:onmousedown="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmousedown="2">..</div>
+<div onmousedown="2">..</div>

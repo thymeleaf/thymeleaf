@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:scoped="${t}">..</div>
+<div th:scoped="${f}">..</div>
+<div th:scoped="${one}">..</div>
+<div th:scoped="'hello'">..</div>
+<div th:scoped="${null}">..</div>
+<div th:scoped="''">..</div>
+
+<div scoped="old" th:scoped="${t}">..</div>
+<div scoped="old" th:scoped="${f}">..</div>
+<div scoped="old" th:scoped="${one}">..</div>
+<div scoped="old" th:scoped="'hello'">..</div>
+<div scoped="old" th:scoped="${null}">..</div>
+<div scoped="old" th:scoped="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>
+
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>
+<div scoped="scoped">..</div>
+<div>..</div>
+<div scoped="scoped">..</div>

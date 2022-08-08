@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-high="${one}">..</div>
+<div data-th-high="'hello'">..</div>
+<div data-th-high="${null}">..</div>
+<div data-th-high="''">..</div>
+
+<div high="old" data-th-high="${one}">..</div>
+<div high="old" data-th-high="'hello'">..</div>
+<div high="old" data-th-high="${null}">..</div>
+<div high="old" data-th-high="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div high="one!">..</div>
+<div high="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div high="one!">..</div>
+<div high="hello">..</div>
+<div>..</div>
+<div>..</div>

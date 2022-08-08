@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<thlogic>
+  <attr sel="form" th:class="greatclass">
+    <attr sel="div[1]">
+      <attr sel="label" th:text="${'MegaCovered'}"/>
+    </attr>
+    <attr sel="div[0]/label" thefirstlabel />
+    <attr sel="/fieldset" id="fset" />
+  </attr>
+</thlogic>

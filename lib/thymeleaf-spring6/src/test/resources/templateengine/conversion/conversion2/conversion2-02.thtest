@@ -1,0 +1,37 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+boundobj = new org.thymeleaf.templateengine.conversion.conversion2.Conversion2Object(#dates.create(1492,10,12))
+# ------------------------------------------------------------
+%INPUT
+<p th:object="${boundobj}" th:text="*{onedate}">...</p>
+<p th:object="${boundobj}" th:text="|The date is *{onedate}|">...</p>
+<p th:object="${boundobj}" th:text="*{{onedate}}">...</p>
+<p th:object="${boundobj}" th:text="|The date is *{{onedate}}|">...</p>
+
+<p th:text="${boundobj.onedate}">...</p>
+<p th:text="|The date is ${boundobj.onedate}|">...</p>
+<p th:text="${{boundobj.onedate}}">...</p>
+<p th:text="|The date is ${{boundobj.onedate}}|">...</p>
+
+<p th:text="*{boundobj.onedate}">...</p>
+<p th:text="|The date is *{boundobj.onedate}|">...</p>
+<p th:text="*{{boundobj.onedate}}">...</p>
+<p th:text="|The date is *{{boundobj.onedate}}|">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Fri Oct 12 00:00:00 1492</p>
+<p>The date is Fri Oct 12 00:00:00 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 1492</p>
+<p>The date is Fri Oct 12 00:00:00 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 1492</p>
+<p>The date is Fri Oct 12 00:00:00 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+

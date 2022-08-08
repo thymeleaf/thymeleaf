@@ -1,0 +1,48 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+user1 = #{ 'name': 'Jack Melon',\
+           'role': 'finance' }
+
+user2 = #{ 'name': 'Elizabeth Carrot',\
+           'role': 'admin' }
+
+user3 = #{ 'name': 'Marie Ann Cho',\
+           'role': 'mgmnt' }
+
+# ------------------------------------------------------------
+%MESSAGES
+roles.manager = mgmnt
+# ------------------------------------------------------------
+%INPUT
+
+<div data-th-switch="${user1.role}">
+  <p data-th-case="'admin'">User is an administrator</p>
+  <p data-th-case="#{roles.manager}">User is a manager</p>
+</div>
+
+<div data-th-switch="${user2.role}">
+  <p data-th-case="'admin'">User is an administrator</p>
+  <p data-th-case="#{roles.manager}">User is a manager</p>
+</div>
+
+<div data-th-switch="${user3.role}">
+  <p data-th-case="'admin'">User is an administrator</p>
+  <p data-th-case="#{roles.manager}">User is a manager</p>
+</div>
+
+# ------------------------------------------------------------
+%OUTPUT
+
+<div>
+</div>
+
+<div>
+  <p>User is an administrator</p>
+</div>
+
+<div>
+  <p>User is a manager</p>
+</div>
+

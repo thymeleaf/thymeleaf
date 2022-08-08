@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<th:block th:replace="::input (70,true)" />
+<div th:fragment="input(maxlength,required)">
+  <input th:type="text" th:name="test" th:id="test" th:maxlength="${maxlength}" th:required="${required}" />
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <input type="text" name="test" id="test" maxlength="70" required="required" />
+</div>
+<div>
+  <input type="text" name="test" id="test" />
+</div>

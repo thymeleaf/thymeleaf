@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+var = 'one'
+# ------------------------------------------------------------
+%INPUT
+<p>something<span th:insert="f :: fr">...</span>something else</p>
+# ------------------------------------------------------------
+%INPUT[f]
+<div><b th:fragment="fr">hello</b></div>
+# ------------------------------------------------------------
+%OUTPUT
+<p stack="p">something p<span stack="p, span th:insert"><b stack="p, span th:insert, b th:fragment">hello p, span th:insert, b th:fragment</b></span>something else p</p>
+
+

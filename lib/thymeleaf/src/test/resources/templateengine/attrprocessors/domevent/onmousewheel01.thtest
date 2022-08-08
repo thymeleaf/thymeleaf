@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onmousewheel="'hello'">..</div>
+<div th:onmousewheel="${null}">..</div>
+<div th:onmousewheel="${one}">..</div>
+<div th:onmousewheel="${2+3}">..</div>
+<div th:onmousewheel="${true}">..</div>
+<div th:onmousewheel="${false}">..</div>
+<div th:onmousewheel="*{null}">..</div>
+<div th:onmousewheel="*{one}">..</div>
+<div th:onmousewheel="*{2+3}">..</div>
+<div th:onmousewheel="*{true}">..</div>
+<div th:onmousewheel="*{false}">..</div>
+
+<div onmousewheel="old" th:onmousewheel="'hello'">..</div>
+<div onmousewheel="old" th:onmousewheel="${null}">..</div>
+<div onmousewheel="old" th:onmousewheel="${one}">..</div>
+<div onmousewheel="old" th:onmousewheel="${2+3}">..</div>
+<div onmousewheel="old" th:onmousewheel="${true}">..</div>
+<div onmousewheel="old" th:onmousewheel="${false}">..</div>
+<div onmousewheel="old" th:onmousewheel="*{null}">..</div>
+<div onmousewheel="old" th:onmousewheel="*{one}">..</div>
+<div onmousewheel="old" th:onmousewheel="*{2+3}">..</div>
+<div onmousewheel="old" th:onmousewheel="*{true}">..</div>
+<div onmousewheel="old" th:onmousewheel="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onmousewheel="hello">..</div>
+<div>..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="5">..</div>
+<div onmousewheel="true">..</div>
+<div onmousewheel="false">..</div>
+<div>..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="5">..</div>
+<div onmousewheel="true">..</div>
+<div onmousewheel="false">..</div>
+
+<div onmousewheel="hello">..</div>
+<div>..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="5">..</div>
+<div onmousewheel="true">..</div>
+<div onmousewheel="false">..</div>
+<div>..</div>
+<div onmousewheel="2">..</div>
+<div onmousewheel="5">..</div>
+<div onmousewheel="true">..</div>
+<div onmousewheel="false">..</div>

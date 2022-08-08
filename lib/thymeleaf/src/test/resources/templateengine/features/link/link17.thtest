@@ -1,0 +1,23 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onevar='Some text over here'
+twovar='Other text (second)'
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{/order/details/{id}/{action}(id=3,action='show_all')}">go</a>
+<a th:href="@{/order/details/{id}/{action}(id=3,id=5,action='show_all')}">go</a>
+<a th:href="@{/order/details/{one}(one=${onevar})}">go</a>
+<a th:href="@{/order/details?o={one}(one=${onevar})}">go</a>
+<a th:href="@{/order/details?o={one}(one=${onevar},two=${twovar})}">go</a>
+<a th:href="@{/order/details/{one}/personal(one=${onevar},two=${twovar})}">go</a>
+<a th:href="@{/order/details/{one}/personal(one=${onevar},two=${twovar},one='hello')}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/order/details/3/show_all">go</a>
+<a href="/testing/order/details/3,5/show_all">go</a>
+<a href="/testing/order/details/Some%20text%20over%20here">go</a>
+<a href="/testing/order/details?o=Some%20text%20over%20here">go</a>
+<a href="/testing/order/details?o=Some%20text%20over%20here&amp;two=Other%20text%20(second)">go</a>
+<a href="/testing/order/details/Some%20text%20over%20here/personal?two=Other%20text%20(second)">go</a>
+<a href="/testing/order/details/Some%20text%20over%20here,hello/personal?two=Other%20text%20(second)">go</a>

@@ -1,0 +1,16 @@
+%EXTENDS escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+text = '4&lt;&nbsp;6'
+# ------------------------------------------------------------
+%INPUT
+<div th:id="${text}">
+  <span th:text="${text}">...</span>
+  <span th:utext="${text}">...</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div id="4&amp;lt;&amp;nbsp;6">
+  <span>4&amp;lt;&amp;nbsp;6</span>
+  <span>4&lt;&nbsp;6</span>
+</div>

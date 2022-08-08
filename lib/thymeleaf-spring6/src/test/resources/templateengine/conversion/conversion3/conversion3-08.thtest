@@ -1,0 +1,13 @@
+%EXTENDS conversion3.common
+# ------------------------------------------------------------
+%CONTEXT
+oneObj = new org.thymeleaf.templateengine.conversion.conversion3.Conversion3Object2()
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${{oneObj}}">One object here!</p>
+<p th:each="o : ${oneObj}" th:text="${{o}}">One object here!</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Conversion3Object2 CONVERTED!!</p>
+<p>Conversion3Object2 CONVERTED!!</p>
+

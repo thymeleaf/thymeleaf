@@ -1,0 +1,52 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+user1 = #{ 'name': 'Jack Melon',\
+           'role': 'finance' }
+
+user2 = #{ 'name': 'Elizabeth Carrot',\
+           'role': 'admin' }
+
+user3 = #{ 'name': 'Marie Ann Cho',\
+           'role': 'mgmnt' }
+
+# ------------------------------------------------------------
+%MESSAGES
+roles.manager = mgmnt
+# ------------------------------------------------------------
+%INPUT
+
+<div th:switch="${user1.role}">
+  <p th:case="*">User is some other thing</p>
+  <p th:case="'admin'">User is an administrator</p>
+  <p th:case="#{roles.manager}">User is a manager</p>
+</div>
+
+<div th:switch="${user2.role}">
+  <p th:case="#{roles.manager}">User is a manager</p>
+  <p th:case="*">User is some other thing</p>
+  <p th:case="'admin'">User is an administrator</p>
+</div>
+
+<div th:switch="${user3.role}">
+  <p th:case="*">User is some other thing</p>
+  <p th:case="'admin'">User is an administrator</p>
+  <p th:case="#{roles.manager}">User is a manager</p>
+</div>
+
+# ------------------------------------------------------------
+%OUTPUT
+
+<div>
+  <p>User is some other thing</p>
+</div>
+
+<div>
+  <p>User is some other thing</p>
+</div>
+
+<div>
+  <p>User is some other thing</p>
+</div>
+

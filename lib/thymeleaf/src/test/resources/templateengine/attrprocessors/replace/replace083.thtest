@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:replace="frag :: fa" class="a">,,,</div>
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+<div>
+  <span th:fragment="f">Hello!</span>
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateInputException
+%EXCEPTION_MESSAGE_PATTERN (.*)?Error resolving(.*?)

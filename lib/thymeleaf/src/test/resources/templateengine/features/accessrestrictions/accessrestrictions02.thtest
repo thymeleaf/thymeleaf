@@ -1,0 +1,10 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+param.something = 'hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${param.something[0]}">We should not allow accessing request parameters in expressions meant to be output unescaped</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

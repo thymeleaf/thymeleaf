@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:ondrop="'hello'">..</div>
+<div th:ondrop="${null}">..</div>
+<div th:ondrop="${one}">..</div>
+<div th:ondrop="${2+3}">..</div>
+<div th:ondrop="${true}">..</div>
+<div th:ondrop="${false}">..</div>
+<div th:ondrop="*{null}">..</div>
+<div th:ondrop="*{one}">..</div>
+<div th:ondrop="*{2+3}">..</div>
+<div th:ondrop="*{true}">..</div>
+<div th:ondrop="*{false}">..</div>
+
+<div ondrop="old" th:ondrop="'hello'">..</div>
+<div ondrop="old" th:ondrop="${null}">..</div>
+<div ondrop="old" th:ondrop="${one}">..</div>
+<div ondrop="old" th:ondrop="${2+3}">..</div>
+<div ondrop="old" th:ondrop="${true}">..</div>
+<div ondrop="old" th:ondrop="${false}">..</div>
+<div ondrop="old" th:ondrop="*{null}">..</div>
+<div ondrop="old" th:ondrop="*{one}">..</div>
+<div ondrop="old" th:ondrop="*{2+3}">..</div>
+<div ondrop="old" th:ondrop="*{true}">..</div>
+<div ondrop="old" th:ondrop="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondrop="hello">..</div>
+<div>..</div>
+<div ondrop="2">..</div>
+<div ondrop="5">..</div>
+<div ondrop="true">..</div>
+<div ondrop="false">..</div>
+<div>..</div>
+<div ondrop="2">..</div>
+<div ondrop="5">..</div>
+<div ondrop="true">..</div>
+<div ondrop="false">..</div>
+
+<div ondrop="hello">..</div>
+<div>..</div>
+<div ondrop="2">..</div>
+<div ondrop="5">..</div>
+<div ondrop="true">..</div>
+<div ondrop="false">..</div>
+<div>..</div>
+<div ondrop="2">..</div>
+<div ondrop="5">..</div>
+<div ondrop="true">..</div>
+<div ondrop="false">..</div>

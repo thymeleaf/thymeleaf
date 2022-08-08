@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    var url = [[${'something'}]];
+    var url = "[[${'something'}]]";
+    var url = "[(${'something'})]";
+    var url = '[(${'something'})]';
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    var url = "something";
+    var url = ""something"";
+    var url = "something";
+    var url = 'something';
+</script>

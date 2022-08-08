@@ -1,0 +1,52 @@
+#
+# This test exemplifies the use if th:insert in a cross-template-mode
+# way, inserting pieces of JAVASCRIPT and CSS into HTML templates
+# (note these JAVASCRIPT and CSS files will be actually templates,
+# resolvable like any others, and processed by thymeleaf using their
+# corresponding template modes.
+#
+# In the example, both parameterized (config) and unparameterized
+# (styles) fragment insertion is exemplified. Output expression
+# inlining is used in both examples.
+#
+%TEMPLATE_MODE HTML
+%TEMPLATE_MODE[config] JAVASCRIPT
+%TEMPLATE_MODE[styles] CSS
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+username = 'John Apricot'
+bodycolor = '#3323bc'
+# ------------------------------------------------------------
+%INPUT
+...
+<head>
+  <script th:insert="config (saluted_name=${username})">...</script>
+  <style th:insert="styles">...</style>
+</head>
+...
+# ------------------------------------------------------------
+%INPUT[config]
+var salute = function(n) {
+    alert('Hello ' + n + '!');
+}
+salute(/*[[${saluted_name}]]*/ 'Someone');
+# ------------------------------------------------------------
+%INPUT[styles]
+body {
+  background-color: /*[(${bodycolor})]*/ red;
+}
+# ------------------------------------------------------------
+%OUTPUT
+...
+<head>
+  <script>var salute = function(n) {
+    alert('Hello ' + n + '!');
+}
+salute("John Apricot");</script>
+  <style>body {
+  background-color: #3323bc;
+}</style>
+</head>
+...

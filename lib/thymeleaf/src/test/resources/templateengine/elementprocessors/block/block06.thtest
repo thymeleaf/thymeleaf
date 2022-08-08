@@ -1,0 +1,14 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+text = 'Hello!'
+# ------------------------------------------------------------
+%INPUT
+<div>[#th:block th:text="${text}"]
+    <span th:text="${cStat.count}">0</span>
+    <p th:text="${c.city}">City</p>
+    <span th:text="${c.country}">Country</span>
+[/th:block]</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Hello!</div>

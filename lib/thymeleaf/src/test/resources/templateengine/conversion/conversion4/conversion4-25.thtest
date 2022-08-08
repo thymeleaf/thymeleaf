@@ -1,0 +1,12 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+var a = /*[['Hello']]*/ "One message!";
+var b = /*[[234]]*/ "One message!";
+# ------------------------------------------------------------
+%OUTPUT
+# JavaScript mode DOES NOT apply conversion service by default, so we should expect
+# results to be output exclusively through the JavaScript escaping utils.
+var a = "Hello";
+var b = 234;
+

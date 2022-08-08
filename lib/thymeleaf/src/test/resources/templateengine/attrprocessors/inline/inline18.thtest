@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+etb = new org.thymeleaf.templateengine.attrprocessors.model.ExceptionThrowingBean()
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript"> 
+    var foo = /*[[${etb.throwException()}]]*/ "hello!";
+</script>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException

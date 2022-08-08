@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+msg = 'Hello, World!'
+# ------------------------------------------------------------
+%INPUT
+<span>before</span>
+<!--/*/
+  <div th:text="ok">
+     Some message here just to test it is reported in the
+     correct line (3, not 2)
+  </div>
+/*/-->
+<span th:text="W R O N G">after</span>
+# ------------------------------------------------------------
+%EXCEPTION
+org.thymeleaf.exceptions.TemplateProcessingException
+# ------------------------------------------------------------
+# The line must be 8, so we test that line numbers return to
+# normality after embedded parsing of a prototype-only comment.
+%EXCEPTION_MESSAGE_PATTERN
+(.*?)parsing040\.thtest\-001\" - line 8, col 7\)

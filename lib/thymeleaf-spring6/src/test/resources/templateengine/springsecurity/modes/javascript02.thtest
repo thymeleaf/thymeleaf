@@ -1,0 +1,14 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%INPUT
+Something before
+[# sec:authorize="isAuthenticated()"]
+auths only!
+[/]
+Something after
+# ------------------------------------------------------------
+%OUTPUT
+Something before
+
+Something after
+

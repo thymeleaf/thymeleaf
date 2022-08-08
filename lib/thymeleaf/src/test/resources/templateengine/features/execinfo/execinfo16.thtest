@@ -1,0 +1,8 @@
+%TEMPLATE_MODE HTML
+%NAME execinfotest16
+# ------------------------------------------------------------
+%INPUT
+<!--[if IE]><p th:text="${#execInfo.templateName}">...</p><![endif]-->
+# ------------------------------------------------------------
+%OUTPUT
+<!--[if IE]><p>execinfotest16-001</p><![endif]-->

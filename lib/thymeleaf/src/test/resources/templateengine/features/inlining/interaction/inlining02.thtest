@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+one = 'a value'
+# ------------------------------------------------------------
+%INPUT
+<div>something is [[${one}]], and something isn't</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>||something is a value, and something isn't||</div>

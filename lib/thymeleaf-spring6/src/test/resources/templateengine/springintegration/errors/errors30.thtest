@@ -1,0 +1,31 @@
+%TEMPLATE_MODE HTML5
+# -----------------------------------------------------------
+%MESSAGES
+date.format = yyyy-MM-dd
+# ------------------------------------------------------------
+%CONTEXT
+
+form = new org.thymeleaf.templateengine.springintegration.model.FormBean04()
+form.applications[0] = new org.thymeleaf.templateengine.springintegration.model.FormBean04$Application()
+form.applications[0].recommendedSum = 10
+form.applications[1] = new org.thymeleaf.templateengine.springintegration.model.FormBean04$Application()
+form.applications[1].recommendedSum = 20
+
+bindingError = #{ 'binding' : 'form',\
+                  'field' : 'applications[1].recommendedSum',\
+                  'message' : 'Wrong value'}
+bindingErrors = { bindingError }
+
+# ------------------------------------------------------------
+%INPUT
+<div th:each="app,row : ${form.applications}" th:object="${form.applications[__${row.index}__]}">
+  <input type="text" th:name="|applications[${row.index}].recommendedSum|" th:errorclass="has-error" />
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <input type="text" name="applications[0].recommendedSum" />
+</div>
+<div>
+  <input type="text" name="applications[1].recommendedSum" class="has-error" />
+</div>

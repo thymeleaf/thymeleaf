@@ -1,0 +1,13 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+param.templateName = 'other'
+# ------------------------------------------------------------
+%INPUT
+<div th:insert="${param.templateName[0]}">...</div>
+# ------------------------------------------------------------
+%INPUT[other]
+<p>some text over here, that should never be included...</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

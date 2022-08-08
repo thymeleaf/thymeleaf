@@ -1,0 +1,58 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Local variable error</title>
+</head>
+<body>
+    <div class="container">
+
+        <p>Main replace start</p>
+        <div th:substituteby=":: replaceTemplate ('Main replace')">
+        </div>
+        <p>Main replace end</p>
+
+    </div>
+
+    <div th:remove="all">
+        Templates:
+
+        <div th:fragment="replaceTemplate (value)">
+            <p>Replace template value: <span th:text="${value}">Test</span></p>
+
+            <div th:substituteby=":: subReplaceTemplate ('Sub replace')">
+            </div>
+        </div>
+
+        <div th:fragment="subReplaceTemplate (value)">
+            <p>Sub replace template value: <span th:text="${value}">Test</span></p>
+        </div>
+
+    </div>
+
+</body>
+</html>
+# ------------------------------------------------------------
+%OUTPUT
+<html>
+<head>
+    <title>Local variable error</title>
+</head>
+<body>
+    <div class="container">
+
+        <p>Main replace start</p>
+        <div>
+            <p>Replace template value: <span>Main replace</span></p>
+
+            <div>
+              <p>Sub replace template value: <span>Sub replace</span></p>
+            </div>
+        </div>
+        <p>Main replace end</p>
+
+    </div>
+
+</body>
+</html>

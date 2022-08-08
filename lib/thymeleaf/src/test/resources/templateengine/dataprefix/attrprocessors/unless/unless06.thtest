@@ -1,0 +1,29 @@
+%EXTENDS booleans.common 
+# ------------------------------------------------------------
+%INPUT
+Text before
+
+<div data-th-unless="${value18}">
+    First value
+</div>
+
+<div data-th-unless="${value19}">
+    Second value
+</div>
+
+<div data-th-unless="${value20}">
+    Third value
+</div>
+
+<div data-th-unless="${value21}">
+    Fourth value
+</div>
+
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+# Note 'N' and 'F' do NOT evaluate as false!
+
+Text after 

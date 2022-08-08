@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+align = 'center'
+# ------------------------------------------------------------
+%INPUT
+<style th:inline="css">
+.main\ elems {
+  text-align: /*[[${align}]]*/ left;
+}
+</style>
+# ------------------------------------------------------------
+%OUTPUT
+<style>
+.main\ elems {
+  text-align: center;
+}
+</style>

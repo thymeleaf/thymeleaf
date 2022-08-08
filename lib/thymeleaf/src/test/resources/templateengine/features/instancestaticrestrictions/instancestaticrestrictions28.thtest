@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${''.getClass().getClass().forName('java.lang.String').format('%s','aaa')}">NOT ALLOWED</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qis forbidden\E(.*)

@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-marginheight="${one}">..</div>
+<div data-th-marginheight="'hello'">..</div>
+<div data-th-marginheight="${null}">..</div>
+<div data-th-marginheight="''">..</div>
+
+<div marginheight="old" data-th-marginheight="${one}">..</div>
+<div marginheight="old" data-th-marginheight="'hello'">..</div>
+<div marginheight="old" data-th-marginheight="${null}">..</div>
+<div marginheight="old" data-th-marginheight="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div marginheight="one!">..</div>
+<div marginheight="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div marginheight="one!">..</div>
+<div marginheight="hello">..</div>
+<div>..</div>
+<div>..</div>

@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+things = { 'one','two' }
+# ------------------------------------------------------------
+%INPUT
+<div markup:donothing="...">
+  <span th:each="t : ${things}" th:text="${t}">...</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <span>one</span><span>two</span>
+</div>

@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML
+%TEMPLATE_MODE[frag] TEXT
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+name = 'John Apricot'
+# ------------------------------------------------------------
+%INPUT
+...
+<div th:include="frag :: f (${name})">...</div>
+...
+# ------------------------------------------------------------
+%INPUT[frag]
+[# th:fragment="f (thename)"]
+  Hello [[${thename}]]!
+[/]
+
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)Template\ selectors\ cannot\ be\ specified(.*?)

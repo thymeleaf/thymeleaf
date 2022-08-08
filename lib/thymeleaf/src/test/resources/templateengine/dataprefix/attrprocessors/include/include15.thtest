@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+fragment1 = 'fragA'
+fragment2 = 'fragB'
+cond = true
+# ------------------------------------------------------------
+%INPUT
+<div data-th-include="(!${cond} ? ${fragment1} : ${fragment2}) :: f">...</div>
+%INPUT[fragA]
+<p data-th-fragment="f">Fragment A!</p>
+%INPUT[fragB]
+<p data-th-fragment="f">Fragment B!</p>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Fragment B!</div>

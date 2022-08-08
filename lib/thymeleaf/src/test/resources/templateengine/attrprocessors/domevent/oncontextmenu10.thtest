@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:oncontextmenu="[['hello']]">..</div>
+<div th:oncontextmenu="[[${null}]]">..</div>
+<div th:oncontextmenu="[[${one}]]">..</div>
+<div th:oncontextmenu="[[${two}]]">..</div>
+<div th:oncontextmenu="[[${three}]]">..</div>
+<div th:oncontextmenu="[('hello')]">..</div>
+<div th:oncontextmenu="[(${null})]">..</div>
+<div th:oncontextmenu="[(${one})]">..</div>
+<div th:oncontextmenu="[(${two})]">..</div>
+<div th:oncontextmenu="[(${three})]">..</div>
+<div th:oncontextmenu="a${a}a[['hello']]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[[${null}]]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[[${one}]]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[[${two}]]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[[${three}]]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[('hello')]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[(${null})]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[(${one})]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[(${two})]a${a}a">..</div>
+<div th:oncontextmenu="a${a}a[(${three})]a${a}a">..</div>
+
+<div oncontextmenu="old" th:oncontextmenu="[['hello']]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[[${null}]]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[[${one}]]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[[${two}]]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[[${three}]]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[('hello')]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[(${null})]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[(${one})]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[(${two})]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="[(${three})]">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[['hello']]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[[${null}]]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[[${one}]]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[[${two}]]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[[${three}]]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[('hello')]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[(${null})]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[(${one})]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[(${two})]a${a}a">..</div>
+<div oncontextmenu="old" th:oncontextmenu="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div oncontextmenu="&quot;hello&quot;">..</div>
+<div oncontextmenu="null">..</div>
+<div oncontextmenu="2">..</div>
+<div oncontextmenu="&quot;two&quot;">..</div>
+<div oncontextmenu="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div oncontextmenu="hello">..</div>
+<div>..</div>
+<div oncontextmenu="2">..</div>
+<div oncontextmenu="two">..</div>
+<div oncontextmenu="two &quot;plus&quot; one">..</div>
+<div oncontextmenu="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div oncontextmenu="a${a}anulla${a}a">..</div>
+<div oncontextmenu="a${a}a2a${a}a">..</div>
+<div oncontextmenu="a${a}a&quot;two&quot;a${a}a">..</div>
+<div oncontextmenu="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div oncontextmenu="a${a}ahelloa${a}a">..</div>
+<div oncontextmenu="a${a}aa${a}a">..</div>
+<div oncontextmenu="a${a}a2a${a}a">..</div>
+<div oncontextmenu="a${a}atwoa${a}a">..</div>
+<div oncontextmenu="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div oncontextmenu="&quot;hello&quot;">..</div>
+<div oncontextmenu="null">..</div>
+<div oncontextmenu="2">..</div>
+<div oncontextmenu="&quot;two&quot;">..</div>
+<div oncontextmenu="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div oncontextmenu="hello">..</div>
+<div>..</div>
+<div oncontextmenu="2">..</div>
+<div oncontextmenu="two">..</div>
+<div oncontextmenu="two &quot;plus&quot; one">..</div>
+<div oncontextmenu="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div oncontextmenu="a${a}anulla${a}a">..</div>
+<div oncontextmenu="a${a}a2a${a}a">..</div>
+<div oncontextmenu="a${a}a&quot;two&quot;a${a}a">..</div>
+<div oncontextmenu="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div oncontextmenu="a${a}ahelloa${a}a">..</div>
+<div oncontextmenu="a${a}aa${a}a">..</div>
+<div oncontextmenu="a${a}a2a${a}a">..</div>
+<div oncontextmenu="a${a}atwoa${a}a">..</div>
+<div oncontextmenu="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

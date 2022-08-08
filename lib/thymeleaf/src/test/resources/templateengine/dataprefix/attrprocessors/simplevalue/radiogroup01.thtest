@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-radiogroup="${one}">..</div>
+<div data-th-radiogroup="'hello'">..</div>
+<div data-th-radiogroup="${null}">..</div>
+<div data-th-radiogroup="''">..</div>
+
+<div radiogroup="old" data-th-radiogroup="${one}">..</div>
+<div radiogroup="old" data-th-radiogroup="'hello'">..</div>
+<div radiogroup="old" data-th-radiogroup="${null}">..</div>
+<div radiogroup="old" data-th-radiogroup="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div radiogroup="one!">..</div>
+<div radiogroup="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div radiogroup="one!">..</div>
+<div radiogroup="hello">..</div>
+<div>..</div>
+<div>..</div>

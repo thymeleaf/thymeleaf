@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+val = 214
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{/myPage/(param=${{val}},pageNumber='pageInfo.pageNumber')}">Link</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/myPage/?param=%5B214%5D&amp;pageNumber=pageInfo.pageNumber">Link</a>
+

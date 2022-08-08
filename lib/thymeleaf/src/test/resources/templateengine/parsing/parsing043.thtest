@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<template>
+    <span th:text="Executed">Not executed</span>
+</template>
+# ------------------------------------------------------------
+%OUTPUT
+# Note <template> is a PROCESSED element, which differentiates it from
+# the <script type="text/template"> tag (this last is CDATA)
+<template>
+    <span>Executed</span>
+</template>

@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%EXACT_MATCH true
+# ------------------------------------------------------------
+%CONTEXT
+one = 'Executed!'
+# ------------------------------------------------------------
+%INPUT
+<DIV th:text="${one}">
+    ...
+</div>
+<span th:text="${one}">...</span>
+<div th:text="${one}">
+    ...
+</DIV>
+<span th:text="${one}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<DIV>Executed!</div>
+<span>Executed!</span>
+<div>Executed!</DIV>
+<span>Executed!</span>

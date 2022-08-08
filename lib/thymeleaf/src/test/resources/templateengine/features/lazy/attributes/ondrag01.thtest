@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = new org.thymeleaf.templateengine.features.lazy.ValueLazyContextVariable(2)
+# ------------------------------------------------------------
+%INPUT
+<div th:ondrag="${one}">..</div>
+<div ondrag="old" th:ondrag="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondrag="2">..</div>
+<div ondrag="2">..</div>

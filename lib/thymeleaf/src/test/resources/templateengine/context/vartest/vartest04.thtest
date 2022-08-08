@@ -1,0 +1,8 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<img ctxvar:setvar="one" th:id="'anid'" ctxvar:writevar />
+# ------------------------------------------------------------
+%OUTPUT
+<img id="anid">one</img>
+

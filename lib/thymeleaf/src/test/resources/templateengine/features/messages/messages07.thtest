@@ -1,0 +1,45 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%MESSAGES
+msg01 = Hello!
+msg02 = Hello {0}!
+msg03 = Hello {0}, welcome to planet {1}!
+msg04 = Hello {0}, welcome to planet {1}!
+%MESSAGES[gl]
+msg01 = Ola!
+msg02 = Ola {0}!
+msg03 = Ola {0}, benvido ao planeta {1}!
+# ------------------------------------------------------------
+%CONTEXT
+locale = 'gl_ES'
+var01 = 'John Apricot'
+var02 = var01 + ' Jr.'
+var03 = 'Saturn'
+# ------------------------------------------------------------
+%INPUT
+[# th:text="#{msg01}"]Some text[/]
+[# th:text="#{msg02('Jack Lettuce')}"]Some text[/]
+[# th:text="#{msg02(${var01})}"]Some text[/]
+[# th:text="#{msg02(${var02})}"]Some text[/]
+[# th:text="#{msg02(${var01} + ' Jr.')}"]Some text[/]
+[# th:text="#{msg02((${var01} + ' Jr.'))}"]Some text[/]
+[# th:text="#{msg03(${var01} + ' Jr.', ${var03})}"]Some text[/]
+[# th:text="#{msg03(${var01} + ' Jr.', 'Mars')}"]Some text[/]
+[# th:text="#{msg03((${var01} + ' Jr.'), 'Mars')}"]Some text[/]
+[# th:text="#{msg04(${var01} + ' Jr.', ${var03})}"]Some text[/]
+[# th:text="#{msg04(${var01} + ' Jr.', 'Mars')}"]Some text[/]
+[# th:text="#{msg04((${var01} + ' Jr.'), 'Mars')}"]Some text[/]
+# ------------------------------------------------------------
+%OUTPUT
+Ola!
+Ola Jack Lettuce!
+Ola John Apricot!
+Ola John Apricot Jr.!
+Ola John Apricot Jr.!
+Ola John Apricot Jr.!
+Ola John Apricot Jr., benvido ao planeta Saturn!
+Ola John Apricot Jr., benvido ao planeta Mars!
+Ola John Apricot Jr., benvido ao planeta Mars!
+Hello John Apricot Jr., welcome to planet Saturn!
+Hello John Apricot Jr., welcome to planet Mars!
+Hello John Apricot Jr., welcome to planet Mars!

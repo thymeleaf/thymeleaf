@@ -1,0 +1,12 @@
+%TEMPLATE_MODE JAVASCRIPT
+# ------------------------------------------------------------
+%CONTEXT
+customerName = 'Pear [# th:text="\\'hu\\'"][/] Apple'
+# ------------------------------------------------------------
+%INPUT
+[# th:utext="${customerName}"]
+  Some text
+[/]
+# ------------------------------------------------------------
+%OUTPUT
+Pear [# th:text="'hu'"][/] Apple

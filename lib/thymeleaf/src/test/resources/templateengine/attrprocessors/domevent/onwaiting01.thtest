@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onwaiting="'hello'">..</div>
+<div th:onwaiting="${null}">..</div>
+<div th:onwaiting="${one}">..</div>
+<div th:onwaiting="${2+3}">..</div>
+<div th:onwaiting="${true}">..</div>
+<div th:onwaiting="${false}">..</div>
+<div th:onwaiting="*{null}">..</div>
+<div th:onwaiting="*{one}">..</div>
+<div th:onwaiting="*{2+3}">..</div>
+<div th:onwaiting="*{true}">..</div>
+<div th:onwaiting="*{false}">..</div>
+
+<div onwaiting="old" th:onwaiting="'hello'">..</div>
+<div onwaiting="old" th:onwaiting="${null}">..</div>
+<div onwaiting="old" th:onwaiting="${one}">..</div>
+<div onwaiting="old" th:onwaiting="${2+3}">..</div>
+<div onwaiting="old" th:onwaiting="${true}">..</div>
+<div onwaiting="old" th:onwaiting="${false}">..</div>
+<div onwaiting="old" th:onwaiting="*{null}">..</div>
+<div onwaiting="old" th:onwaiting="*{one}">..</div>
+<div onwaiting="old" th:onwaiting="*{2+3}">..</div>
+<div onwaiting="old" th:onwaiting="*{true}">..</div>
+<div onwaiting="old" th:onwaiting="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onwaiting="hello">..</div>
+<div>..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="5">..</div>
+<div onwaiting="true">..</div>
+<div onwaiting="false">..</div>
+<div>..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="5">..</div>
+<div onwaiting="true">..</div>
+<div onwaiting="false">..</div>
+
+<div onwaiting="hello">..</div>
+<div>..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="5">..</div>
+<div onwaiting="true">..</div>
+<div onwaiting="false">..</div>
+<div>..</div>
+<div onwaiting="2">..</div>
+<div onwaiting="5">..</div>
+<div onwaiting="true">..</div>
+<div onwaiting="false">..</div>

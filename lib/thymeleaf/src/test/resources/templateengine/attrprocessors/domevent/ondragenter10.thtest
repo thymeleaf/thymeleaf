@@ -1,0 +1,92 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+two = 'two'
+three = 'two "plus" one'
+# ------------------------------------------------------------
+%INPUT
+<div th:ondragenter="[['hello']]">..</div>
+<div th:ondragenter="[[${null}]]">..</div>
+<div th:ondragenter="[[${one}]]">..</div>
+<div th:ondragenter="[[${two}]]">..</div>
+<div th:ondragenter="[[${three}]]">..</div>
+<div th:ondragenter="[('hello')]">..</div>
+<div th:ondragenter="[(${null})]">..</div>
+<div th:ondragenter="[(${one})]">..</div>
+<div th:ondragenter="[(${two})]">..</div>
+<div th:ondragenter="[(${three})]">..</div>
+<div th:ondragenter="a${a}a[['hello']]a${a}a">..</div>
+<div th:ondragenter="a${a}a[[${null}]]a${a}a">..</div>
+<div th:ondragenter="a${a}a[[${one}]]a${a}a">..</div>
+<div th:ondragenter="a${a}a[[${two}]]a${a}a">..</div>
+<div th:ondragenter="a${a}a[[${three}]]a${a}a">..</div>
+<div th:ondragenter="a${a}a[('hello')]a${a}a">..</div>
+<div th:ondragenter="a${a}a[(${null})]a${a}a">..</div>
+<div th:ondragenter="a${a}a[(${one})]a${a}a">..</div>
+<div th:ondragenter="a${a}a[(${two})]a${a}a">..</div>
+<div th:ondragenter="a${a}a[(${three})]a${a}a">..</div>
+
+<div ondragenter="old" th:ondragenter="[['hello']]">..</div>
+<div ondragenter="old" th:ondragenter="[[${null}]]">..</div>
+<div ondragenter="old" th:ondragenter="[[${one}]]">..</div>
+<div ondragenter="old" th:ondragenter="[[${two}]]">..</div>
+<div ondragenter="old" th:ondragenter="[[${three}]]">..</div>
+<div ondragenter="old" th:ondragenter="[('hello')]">..</div>
+<div ondragenter="old" th:ondragenter="[(${null})]">..</div>
+<div ondragenter="old" th:ondragenter="[(${one})]">..</div>
+<div ondragenter="old" th:ondragenter="[(${two})]">..</div>
+<div ondragenter="old" th:ondragenter="[(${three})]">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[['hello']]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[[${null}]]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[[${one}]]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[[${two}]]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[[${three}]]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[('hello')]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[(${null})]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[(${one})]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[(${two})]a${a}a">..</div>
+<div ondragenter="old" th:ondragenter="a${a}a[(${three})]a${a}a">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ondragenter="&quot;hello&quot;">..</div>
+<div ondragenter="null">..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="&quot;two&quot;">..</div>
+<div ondragenter="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragenter="hello">..</div>
+<div>..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="two">..</div>
+<div ondragenter="two &quot;plus&quot; one">..</div>
+<div ondragenter="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragenter="a${a}anulla${a}a">..</div>
+<div ondragenter="a${a}a2a${a}a">..</div>
+<div ondragenter="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragenter="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragenter="a${a}ahelloa${a}a">..</div>
+<div ondragenter="a${a}aa${a}a">..</div>
+<div ondragenter="a${a}a2a${a}a">..</div>
+<div ondragenter="a${a}atwoa${a}a">..</div>
+<div ondragenter="a${a}atwo &quot;plus&quot; onea${a}a">..</div>
+
+<div ondragenter="&quot;hello&quot;">..</div>
+<div ondragenter="null">..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="&quot;two&quot;">..</div>
+<div ondragenter="&quot;two \&quot;plus\&quot; one&quot;">..</div>
+<div ondragenter="hello">..</div>
+<div>..</div>
+<div ondragenter="2">..</div>
+<div ondragenter="two">..</div>
+<div ondragenter="two &quot;plus&quot; one">..</div>
+<div ondragenter="a${a}a&quot;hello&quot;a${a}a">..</div>
+<div ondragenter="a${a}anulla${a}a">..</div>
+<div ondragenter="a${a}a2a${a}a">..</div>
+<div ondragenter="a${a}a&quot;two&quot;a${a}a">..</div>
+<div ondragenter="a${a}a&quot;two \&quot;plus\&quot; one&quot;a${a}a">..</div>
+<div ondragenter="a${a}ahelloa${a}a">..</div>
+<div ondragenter="a${a}aa${a}a">..</div>
+<div ondragenter="a${a}a2a${a}a">..</div>
+<div ondragenter="a${a}atwoa${a}a">..</div>
+<div ondragenter="a${a}atwo &quot;plus&quot; onea${a}a">..</div>

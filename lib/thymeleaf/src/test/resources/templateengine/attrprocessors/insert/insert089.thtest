@@ -1,0 +1,31 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<head th:insert="basic_template :: header(~{::title/text()},~{::link})">
+
+  <title>Some wonderful page</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <link href="themes/smoothness/jquery-ui.css" rel="stylesheet" />
+
+</head>
+# ------------------------------------------------------------
+%INPUT[basic_template]
+<th:block th:fragment="header(pagetitle,links)">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title th:text="${pagetitle}">A template prototyping title</title>
+
+  <th:block th:insert="${links}" />
+
+</th:block>
+# ------------------------------------------------------------
+%OUTPUT
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Some wonderful page</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet" /><link href="themes/smoothness/jquery-ui.css" rel="stylesheet" />
+
+</head>

@@ -1,0 +1,54 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onsuspend="'hello'">..</div>
+<div th:onsuspend="${null}">..</div>
+<div th:onsuspend="${one}">..</div>
+<div th:onsuspend="${2+3}">..</div>
+<div th:onsuspend="${true}">..</div>
+<div th:onsuspend="${false}">..</div>
+<div th:onsuspend="*{null}">..</div>
+<div th:onsuspend="*{one}">..</div>
+<div th:onsuspend="*{2+3}">..</div>
+<div th:onsuspend="*{true}">..</div>
+<div th:onsuspend="*{false}">..</div>
+
+<div onsuspend="old" th:onsuspend="'hello'">..</div>
+<div onsuspend="old" th:onsuspend="${null}">..</div>
+<div onsuspend="old" th:onsuspend="${one}">..</div>
+<div onsuspend="old" th:onsuspend="${2+3}">..</div>
+<div onsuspend="old" th:onsuspend="${true}">..</div>
+<div onsuspend="old" th:onsuspend="${false}">..</div>
+<div onsuspend="old" th:onsuspend="*{null}">..</div>
+<div onsuspend="old" th:onsuspend="*{one}">..</div>
+<div onsuspend="old" th:onsuspend="*{2+3}">..</div>
+<div onsuspend="old" th:onsuspend="*{true}">..</div>
+<div onsuspend="old" th:onsuspend="*{false}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onsuspend="hello">..</div>
+<div>..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="5">..</div>
+<div onsuspend="true">..</div>
+<div onsuspend="false">..</div>
+<div>..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="5">..</div>
+<div onsuspend="true">..</div>
+<div onsuspend="false">..</div>
+
+<div onsuspend="hello">..</div>
+<div>..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="5">..</div>
+<div onsuspend="true">..</div>
+<div onsuspend="false">..</div>
+<div>..</div>
+<div onsuspend="2">..</div>
+<div onsuspend="5">..</div>
+<div onsuspend="true">..</div>
+<div onsuspend="false">..</div>

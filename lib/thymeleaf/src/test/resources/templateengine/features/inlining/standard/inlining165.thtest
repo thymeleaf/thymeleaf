@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+    template = `[[${2+1}]]`;
+    template = `[[${'a'}]]`;
+    template = `[(${'a'})]`;
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+    template = `3`;
+    template = `"a"`;
+    template = `a`;
+</script>

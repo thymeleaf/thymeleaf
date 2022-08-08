@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-defer="${t}">..</div>
+<div data-th-defer="${f}">..</div>
+<div data-th-defer="${one}">..</div>
+<div data-th-defer="'hello'">..</div>
+<div data-th-defer="${null}">..</div>
+<div data-th-defer="''">..</div>
+
+<div defer="old" data-th-defer="${t}">..</div>
+<div defer="old" data-th-defer="${f}">..</div>
+<div defer="old" data-th-defer="${one}">..</div>
+<div defer="old" data-th-defer="'hello'">..</div>
+<div defer="old" data-th-defer="${null}">..</div>
+<div defer="old" data-th-defer="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div defer="defer">..</div>
+<div>..</div>
+<div defer="defer">..</div>
+<div defer="defer">..</div>
+<div>..</div>
+<div defer="defer">..</div>
+
+<div defer="defer">..</div>
+<div>..</div>
+<div defer="defer">..</div>
+<div defer="defer">..</div>
+<div>..</div>
+<div defer="defer">..</div>

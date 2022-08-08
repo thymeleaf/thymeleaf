@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+useradmin = false
+# ------------------------------------------------------------
+%INPUT
+<script type="text/javascript" th:inline="javascript">
+/*[# th:if="${useradmin}"]*/
+    alert('Welcome admin');
+/*[/]*/
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/javascript">
+
+</script>

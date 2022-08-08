@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${_T(org.thymeleaf.TemplateEngine).TIMER_LOGGER_NAME}">NOT ALLOWED</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QProperty or field 'thymeleaf' cannot be found on null\E(.*)

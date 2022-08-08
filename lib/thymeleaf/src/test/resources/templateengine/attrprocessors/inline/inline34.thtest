@@ -1,0 +1,13 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%CONTEXT
+x = 2
+# ------------------------------------------------------------
+%INPUT
+<p th:inline="none">
+    This should not be replaced: [[${x}]]
+    <span th:inline="html">But this should: [[${x}]]</span>
+</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*?)Invalid\ inline\ mode\ selected(.*?)
