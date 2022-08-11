@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateengine;
+package org.thymeleaf.util;
 
 import java.util.Arrays;
 import java.util.stream.Stream;

@@ -27,7 +27,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.templateengine.ThrottleArgumentsProvider;
+import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.templateengine.aggregation.dialect.Dialect01;
 import org.thymeleaf.templateengine.aggregation.dialect.Dialect02;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
