@@ -40,7 +40,7 @@ public class ConditionalCommentsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testConditionalComments(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{ new StandardDialect() }));
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/conditionalcomments");

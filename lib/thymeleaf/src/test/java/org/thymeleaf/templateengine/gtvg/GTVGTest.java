@@ -36,7 +36,7 @@ public class GTVGTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testGTVGHTML5(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/gtvg_html5");
         
@@ -49,7 +49,7 @@ public class GTVGTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testGTVGXHTML(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/gtvg_xhtml");
 

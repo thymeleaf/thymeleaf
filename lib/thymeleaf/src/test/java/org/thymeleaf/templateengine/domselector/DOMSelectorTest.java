@@ -38,7 +38,7 @@ public class DOMSelectorTest {
     @Test
     public void testDOMSelector() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/domselector");
         
         Assertions.assertTrue(executor.isAllOK());

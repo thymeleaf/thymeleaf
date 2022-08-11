@@ -38,7 +38,7 @@ public class DataPrefixFeaturesTest {
     @Test
     public void testText() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/features/text");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -50,7 +50,7 @@ public class DataPrefixFeaturesTest {
     @Test
     public void testLink() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/features/link");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -61,7 +61,7 @@ public class DataPrefixFeaturesTest {
     @Test
     public void testUtil() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/features/util");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -72,7 +72,7 @@ public class DataPrefixFeaturesTest {
     @Test
     public void testExpression() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/features/expression");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -83,7 +83,7 @@ public class DataPrefixFeaturesTest {
     @Test
     public void testMessages() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/features/messages");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -94,7 +94,7 @@ public class DataPrefixFeaturesTest {
     @Test
     public void testNormalization() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/features/normalization");
 
         Assertions.assertTrue(executor.isAllOK());

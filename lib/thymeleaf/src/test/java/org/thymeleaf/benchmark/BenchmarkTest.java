@@ -38,7 +38,7 @@ public class BenchmarkTest {
     @Test
     public void testBenchmark() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setReporter(new BenchmarkTestReporter());
         executor.execute("classpath:benchmark/benchmark.thindex");
 

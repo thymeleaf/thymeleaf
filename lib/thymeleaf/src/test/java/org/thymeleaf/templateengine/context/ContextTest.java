@@ -43,7 +43,7 @@ public class ContextTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testContextBase(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(), new ContextDialect()}));
         executor.setThrottleStep(throttleStep);
@@ -57,7 +57,7 @@ public class ContextTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testContextVarTest(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(), new ContextVarTestDialect()}));
         executor.setThrottleStep(throttleStep);

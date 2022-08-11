@@ -38,7 +38,7 @@ public class XmlnsTest {
     @Test
     public void testXmlns() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/xmlns");
         
         Assertions.assertTrue(executor.isAllOK());

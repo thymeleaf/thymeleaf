@@ -36,7 +36,7 @@ public class ParsingTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testParsing(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/parsing");
 

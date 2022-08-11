@@ -44,7 +44,7 @@ public class Conversion4Test {
     @Test
     public void testConversion() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new ConversionTestDialect4()}));
 
         executor.execute("classpath:templateengine/conversion/conversion4");

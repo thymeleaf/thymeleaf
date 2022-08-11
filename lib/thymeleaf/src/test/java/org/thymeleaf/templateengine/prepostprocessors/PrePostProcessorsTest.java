@@ -41,7 +41,7 @@ public class PrePostProcessorsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testPrePostProcessors(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(),  new Dialect01()}));
         executor.setThrottleStep(throttleStep);

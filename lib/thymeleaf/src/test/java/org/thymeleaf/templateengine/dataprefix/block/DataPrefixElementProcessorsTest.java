@@ -41,7 +41,7 @@ public class DataPrefixElementProcessorsTest {
     @Test
     public void testBlock() throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.execute("classpath:templateengine/dataprefix/elementprocessors/block");
 
         Assertions.assertTrue(executor.isAllOK());

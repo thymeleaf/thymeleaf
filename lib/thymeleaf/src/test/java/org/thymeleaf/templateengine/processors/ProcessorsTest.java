@@ -45,7 +45,7 @@ public class ProcessorsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testReplaceWithProcessable(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new ReplaceWithProcessableDialect()}));
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/processors/replacewithprocessable");
@@ -59,7 +59,7 @@ public class ProcessorsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testReplaceWithNonProcessable(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new ReplaceWithNonProcessableDialect()}));
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/processors/replacewithnonprocessable");
@@ -73,7 +73,7 @@ public class ProcessorsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testRemove(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new RemoveDialect()}));
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/processors/remove");
@@ -87,7 +87,7 @@ public class ProcessorsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testNoOp(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new NoOpDialect()}));
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/processors/noop");
@@ -101,7 +101,7 @@ public class ProcessorsTest {
     @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testSurround(final int throttleStep) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createTestExecutor();
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new SurroundDialect()}));
         executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/processors/surround");
