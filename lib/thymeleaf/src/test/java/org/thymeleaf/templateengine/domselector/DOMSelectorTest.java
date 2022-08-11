@@ -22,7 +22,7 @@ package org.thymeleaf.templateengine.domselector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-import org.thymeleaf.TestExecutorFactory;
+import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 
 
 public class DOMSelectorTest {

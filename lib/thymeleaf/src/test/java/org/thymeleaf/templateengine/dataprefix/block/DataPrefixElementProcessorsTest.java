@@ -21,7 +21,7 @@ package org.thymeleaf.templateengine.dataprefix.block;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.thymeleaf.TestExecutorFactory;
+import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 

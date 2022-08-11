@@ -17,13 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf;
+package org.thymeleaf.testing.templateengine.engine;
 
 
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.context.web.JakartaServletTestWebExchangeBuilder;
 import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.report.ITestReporter;
 import org.thymeleaf.testing.templateengine.report.MinimalConsoleTestReporter;
 
