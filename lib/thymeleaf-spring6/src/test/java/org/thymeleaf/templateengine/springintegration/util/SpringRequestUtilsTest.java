@@ -25,15 +25,14 @@ import java.util.Map;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring6.util.SpringRequestUtils;
 import org.thymeleaf.testing.templateengine.util.JakartaServletMockUtils;
 import org.thymeleaf.web.IWebExchange;
 import org.thymeleaf.web.IWebRequest;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
-
-import static org.junit.Assertions.assertThrows;
-import static org.thymeleaf.spring6.util.SpringRequestUtils.checkViewNameNotInRequest;
 
 
 public final class SpringRequestUtilsTest {
@@ -45,19 +44,19 @@ public final class SpringRequestUtilsTest {
     @Test
     public void testCheckViewNameNotInRequest() {
 
-        checkViewNameNotInRequest("lala", mockRequest("alala"));
-        checkViewNameNotInRequest("lala :: le", mockRequest("a/elala::le//"));
-        checkViewNameNotInRequest("lala :: le", mockRequest("a/elala :: le//"));
-        checkViewNameNotInRequest("${lala} :: le", mockRequest("a/elala::le//"));
-        checkViewNameNotInRequest("${lala} :: le", mockRequest("a/elala :: le//"));
-        assertThrows(TemplateProcessingException.class, () -> checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e${lala}::le//")));
-        assertThrows(TemplateProcessingException.class, () -> checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e${lala} :: le//")));
-        assertThrows(TemplateProcessingException.class, () -> checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e${x} :: le//")));
-        assertThrows(TemplateProcessingException.class, () -> checkViewNameNotInRequest("${lala} :: le (a=23)", mockRequest("a/e${lala} :: le//")));
-        checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e","p0","${lala} :: le//"));
-        assertThrows(TemplateProcessingException.class, () -> checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e","p0","${lala} :: le")));
-        checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e","p0","${lala}_le//"));
-        checkViewNameNotInRequest("${lala}::le", mockRequest("a/e","p0","${lili}::le"));
+        SpringRequestUtils.checkViewNameNotInRequest("lala", mockRequest("alala"));
+        SpringRequestUtils.checkViewNameNotInRequest("lala :: le", mockRequest("a/elala::le//"));
+        SpringRequestUtils.checkViewNameNotInRequest("lala :: le", mockRequest("a/elala :: le//"));
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/elala::le//"));
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/elala :: le//"));
+        Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e${lala}::le//")));
+        Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e${lala} :: le//")));
+        Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e${x} :: le//")));
+        Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le (a=23)", mockRequest("a/e${lala} :: le//")));
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e","p0","${lala} :: le//"));
+        Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e","p0","${lala} :: le")));
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e","p0","${lala}_le//"));
+        SpringRequestUtils.checkViewNameNotInRequest("${lala}::le", mockRequest("a/e","p0","${lili}::le"));
 
     }
 

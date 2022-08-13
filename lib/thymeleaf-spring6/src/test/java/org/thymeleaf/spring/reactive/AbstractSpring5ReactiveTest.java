@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.reactivestreams.Publisher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -107,7 +107,7 @@ public abstract class AbstractSpring5ReactiveTest {
 
 
 
-    @BeforeClass
+    @BeforeAll
     public static void initTemplateEngine() {
 
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
@@ -179,12 +179,12 @@ public abstract class AbstractSpring5ReactiveTest {
 
         if (responseMaxChunkSizeBytes != Integer.MAX_VALUE) {
             for (final DataBuffer resultBuffer : resultBuffers) {
-                Assertions.assertTrue("Buffer returned by stream is of size larger than " + responseMaxChunkSizeBytes, resultBuffer.readableByteCount() <= responseMaxChunkSizeBytes);
+                Assertions.assertTrue(resultBuffer.readableByteCount() <= responseMaxChunkSizeBytes, "Buffer returned by stream is of size larger than " + responseMaxChunkSizeBytes);
             }
         } else {
             if (!isDataDriven) {
                 final int bufferCount = resultBuffers.size();
-                Assertions.assertTrue("No limit set on buffer size, and non-data-driven: there should only be one result buffer instead of " + bufferCount, bufferCount == 1);
+                Assertions.assertTrue(bufferCount == 1, "No limit set on buffer size, and non-data-driven: there should only be one result buffer instead of " + bufferCount);
             }
         }
 
@@ -250,12 +250,12 @@ public abstract class AbstractSpring5ReactiveTest {
 
         if (responseMaxChunkSizeBytes != Integer.MAX_VALUE) {
             for (final DataBuffer resultBuffer : resultBuffers) {
-                Assertions.assertTrue("Buffer returned by stream is of size larger than " + responseMaxChunkSizeBytes, resultBuffer.readableByteCount() <= responseMaxChunkSizeBytes);
+                Assertions.assertTrue(resultBuffer.readableByteCount() <= responseMaxChunkSizeBytes, "Buffer returned by stream is of size larger than " + responseMaxChunkSizeBytes);
             }
         } else {
             if (!isDataDriven) {
                 final int bufferCount = resultBuffers.size();
-                Assertions.assertTrue("No limit set on buffer size, and non-data-driven: there should only be one result buffer instead of " + bufferCount, bufferCount == 1);
+                Assertions.assertTrue(bufferCount == 1, "No limit set on buffer size, and non-data-driven: there should only be one result buffer instead of " + bufferCount);
             }
         }
 

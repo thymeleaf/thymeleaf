@@ -19,58 +19,31 @@
  */
 package org.thymeleaf.templateengine.stsm;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.templateengine.stsm.context.STSMWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.testing.templateengine.spring6.context.web.SpringMVCWebProcessingContextBuilder;
-import org.thymeleaf.tests.util.TestExecutorFactory;
 import org.thymeleaf.util.SpringStandardDialectUtils;
+import org.thymeleaf.util.ThrottleArgumentsProvider;
 
 
-@RunWith(Parameterized.class)
 public class STSMTest {
 
 
-    private final int throttleStep;
 
-
-    public STSMTest(final Integer throttleStep) {
-        super();
-        this.throttleStep = throttleStep.intValue();
-    }
-
-
-    @Parameterized.Parameters
-    public static Collection<Object[]> parameters() {
-
-        final int[] throttleSteps = new int[] { Integer.MAX_VALUE, 1000, 100, 11, 9, 5, 1};
-
-        final List<Object[]> params = new ArrayList<Object[]>();
-        for (int i = 0; i < throttleSteps.length; i++) {
-            params.add(new Object[] { Integer.valueOf(i) });
-        }
-        return params;
-
-    }
-
-
-
-
-    @Test
-    public void testSTSMWithoutIntegratedConversion() throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ThrottleArgumentsProvider.class)
+    public void testSTSMWithoutIntegratedConversion(final int throttleStep) throws Exception {
 
         final TestExecutor executor = TestExecutorFactory.createTestExecutor(new STSMWebProcessingContextBuilder());
         executor.setDialects(Arrays.asList(new IDialect[] { SpringStandardDialectUtils.createSpringStandardDialectInstance()}));
-        executor.setThrottleStep(this.throttleStep);
+        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/stsm");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -78,15 +51,16 @@ public class STSMTest {
         
     }
 
-    @Test
-    public void testSTSMWithIntegratedConversion() throws Exception {
+    @ParameterizedTest
+    @ArgumentsSource(ThrottleArgumentsProvider.class)
+    public void testSTSMWithIntegratedConversion(final int throttleStep) throws Exception {
 
         final SpringMVCWebProcessingContextBuilder contextBuilder = new SpringMVCWebProcessingContextBuilder();
         contextBuilder.setApplicationContextConfigLocation("classpath:templateengine/stsm/applicationContext.xml");
 
         final TestExecutor executor = TestExecutorFactory.createTestExecutor(contextBuilder);
         executor.setDialects(Arrays.asList(new IDialect[] { SpringStandardDialectUtils.createSpringStandardDialectInstance()}));
-        executor.setThrottleStep(this.throttleStep);
+        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/stsm");
 
         Assertions.assertTrue(executor.isAllOK());

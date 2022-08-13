@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.templateengine.conversion.conversion3.Conversion3WebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-import org.thymeleaf.tests.util.TestExecutorFactory;
+import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 
 
 public class Conversion5Test {
