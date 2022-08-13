@@ -96,7 +96,7 @@ public final class BareHtmlEngineTest {
 
         PARSER.parseStandalone(TEMPLATE_ENGINE_CONFIGURATION, templateName, templateName,  blockSelectors, new StringTemplateResource(input), TemplateMode.HTML, false, handler);
 
-        Assertions.assertEquals("Test failed for file: " + templateName, output, writer.toString());
+        Assertions.assertEquals(output, writer.toString(), "Test failed for file: " + templateName);
 
     }
 

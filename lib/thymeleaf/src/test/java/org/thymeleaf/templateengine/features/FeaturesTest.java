@@ -237,7 +237,8 @@ public class FeaturesTest {
     }
 
 
-    @Test
+    @ParameterizedTest
+    @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testElementStack(final int throttleStep) throws Exception {
 
         final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();

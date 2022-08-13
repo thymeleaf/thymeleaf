@@ -96,7 +96,7 @@ public final class ParserLevelCommentTextReaderTest {
 
                     final String result = strBuilder.toString();
 
-                    Assertions.assertEquals("Checking: '" + message + "' (" + j + "," + k + "," + l + ")", expected, result);
+                    Assertions.assertEquals(expected, result, "Checking: '" + message + "' (" + j + "," + k + "," + l + ")");
 
                 }
 
