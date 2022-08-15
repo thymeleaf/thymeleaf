@@ -33,9 +33,10 @@ public class ConsoleTestReporter extends AbstractTextualTestReporter {
     
     @Override
     protected void output(final String line, final boolean error) {
-        System.out.println(line);
         if (error) {
             System.err.println(line);
+        } else {
+            System.out.println(line);
         }
     }
     
