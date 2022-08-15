@@ -30,7 +30,7 @@ import org.thymeleaf.spring.reactive.data.AlbumRepository;
 import org.thymeleaf.spring6.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 
-public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
+public final class SpringReactive13Test extends AbstractSpring5ReactiveTest {
 
 
 
@@ -40,9 +40,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(0), 1));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(0), 1, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-01", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-01", true);
 
     }
 
@@ -55,7 +55,7 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final Context ctx1 = new Context();
 
         try {
-            testTemplate("reactive11", null, ctx1, "reactive11-01", true);
+            testTemplate("reactive13", null, ctx1, "reactive13-01", true);
             Assertions.assertTrue(false);
         } catch (final TemplateProcessingException e) {
             // When there is no data-driver variable, an exception should be thrown
@@ -71,9 +71,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 1));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 1, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -84,9 +84,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 2));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 2, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -97,9 +97,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 3));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 3, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -110,9 +110,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 7));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 7, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -123,9 +123,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 11));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 11, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -136,9 +136,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 137));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 137, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -149,9 +149,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 1024));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 1024, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
 
     }
 
@@ -162,9 +162,22 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), Integer.MAX_VALUE));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), Integer.MAX_VALUE, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-02", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-02", true);
+
+    }
+
+
+    @Test
+    public void testDataDrivenLarge09() throws Exception {
+
+        final List<Album> albums = AlbumRepository.findAllAlbums();
+
+        final Context ctx1 = new Context();
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), Integer.MAX_VALUE, "pref", 23L));
+
+        testTemplate("reactive13", null, ctx1, "reactive13-05", true);
 
     }
 
@@ -175,9 +188,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 1));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 1, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -188,9 +201,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 2));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 2, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -201,9 +214,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 3));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 3, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -214,9 +227,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 7));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 7, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -227,9 +240,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 11));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 11, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -240,9 +253,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 137));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 137, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -253,9 +266,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 1024));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), 1024, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -266,9 +279,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), Integer.MAX_VALUE));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(1), Integer.MAX_VALUE, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-03", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-03", true);
 
     }
 
@@ -279,9 +292,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 1));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 1, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -292,9 +305,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 2));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 2, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -305,9 +318,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 3));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 3, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -318,9 +331,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 7));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 7, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -331,9 +344,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 11));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 11, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -344,9 +357,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 137));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 137, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -357,9 +370,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 1024));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), 1024, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 
@@ -370,9 +383,9 @@ public final class Spring5Reactive11Test extends AbstractSpring5ReactiveTest {
         final List<Album> albums = AlbumRepository.findAllAlbums();
 
         final Context ctx1 = new Context();
-        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), Integer.MAX_VALUE));
+        ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums).take(2), Integer.MAX_VALUE, "pref"));
 
-        testTemplate("reactive11", null, ctx1, "reactive11-04", true);
+        testTemplate("reactive13", null, ctx1, "reactive13-04", true);
 
     }
 

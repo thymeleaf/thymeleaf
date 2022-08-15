@@ -28,7 +28,7 @@ import org.thymeleaf.spring.reactive.data.AlbumRepository;
 import org.thymeleaf.spring6.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 
-public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
+public final class SpringReactive05Test extends AbstractSpring5ReactiveTest {
 
 
 
@@ -37,7 +37,7 @@ public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
 
         final Context ctx1 = new Context();
 
-        testTemplate("reactive03", null, ctx1, "reactive03-01");
+        testTemplate("reactive05", null, ctx1, "reactive05-01");
 
     }
 
@@ -50,7 +50,7 @@ public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
         final Context ctx1 = new Context();
         ctx1.setVariable("albums", albums);
 
-        testTemplate("reactive03", null, ctx1, "reactive03-02");
+        testTemplate("reactive05", null, ctx1, "reactive05-02");
 
     }
 
@@ -64,7 +64,7 @@ public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
         final Context ctx1 = new Context();
         ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 1));
 
-        testTemplate("reactive03", null, ctx1, "reactive03-02");
+        testTemplate("reactive05", null, ctx1, "reactive05-02");
 
     }
 
@@ -78,7 +78,7 @@ public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
         final Context ctx1 = new Context();
         ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 10));
 
-        testTemplate("reactive03", null, ctx1, "reactive03-02");
+        testTemplate("reactive05", null, ctx1, "reactive05-02");
 
     }
 
@@ -92,7 +92,7 @@ public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
         final Context ctx1 = new Context();
         ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 100));
 
-        testTemplate("reactive03", null, ctx1, "reactive03-02");
+        testTemplate("reactive05", null, ctx1, "reactive05-02");
 
     }
 
@@ -106,7 +106,7 @@ public final class Spring5Reactive03Test extends AbstractSpring5ReactiveTest {
         final Context ctx1 = new Context();
         ctx1.setVariable("albums", new ReactiveDataDriverContextVariable(Flux.fromIterable(albums), 100000));
 
-        testTemplate("reactive03", null, ctx1, "reactive03-02");
+        testTemplate("reactive05", null, ctx1, "reactive05-02");
 
     }
 
