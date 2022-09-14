@@ -564,6 +564,7 @@
 
   <modules>
     <module>lib</module>
+    <module>tests</module>
     <module>examples</module>
     <module>dist</module>
   </modules>
