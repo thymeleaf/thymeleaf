@@ -1,0 +1,37 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+# true
+text01 = '&#116;&#114;&#117;&#101;'
+# false
+text02 = '&#102;&#97;&#108;&#115;&#101;'
+# ------------------------------------------------------------
+%MESSAGES
+# true
+text01 = '&#116;&#114;&#117;&#101;'
+# false
+text02 = '&#102;&#97;&#108;&#115;&#101;'
+# ------------------------------------------------------------
+%INPUT
+<div th:autoplay="${text01}">...</div>
+<div th:autoplay="${text02}">...</div>
+<div th:autoplay="#{text01}">...</div>
+<div th:autoplay="#{text02}">...</div>
+<div th:autoplay="'&#116;&#114;&#117;&#101;'">...</div>
+<div th:autoplay="'&#102;&#97;&#108;&#115;&#101;'">...</div>
+<div th:autoplay="${'&#116;&#114;&#117;&#101;'}">...</div>
+<div th:autoplay="${'&#102;&#97;&#108;&#115;&#101;'}">...</div>
+<div autoplay="&#116;&#114;&#117;&#101;">...</div>
+# ------------------------------------------------------------
+%OUTPUT
+# Note the ${...} and #{...} ones will display as "true" because the expression engine won't unescape them at all,
+# which is the intended behaviour. Only attribute values themselves will be unescaped!
+<div autoplay="autoplay">...</div>
+<div autoplay="autoplay">...</div>
+<div autoplay="autoplay">...</div>
+<div autoplay="autoplay">...</div>
+<div autoplay="autoplay">...</div>
+<div>...</div>
+<div autoplay="autoplay">...</div>
+<div>...</div>
+<div autoplay="&#116;&#114;&#117;&#101;">...</div>

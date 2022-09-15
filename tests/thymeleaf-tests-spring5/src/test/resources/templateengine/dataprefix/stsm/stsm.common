@@ -1,0 +1,208 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+typePlastic = @org.thymeleaf.templateengine.dataprefix.stsm.model.Type@PLASTIC
+typeWood = @org.thymeleaf.templateengine.dataprefix.stsm.model.Type@WOOD
+allTypes = { typePlastic, typeWood }
+
+featureSubstrate = @org.thymeleaf.templateengine.dataprefix.stsm.model.Feature@SEEDSTARTER_SPECIFIC_SUBSTRATE
+featureFertilizer = @org.thymeleaf.templateengine.dataprefix.stsm.model.Feature@FERTILIZER
+featurePhCorrector = @org.thymeleaf.templateengine.dataprefix.stsm.model.Feature@PH_CORRECTOR
+allFeatures = { featureSubstrate, featureFertilizer, featurePhCorrector }
+
+varietyRepository = new org.thymeleaf.templateengine.dataprefix.stsm.model.repository.VarietyRepository()
+allVarieties = varietyRepository.findAll()
+
+seedStarterRepository = new org.thymeleaf.templateengine.dataprefix.stsm.model.repository.SeedStarterRepository()
+allSeedStarters = seedStarterRepository.findAll()
+
+seedStarter = new org.thymeleaf.templateengine.dataprefix.stsm.model.SeedStarter()
+seedStarter.datePlanted = #dates.create(2013,5,3)
+
+# ------------------------------------------------------------
+%MESSAGES
+title.application=Spring Thyme Seed-Starter Manager
+title.list=Seed Starter List
+title.new=Add new Seed Starter
+
+date.format=MM/dd/yyyy
+bool.true=yes
+bool.false=no
+
+seedstarter.data=Seed Starter data
+seedstarter.create=Add Seed Starter
+seedstarter.row.add=Add row
+seedstarter.row.remove=Remove row
+
+seedstarter.datePlanted=Date planted
+seedstarter.covered=Covered
+seedstarter.type=Type
+seedstarter.features=Features
+seedstarter.rows=Rows
+
+seedstarter.type.WOOD=Wood
+seedstarter.type.PLASTIC=Plastic
+
+seedstarter.feature.SEEDSTARTER_SPECIFIC_SUBSTRATE=Seed starter-specific substrate
+seedstarter.feature.FERTILIZER=Fertilizer used
+seedstarter.feature.PH_CORRECTOR=PH Corrector used
+
+seedstarter.rows.head.rownum=Row
+seedstarter.rows.head.variety=Variety
+seedstarter.rows.head.seedsPerCell=Seeds per cell
+
+typeMismatch.datePlanted=Date has an incorrect format (see pattern)
+typeMismatch.seedsPerCell=Seeds per cell must be an integer number
+
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Spring Thyme Seed Starter Manager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/stsm.css" data-th-href="@{/css/stsm.css}"/>
+  </head>
+
+  <body>
+
+    <div>
+      <img src="../../images/stsmlogo.png" alt="STSM logo" title="STSM logo" 
+           data-th-src="@{/images/stsmlogo.png}" data-th-alt-title="#{title.application}"/>
+    </div>
+    
+    <div class="seedstarterlist" data-th-unless="${#lists.isEmpty(allSeedStarters)}">
+    
+      <h2 data-th-text="#{title.list}">List of Seed Starters</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th data-th-text="#{seedstarter.datePlanted}">Date Planted</th>
+            <th data-th-text="#{seedstarter.covered}">Covered</th>
+            <th data-th-text="#{seedstarter.type}">Type</th>
+            <th data-th-text="#{seedstarter.features}">Features</th>
+            <th data-th-text="#{seedstarter.rows}">Rows</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-th-each="sb : ${allSeedStarters}">
+            <td data-th-text="${#dates.format(sb.datePlanted, #messages.msg('date.format'))}">13/01/2011</td>
+            <td data-th-text="${sb.covered}? #{bool.true} : #{bool.false}">yes</td>
+            <td data-th-text="#{${'seedstarter.type.' + sb.type}}">Wireframe</td>
+            <td data-th-text="${#strings.arrayJoin(
+                             #messages.arrayMsg(
+                               #strings.arrayPrepend(sb.features,'seedstarter.feature.')),
+                             ', ')}">Electric Heating, Turf</td>
+            <td>
+              <table>
+                <tbody>
+                  <tr data-th-each="row,rowStat : ${sb.rows}">
+                    <td data-th-text="${rowStat.count}">1</td>
+                    <td data-th-text="${row.variety.name}">Thymus Thymi</td>
+                    <td data-th-text="${row.seedsPerCell}">12</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+
+
+    <div>
+    
+      <h2 data-th-text="#{title.new}">Add new Seed Starter</h2>
+
+      <form action="#" data-th-action="@{/seedstartermng}" data-th-object="${seedStarter}" method="post">
+    
+        <fieldset>
+          
+          <legend data-th-text="#{seedstarter.data}">Seed Starter Data</legend>
+
+          <ul data-th-if="${#fields.hasErrors('*')}" class="errorlist">
+            <li data-th-each="err : ${#fields.errors('*')}" data-th-text="${err}">Input is incorrect</li>
+          </ul>
+
+          
+          <div>
+            <label for="datePlanted">
+              <span data-th-text="#{seedstarter.datePlanted}">Date planted</span>
+              (<span data-th-text="#{date.format}">YYYY/MM/DD</span>)
+            </label>
+            <input type="text" data-th-field="*{datePlanted}" data-th-class="${#fields.hasErrors('datePlanted')}? 'fieldError'" />
+          </div>
+          <div>
+            <label data-th-for="${#ids.next('covered')}" data-th-text="#{seedstarter.covered}">Covered</label>
+            <input type="checkbox" data-th-field="*{covered}" />
+          </div>
+          <div>
+            <label for="type" data-th-text="#{seedstarter.type}">Type</label>
+            <select data-th-field="*{type}">
+              <option data-th-each="type : ${allTypes}" data-th-value="${type}" data-th-text="#{${'seedstarter.type.' + type}}">Wireframe</option>
+            </select>
+          </div>
+          <div>
+            <label data-th-text="#{seedstarter.features}">Features</label>
+            <ul>
+              <li data-th-each="feat : ${allFeatures}">
+                <input type="checkbox" data-th-field="*{features}" data-th-value="${feat}" />
+                <label data-th-for="${#ids.prev('features')}" data-th-text="#{${'seedstarter.feature.' + feat}}">Electric Heating</label>
+              </li>
+              <li data-th-remove="all">
+                <input id="removed1" type="checkbox" /> <label for="removed1">Turf</label>
+              </li>
+            </ul>
+          </div>
+    
+          <div>
+            <label data-th-text="#{seedstarter.rows}">Rows</label>
+            <table>
+              <thead>
+                <tr>
+                  <th data-th-text="#{seedstarter.rows.head.rownum}">Row</th>
+                  <th data-th-text="#{seedstarter.rows.head.variety}">Variety</th>
+                  <th data-th-text="#{seedstarter.rows.head.seedsPerCell}">Seeds per cell</th>
+                  <th>
+                    <button type="submit" name="addRow" data-th-text="#{seedstarter.row.add}">Add row</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-th-each="row,rowStat : *{rows}">
+                  <td data-th-text="${rowStat.count}">1</td>
+                  <td>
+                    <select data-th-field="*{rows[__${rowStat.index}__].variety}">
+                      <option data-th-each="var : ${allVarieties}" data-th-value="${var.id}" data-th-text="${var.name}">Thymus Thymi</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" 
+                           data-th-field="*{rows[__${rowStat.index}__].seedsPerCell}"
+                           data-th-class="${#fields.hasErrors('rows[__${rowStat.index}__].seedsPerCell')}? 'fieldError'" />
+                  </td>
+                  <td>
+                    <button type="submit" name="removeRow" data-th-value="${rowStat.index}" data-th-text="#{seedstarter.row.remove}">Remove row</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+    
+          <div class="submit">
+            <button type="submit" name="save" data-th-text="#{seedstarter.create}">Add Seed Starter</button>
+          </div>
+        
+        </fieldset>
+          
+      </form>
+        
+    </div>
+
+  </body>
+</html>

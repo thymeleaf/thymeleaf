@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+param_a='something'
+a_new='something else'
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${param_a}">ALLOWED</p>
+<p th:utext="${a_new}">ALLOWED</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>something</p>
+<p>something else</p>

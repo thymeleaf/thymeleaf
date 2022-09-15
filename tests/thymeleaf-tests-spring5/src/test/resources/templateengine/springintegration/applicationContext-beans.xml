@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                                 http://www.springframework.org/schema/util
+                                 http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+        
+
+  <util:map id="myMap">
+    <entry key="one" value="one value" />
+  </util:map>
+
+  <util:map id="domainValues">
+    <entry key="one" value="ONE1" />
+    <entry key="two" value="TWO2" />
+    <entry key="three" value="THREE3" />
+    <entry key="four" value="FOUR4" />
+    <entry key="five" value="FIVE5" />
+    <entry key="six" value="SIX6" />
+    <entry key="seven" value="SEVEN7" />
+    <entry key="eight" value="EIGHT8" />
+    <entry key="nine" value="NINE9" />
+    <entry key="ten" value="TEN10" />
+    <entry key="eleven" value="ELEVEN11" />
+    <entry key="twelve" value="TWELVE12" />
+    <entry key="thirteen" value="THIRTEEN13" />
+    <entry key="fourteen" value="FOURTEEN14" />
+    <entry key="fifteen" value="FIFTEEN15" />
+  </util:map>
+
+</beans>

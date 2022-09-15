@@ -1,0 +1,32 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+bean0 = new org.thymeleaf.templateengine.springintegration.model.FormBean06()
+bean1 = new org.thymeleaf.templateengine.springintegration.model.FormBean06()
+bean0.something = 'value three'
+bean1.something = 'value one'
+bean = new org.thymeleaf.templateengine.springintegration.model.FormBean07()
+bean.somethings = { bean0, bean1 }
+thevalues = {'value one', 'value two', 'value three', 'value four'}
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${bean}" th:action="'/url'">
+   <select th:field="*{somethings[__${i}__].something}" th:multiple="multiple" th:each="i : ${#numbers.sequence(0,1)}">
+     <option th:each="avalue : ${thevalues}" th:value="${avalue}" th:text="${avalue}">option</option>
+   </select>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <input type="hidden" name="_somethings[0].something" value="1"/><select multiple="multiple" id="somethings0.something" name="somethings[0].something">
+     <option value="value one">value one</option>
+     <option value="value two">value two</option>
+     <option value="value three" selected="selected">value three</option>
+     <option value="value four">value four</option>
+   </select><input type="hidden" name="_somethings[1].something" value="1"/><select multiple="multiple" id="somethings1.something" name="somethings[1].something">
+     <option value="value one" selected="selected">value one</option>
+     <option value="value two">value two</option>
+     <option value="value three">value three</option>
+     <option value="value four">value four</option>
+   </select>
+</form>

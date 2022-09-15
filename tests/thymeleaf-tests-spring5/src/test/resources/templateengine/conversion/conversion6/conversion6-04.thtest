@@ -1,0 +1,12 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+obj = new org.thymeleaf.templateengine.conversion.conversion6.Conversion6Bean01()
+obj.num = 1234
+# ------------------------------------------------------------
+%INPUT
+[# th:text="${{obj.obtainNum()}}"]...[/]
+# ------------------------------------------------------------
+%OUTPUT
+# This is not a bean property, so conversion should not apply
+1234

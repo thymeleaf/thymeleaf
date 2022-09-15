@@ -1,0 +1,78 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+bindingError01 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name has to be < than \\'aa\\''}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : null,\
+                    'message' : 'Name has to be >= than \\'ab\\''}
+                    
+bindingErrors = { bindingError01, bindingError02 }
+# ------------------------------------------------------------
+%INPUT
+<form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
+
+  <fieldset>
+
+    <ul>
+       <li th:each="e : ${#fields.errors()}" th:text="${e}">item</li>
+    </ul>
+    <ul>
+       <li th:each="e : ${#fields.errors('*')}" th:text="${e}">item</li>
+    </ul>
+    <ul>
+       <li th:each="e : ${#fields.allErrors()}" th:text="${e}">item</li>
+    </ul>
+    <ul>
+       <li th:each="e : ${#fields.globalErrors()}" th:text="${e}">item</li>
+    </ul>
+    <ul>
+       <li th:each="e : ${#fields.errors('date')}" th:text="${e}">item</li>
+    </ul>
+    <ul>
+       <li th:each="e : ${#fields.errors('name')}" th:text="${e}">item</li>
+    </ul>
+
+    <div>
+      Name: <input type="text" th:field="*{name}" />
+    </div>
+    
+  </fieldset>
+      
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/process" method="post">
+
+  <fieldset>
+      
+    <ul>
+      <li>Name has to be &lt; than &#39;aa&#39;</li>
+      <li>Name has to be &gt;= than &#39;ab&#39;</li>
+    </ul>
+    <ul>
+      <li>Name has to be &lt; than &#39;aa&#39;</li>
+      <li>Name has to be &gt;= than &#39;ab&#39;</li>
+    </ul>
+    <ul>
+      <li>Name has to be &lt; than &#39;aa&#39;</li>
+      <li>Name has to be &gt;= than &#39;ab&#39;</li>
+    </ul>
+    <ul>
+      <li>Name has to be &gt;= than &#39;ab&#39;</li>
+    </ul>
+    <ul>
+    </ul>
+    <ul>
+      <li>Name has to be &lt; than &#39;aa&#39;</li>
+    </ul>
+
+    <div>
+      Name: <input type="text" id="name" name="name" value="Mark Lettuce" />
+    </div>
+    
+  </fieldset>
+      
+</form>

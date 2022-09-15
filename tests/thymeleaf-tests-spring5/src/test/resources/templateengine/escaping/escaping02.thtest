@@ -1,0 +1,11 @@
+%EXTENDS escaping.common
+# ------------------------------------------------------------
+%INPUT
+<div th:id="'\u00E1\u00E2\u00E3\u00E4\uD840\uDC00'">
+  <span th:text="'\u00E1\u00E2\u00E3\u00E4\uD840\uDC00'">...</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div id="\u00E1\u00E2\u00E3\u00E4\uD840\uDC00">
+  <span>\u00E1\u00E2\u00E3\u00E4\uD840\uDC00</span>
+</div>

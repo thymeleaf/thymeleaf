@@ -1,0 +1,11 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean01}">
+  <input type="date" th:pattern="#{date.format}" th:field="*{date}"/>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="date" pattern="yyyy-MM-dd" id="date" name="date" value="1492-10-12" />
+</form>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <title>Thymeleaf Sandbox: Spring Reactive</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <h2>Modify album</h2>
+
+    <a href="{[/testing/something]}">some link</a>
+
+    <form action="{[doit]}"><input type="hidden" name="onehiddenfield" value="onehiddenvalue" />
+
+      <fieldset>
+        <p>
+          <input type="text" id="id" name="id" value="{100}">
+        </p>
+        <p>
+          <input type="text" id="name" name="name" value="{Whatever}">
+        </p>
+        <input type="submit">
+      </fieldset>
+
+    </form>
+
+  </body>
+
+</html>

@@ -1,0 +1,45 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+bindingError01 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name has to be < than \\'aa\\''}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name has to be >= than \\'ab\\''}
+                    
+bindingErrors = { bindingError01, bindingError02 }
+# ------------------------------------------------------------
+%INPUT
+<form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
+
+  <fieldset>
+
+    <div th:uerrors="*{*}"></div>
+    <div th:uerrors="*{name}"></div>
+    <div th:uerrors="*{date}"></div>
+      
+    <div>
+      Name: <input type="text" th:field="*{name}" />
+    </div>
+    
+  </fieldset>
+      
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/process" method="post">
+
+  <fieldset>
+      
+    <div>Name has to be < than 'aa'<br />Name has to be >= than 'ab'</div>
+    <div>Name has to be < than 'aa'<br />Name has to be >= than 'ab'</div>
+    
+    <div>
+      Name: <input type="text" id="name" name="name" value="Mark Lettuce" />
+    </div>
+    
+  </fieldset>
+      
+</form>

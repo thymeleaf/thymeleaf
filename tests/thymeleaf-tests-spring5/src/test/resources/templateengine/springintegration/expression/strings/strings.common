@@ -1,0 +1,9 @@
+%EXTENDS ../../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+one = 'one'
+two = 'two'
+three = 'three'
+
+strList = { one, two, three }

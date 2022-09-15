@@ -1,0 +1,33 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+text01 = '4&lt;&nbsp;6'
+text02 = '4<\u00A06'
+text03 = '4<&nbsp;6'
+# ------------------------------------------------------------
+%MESSAGES
+text01 = '4&lt;&nbsp;6'
+text02 = '4<\u00A06'
+text03 = '4<&nbsp;6'
+# ------------------------------------------------------------
+%INPUT
+<div th:attr="abbr='\u00E1\u00E2\u00E3\u00E4\uD840\uDC00'">...</div>
+<div th:attr="abbr=${text01}">...</div>
+<div th:attr="abbr=${text02}">...</div>
+<div th:attr="abbr=${text03}">...</div>
+<div th:attr="abbr=#{text01}">...</div>
+<div th:attr="abbr=#{text02}">...</div>
+<div th:attr="abbr=#{text03}">...</div>
+<div th:attr="abbr='4&lt;&nbsp;6'">...</div>
+<div th:attr="abbr=${'4&lt;&nbsp;6'}">...</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div abbr="\u00E1\u00E2\u00E3\u00E4\uD840\uDC00">...</div>
+<div abbr="4&amp;lt;&amp;nbsp;6">...</div>
+<div abbr="4&lt;\u00A06">...</div>
+<div abbr="4&lt;&amp;nbsp;6">...</div>
+<div abbr="4&amp;lt;&amp;nbsp;6">...</div>
+<div abbr="4&lt;\u00A06">...</div>
+<div abbr="4&lt;&amp;nbsp;6">...</div>
+<div abbr="4&lt;\u00A06">...</div>
+<div abbr="4&lt;\u00A06">...</div>

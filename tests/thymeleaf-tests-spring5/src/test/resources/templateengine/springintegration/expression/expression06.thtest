@@ -1,0 +1,20 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+request.a = 'Some text'
+request.b = 123
+request.c = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${a.class}">...</p>
+<p th:text="${a}">...</p>
+<p th:text="${b.class}">...</p>
+<p th:text="${b}">...</p>
+<p th:text="${c}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>class java.lang.String</p>
+<p>Some text</p>
+<p>class java.lang.Integer</p>
+<p>123</p>
+<p>Hello</p>

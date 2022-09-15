@@ -1,0 +1,31 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+val0 = @java.lang.Byte@valueOf('10')
+val1 = @java.lang.Short@valueOf('10')
+val2 = @java.lang.Integer@valueOf('10')
+val3 = new java.io.ByteArrayInputStream("something".getBytes())
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${val0}">...</span>
+<span th:text="${val0.class.name}">...</span>
+<span th:text="${val1}">...</span>
+<span th:text="${val1.class.name}">...</span>
+<span th:text="${val2}">...</span>
+<span th:text="${val2.class.name}">...</span>
+<span th:text="${val0} == ${val2}">...</span>
+<span th:text="${val1} == ${val2}">...</span>
+<span th:text="${val3.class.name}">...</span>
+<span th:text="${val3.getClass().getName()}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>10</span>
+<span>java.lang.Byte</span>
+<span>10</span>
+<span>java.lang.Short</span>
+<span>10</span>
+<span>java.lang.Integer</span>
+<span>true</span>
+<span>true</span>
+<span>java.io.ByteArrayInputStream</span>
+<span>java.io.ByteArrayInputStream</span>

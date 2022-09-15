@@ -1,0 +1,27 @@
+%TEMPLATE_MODE HTML5
+# -----------------------------------------------------------
+%MESSAGES
+date.format = yyyy-MM-dd
+# ------------------------------------------------------------
+%CONTEXT
+entity = new org.thymeleaf.templateengine.springintegration.model.FormBean05()
+entity.properties['alpha'] = 'one alpha'
+entity.properties['beta'] = 'two beta'
+columns = {'alpha','beta'}
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${entity}">
+<div th:each="column : ${columns}">
+  <input th:type="checkbox" th:field="*{properties['__${column}__']}" value="entityON" />
+</div>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+<div>
+  <input value="entityON" type="checkbox" id="properties'alpha'1" name="properties['alpha']" /><input type="hidden" name="_properties['alpha']" value="on" />
+</div>
+<div>
+  <input value="entityON" type="checkbox" id="properties'beta'1" name="properties['beta']" /><input type="hidden" name="_properties['beta']" value="on" />
+</div>
+</form>

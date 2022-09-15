@@ -63,7 +63,7 @@
 
   <modules>
     <module>thymeleaf-tests-core</module>
-<!--    <module>thymeleaf-tests-spring5</module>-->
+    <module>thymeleaf-tests-spring5</module>
     <module>thymeleaf-tests-spring6</module>
   </modules>
 

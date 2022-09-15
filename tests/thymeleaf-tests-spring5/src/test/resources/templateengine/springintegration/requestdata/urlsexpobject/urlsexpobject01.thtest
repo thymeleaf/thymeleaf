@@ -1,0 +1,17 @@
+%EXTENDS ../requestdata.common
+# ------------------------------------------------------------
+%INPUT
+<a th:with="u=@{this/url}" th:nohref="${#requestdatavalues.url(u)}">...</a>
+<a th:with="u=@{/this/url}" th:nohref="${#requestdatavalues.url(u)}">...</a>
+<a th:with="u=@{http://this/url}" th:nohref="${#requestdatavalues.url(u)}">...</a>
+<form th:with="u=@{/doit}" th:noaction="${#requestdatavalues.action(u, 'post')}" th:object="${formBean01}"><input th:each="f : ${#requestdatavalues.extraHiddenFields()}" type="hidden" th:name="${f.key}" th:novalue="${f.value}" />
+   <input type="text" id="name" name="nam" th:novalue="*{#requestdatavalues.formFieldValue('nam', name, 'text')}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<a nohref="{this/url}">...</a>
+<a nohref="{/testing/this/url}">...</a>
+<a nohref="{http://this/url}">...</a>
+<form noaction="[/testing/doit,post]"><input type="hidden" name="extra-field1" novalue="The value of the First Extra field" /><input type="hidden" name="extra-field2" novalue="The value of the Second Extra field" />
+   <input type="text" id="name" name="nam" novalue="(Mark Lettuce,nam,text)" />
+</form>

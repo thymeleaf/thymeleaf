@@ -1,0 +1,24 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+
+user = #{ 'name': 'Elizabeth Carrot',\
+          'role': 'admin' }
+
+# ------------------------------------------------------------
+%MESSAGES
+roles.manager = mgmnt
+# ------------------------------------------------------------
+%INPUT
+
+<div th:switch="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#114;&#111;&#108;&#101;&rbrace;">
+  <p th:case="&#97;&#100;&#109;&#105;&#110;">User is an administrator</p>
+  <p th:case="&num;&lbrace;&#114;&#111;&#108;&#101;&#115;&period;&#109;&#97;&#110;&#97;&#103;&#101;&#114;&rbrace;">User is a manager</p>
+</div>
+
+# ------------------------------------------------------------
+%OUTPUT
+
+<div>
+  <p>User is an administrator</p>
+</div>

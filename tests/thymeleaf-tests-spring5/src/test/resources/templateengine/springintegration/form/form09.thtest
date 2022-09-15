@@ -1,0 +1,27 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean03_01}" th:action="'/url'">
+   <input type="checkbox" th:field="*{nullBool}" disabled="disabled" />
+   <input type="checkbox" th:field="*{notNullTrue}" disabled="disabled" />
+   <input type="checkbox" th:field="*{notNullFalse}" disabled="disabled" />
+   <input type="checkbox" th:field="*{nullBool}" disabled="true" />
+   <input type="checkbox" th:field="*{notNullTrue}" disabled="true" />
+   <input type="checkbox" th:field="*{notNullFalse}" disabled="true" />
+   <input type="checkbox" th:field="*{nullBool}" disabled="false" />
+   <input type="checkbox" th:field="*{notNullTrue}" disabled="false" />
+   <input type="checkbox" th:field="*{notNullFalse}" disabled="false" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <input type="checkbox" id="nullBool1" name="nullBool" value="true" disabled="disabled" />
+   <input type="checkbox" id="notNullTrue1" name="notNullTrue" value="true" checked="checked" disabled="disabled" />
+   <input type="checkbox" id="notNullFalse1" name="notNullFalse" value="true" disabled="disabled" />
+   <input type="checkbox" id="nullBool2" name="nullBool" value="true" disabled="true" />
+   <input type="checkbox" id="notNullTrue2" name="notNullTrue" value="true" checked="checked" disabled="true" />
+   <input type="checkbox" id="notNullFalse2" name="notNullFalse" value="true" disabled="true" />
+   <input type="checkbox" id="nullBool3" name="nullBool" value="true" disabled="false" />
+   <input type="checkbox" id="notNullTrue3" name="notNullTrue" value="true" checked="checked" disabled="false" />
+   <input type="checkbox" id="notNullFalse3" name="notNullFalse" value="true" disabled="false" />
+</form>

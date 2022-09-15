@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+
+locale = 'en'
+
+conversion3Obj1 = new org.thymeleaf.templateengine.conversion.conversion3.Conversion3Object()
+conversion3Obj1.id = 12345
+conversion3Obj1.age = 9876543
+conversion3Obj1.name = 'Matusalem'
+conversion3Obj1.date = #dates.create(2006,05,23)
+
+conversion3Obj2 = new org.thymeleaf.templateengine.conversion.conversion3.Conversion3Object()
+conversion3Obj2.id = 9876
+conversion3Obj2.age = 1234567
+conversion3Obj2.name = 'Plato'
+conversion3Obj2.date = #dates.create(1990,04,30)

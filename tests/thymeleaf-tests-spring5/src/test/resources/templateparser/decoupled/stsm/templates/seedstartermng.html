@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Spring Thyme Seed Starter Manager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/stsm.css" />
+  </head>
+
+  <body>
+
+    <div id="logo">
+      <img src="../../images/stsmlogo.png" alt="STSM logo" title="STSM logo"/>
+    </div>
+
+    .<div class="seedstarterlist">
+
+      <h2>List of Seed Starters</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date Planted</th>
+            <th>Covered</th>
+            <th>Type</th>
+            <th>Features</th>
+            <th>Rows</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>13/01/2011</td>
+            <td>yes</td>
+            <td>Wireframe</td>
+            <td>Electric Heating, Turf</td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Thymus Thymi</td>
+                    <td>12</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+
+    <div id="formsection">
+
+      <h2>Add new Seed Starter</h2>
+
+      <form action="#" method="post">
+
+        <fieldset>
+
+          <legend>Seed Starter Data</legend>
+
+<ul class="errorlist">
+    <li>Input is incorrect</li>
+</ul>
+
+
+          <div id="datePlantedFormPart">
+            <label for="datePlanted">
+              <span>Date planted</span>
+              (<span>YYYY/MM/DD</span>)
+            </label>
+            <input type="text"/>
+          </div>
+          <div id="coveredFormPart">
+            <label>Covered</label>
+            <input type="checkbox"/>
+          </div>
+          <div id="typeFormPart">
+            <label for="type">Type</label>
+            <select>
+              <option>Wireframe</option>
+            </select>
+          </div>
+          <div id="featuresFormPart">
+            <label>Features</label>
+            <ul>
+              <li>
+                <input type="checkbox"/>
+                <label>Electric Heating</label>
+              </li>
+<li>
+  <input id="removed1" type="checkbox" /> <label for="removed1">Turf</label>
+</li>
+            </ul>
+          </div>
+
+          <div id="rowsFormPart">
+            <label>Rows</label>
+            <table>
+              <thead>
+                <tr>
+                  <th th:text="#{seedstarter.rows.head.rownum}">Row</th>
+                  <th th:text="#{seedstarter.rows.head.variety}">Variety</th>
+                  <th th:text="#{seedstarter.rows.head.seedsPerCell}">Seeds per cell</th>
+                  <th>
+                    <button type="submit" name="addRow" th:text="#{seedstarter.row.add}">Add row</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+<tr th:each="row,rowStat : *{rows}">
+  <td th:text="${rowStat.count}">1</td>
+  <td>
+    <select th:field="*{rows[__${rowStat.index}__].variety}">
+      <option th:each="var : ${allVarieties}" th:value="${var.id}" th:text="${var.name}">Thymus Thymi</option>
+    </select>
+  </td>
+  <td>
+    <input type="text" th:field="*{rows[__${rowStat.index}__].seedsPerCell}" th:errorclass="fieldError" />
+  </td>
+  <td>
+    <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedstarter.row.remove}">Remove row</button>
+  </td>
+</tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="submit">
+            <button type="submit" name="save" th:text="#{seedstarter.create}">Add Seed Starter</button>
+          </div>
+
+        </fieldset>
+
+      </form>
+
+    </div>
+
+  </body>
+</html>

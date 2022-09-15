@@ -1,0 +1,15 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean03_01}" th:action="'/url'">
+   <input type="checkbox" th:field="*{nullBool}" />
+   <input type="checkbox" th:field="*{notNullTrue}" />
+   <input type="checkbox" th:field="*{notNullFalse}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <input type="hidden" name="_nullBool" value="on" /><input type="checkbox" id="nullBool1" name="nullBool" value="true" />
+   <input type="hidden" name="_notNullTrue" value="on" /><input type="checkbox" id="notNullTrue1" name="notNullTrue" value="true" checked="checked" />
+   <input type="hidden" name="_notNullFalse" value="on" /><input type="checkbox" id="notNullFalse1" name="notNullFalse" value="true" />
+</form>

@@ -1,0 +1,34 @@
+%EXTENDS conversion3.common
+# ------------------------------------------------------------
+%CONTEXT
+obj = conversion3Obj1
+obj2 = conversion3Obj2
+# ------------------------------------------------------------
+%INPUT
+<p>The date of this object is <span th:text="*{obj.date}">somedate</span></p>
+<p>The date of the second, not bound object is <span th:text="*{obj2.date}">somedate</span></p>
+<p>The formatted date of this object is <span th:text="*{{obj.date}}">somedate</span></p>
+<p>The formatted date of the second, not bound object is <span th:text="*{{obj2.date}}">somedate</span></p>
+<form th:object="${obj}">
+  <p>The date of this object is <span th:text="*{date}">somedate</span></p>
+  <p>The formatted date of this object is <span th:text="*{{date}}">somedate</span></p>
+  <input type="text" th:field="*{id}" />
+  <input type="text" th:field="*{age}" />
+  <input type="text" th:field="*{name}" />
+  <input type="text" th:field="*{date}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<p>The date of this object is <span>Tue May 23 00:00:00 2006</span></p>
+<p>The date of the second, not bound object is <span>Mon Apr 30 00:00:00 1990</span></p>
+<p>The formatted date of this object is <span>2006-05-23</span></p>
+<p>The formatted date of the second, not bound object is <span>1990-04-30</span></p>
+<form>
+  <p>The date of this object is <span>Tue May 23 00:00:00 2006</span></p>
+  <p>The formatted date of this object is <span>2006-05-23</span></p>
+  <input type="text" id="id" name="id" value="12,345" />
+  <input type="text" id="age" name="age" value="9.876.543" />
+  <input type="text" id="name" name="name" value="Matusalem" />
+  <input type="text" id="date" name="date" value="2006-05-23" />
+</form>
+

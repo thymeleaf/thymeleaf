@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+
+  <body>
+
+    <table id="content">
+      <thead>
+        <tr>
+          <th>Album ID</th>
+          <th>Album Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="a : ${albums}">
+          <td th:text="${a.id}">...</td>
+          <td th:text="${a.name}">...</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </body>
+
+</html>

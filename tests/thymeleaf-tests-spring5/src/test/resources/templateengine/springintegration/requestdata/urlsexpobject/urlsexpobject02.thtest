@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%MESSAGES
+msg.knowmore=Click <a href="{0}">here</a> if you want to know more.
+# ------------------------------------------------------------
+%INPUT
+<p th:with="morelink=@{/detail/more}"
+   th:utext="#{msg.knowmore(${#requestdatavalues.url(morelink)})}">
+# ------------------------------------------------------------
+%OUTPUT
+<p>Click <a href="{/testing/detail/more}">here</a> if you want to know more.

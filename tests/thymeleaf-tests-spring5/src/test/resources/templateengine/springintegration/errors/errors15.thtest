@@ -1,0 +1,58 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+bindingError01 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name has to be < than \\'aa\\''}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : null,\
+                    'message' : 'Name has to be >= than \\'ab\\''}
+
+bindingError03 = #{ 'binding' : 'formBean01_02',\
+                    'field' : 'name',\
+                    'message' : 'Name is not correctly spelled'}
+
+bindingError04 = #{ 'binding' : 'formBean01_02',\
+                    'field' : null,\
+                    'message' : 'Something is wrong with this form'}
+
+bindingErrors = { bindingError01, bindingError02, bindingError03, bindingError04 }
+# ------------------------------------------------------------
+%INPUT
+<form action="#" th:action="@{/process}" th:object="${formBean01_02}" method="post">
+
+<div th:errors="*"></div>
+<div th:errors="global"></div>
+<div th:errors="*{*}"></div>
+<div th:errors="*{global}"></div>
+
+  <fieldset>
+
+
+    <div>
+      Name: <input type="text" th:field="*{name}" />
+    </div>
+    
+  </fieldset>
+      
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/process" method="post">
+
+<div>Name is not correctly spelled<br />Something is wrong with this form</div>
+<div>Something is wrong with this form</div>
+<div>Name is not correctly spelled<br />Something is wrong with this form</div>
+<div>Something is wrong with this form</div>
+
+  <fieldset>
+      
+
+    <div>
+      Name: <input type="text" id="name" name="name" value="Jack Apricot" />
+    </div>
+    
+  </fieldset>
+      
+</form>

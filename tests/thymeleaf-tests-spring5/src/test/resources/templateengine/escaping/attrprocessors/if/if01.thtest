@@ -1,0 +1,39 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+user = #{ 'age': 24 }
+# ------------------------------------------------------------
+%INPUT
+Text before
+<div th:if="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#97;&#103;&#101;&#32;&gt;&#32;&#50;&#52;&rbrace;">
+    Bigger
+</div>
+<div th:if="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#97;&#103;&#101;&rbrace;&#32;&gt;&#32;&#50;&#52;">
+    Bigger
+</div>
+<div th:if="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#97;&#103;&#101;&rbrace;&#32;&gt;&#32;&#50;&#52;&period;&#48;">
+    Bigger
+</div>
+<div th:if="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#97;&#103;&#101;&#32;&gt;&equals;&#32;&#50;&#52;&rbrace;">
+    Or equal
+</div>
+<div th:if="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#97;&#103;&#101;&rbrace;&#32;&gt;&equals;&#32;&#50;&#52;">
+    Or equal
+</div>
+<div th:if="&dollar;&lbrace;&#117;&#115;&#101;&#114;&period;&#97;&#103;&#101;&rbrace;&#32;&gt;&equals;&#32;&#50;&#52;&period;&#48;">
+    Or equal
+</div>
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+<div> 
+    Or equal
+</div>
+<div> 
+    Or equal
+</div>
+<div> 
+    Or equal
+</div>
+Text after 

@@ -1,0 +1,14 @@
+%EXTENDS conversion3.common
+# ------------------------------------------------------------
+%CONTEXT
+obj = conversion3Obj1
+binding = 'obj'
+objs = { conversion3Obj2 }
+num = @java.lang.Long@valueOf(123456789)
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{/something(param0=${{obj.date}},param1=${{num}})}">...</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/something?param0=2006-05-23&amp;param1=123,456,789">...</a>
+
