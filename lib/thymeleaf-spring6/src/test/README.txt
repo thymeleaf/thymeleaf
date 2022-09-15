@@ -1,1 +1,1 @@
-Tests for this module live in the /tests/thymeleaf-spring6-tests module
+Tests for this module live in the /tests/thymeleaf-tests-spring6 module

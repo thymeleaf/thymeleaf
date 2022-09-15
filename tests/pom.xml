@@ -33,9 +33,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>thymeleaf-tests-parent</artifactId>
+  <artifactId>thymeleaf-tests</artifactId>
   <packaging>pom</packaging>
-  <name>thymeleaf tests parent</name>
+  <name>thymeleaf tests</name>
 
   <build>
 
@@ -62,9 +62,9 @@
   </build>
 
   <modules>
-    <module>thymeleaf-tests</module>
-<!--    <module>thymeleaf-spring5-tests</module>-->
-    <module>thymeleaf-spring6-tests</module>
+    <module>thymeleaf-tests-core</module>
+<!--    <module>thymeleaf-tests-spring5</module>-->
+    <module>thymeleaf-tests-spring6</module>
   </modules>
 
 </project>

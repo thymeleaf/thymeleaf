@@ -1,1 +1,1 @@
-Tests for this module live in the /tests/thymeleaf-tests module
+Tests for this module live in the /tests/thymeleaf-tests-core module
