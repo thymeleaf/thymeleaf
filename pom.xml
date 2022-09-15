@@ -141,7 +141,7 @@
     <ognl.version>3.2.21</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
-    <spring-framework5.version>5.3.18</spring-framework5.version>
+    <spring-framework5.version>5.3.23</spring-framework5.version>
     <spring-framework6.version>6.0.0-SNAPSHOT</spring-framework6.version>
     <spring-security5.version>5.6.2</spring-security5.version>
     <spring-security6.version>6.0.0-SNAPSHOT</spring-security6.version>
