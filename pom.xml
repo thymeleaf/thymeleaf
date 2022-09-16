@@ -222,6 +222,7 @@
         <groupId>org.thymeleaf.examples</groupId>
         <artifactId>thymeleaf-examples</artifactId>
         <version>${thymeleaf.version}</version>
+        <type>pom</type>
       </dependency>
 
       <dependency>

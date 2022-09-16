@@ -26,6 +26,7 @@
             <useProjectArtifact>false</useProjectArtifact>
             <excludes>
               <exclude>org.thymeleaf:*</exclude>
+              <exclude>org.thymeleaf.examples:*</exclude>
             </excludes>
           </dependencySet>
         </dependencySets>
@@ -89,6 +90,7 @@
             <excludes>
               <exclude>org.thymeleaf:*</exclude>
               <exclude>org.thymeleaf.testing:*</exclude>
+              <exclude>org.thymeleaf.examples:*</exclude>
             </excludes>
           </dependencySet>
         </dependencySets>

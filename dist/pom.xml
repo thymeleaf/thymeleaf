@@ -123,6 +123,7 @@
     <dependency>
       <groupId>org.thymeleaf.examples</groupId>
       <artifactId>thymeleaf-examples</artifactId>
+      <type>pom</type>
     </dependency>
 
   </dependencies>
