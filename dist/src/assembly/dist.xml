@@ -26,6 +26,7 @@
             <useProjectArtifact>false</useProjectArtifact>
             <excludes>
               <exclude>org.thymeleaf:*</exclude>
+              <exclude>org.thymeleaf.testing:*</exclude>
               <exclude>org.thymeleaf.examples:*</exclude>
             </excludes>
           </dependencySet>
@@ -85,7 +86,7 @@
         <dependencySets>
           <dependencySet>
             <outputDirectory>/testing/lib</outputDirectory>
-            <scope>runtime</scope>
+            <scope>test</scope>
             <useProjectArtifact>false</useProjectArtifact>
             <excludes>
               <exclude>org.thymeleaf:*</exclude>

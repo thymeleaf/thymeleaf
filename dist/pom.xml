@@ -110,14 +110,17 @@
     <dependency>
       <groupId>org.thymeleaf.testing</groupId>
       <artifactId>thymeleaf-testing</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf.testing</groupId>
       <artifactId>thymeleaf-testing-spring5</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf.testing</groupId>
       <artifactId>thymeleaf-testing-spring6</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
