@@ -75,7 +75,7 @@
       <dependency>
         <groupId>org.springframework.webflow</groupId>
         <artifactId>spring-webflow</artifactId>
-        <version>${spring-webflow.version}</version>
+        <version>${spring-webflow2.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

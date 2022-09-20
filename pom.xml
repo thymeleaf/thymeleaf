@@ -145,7 +145,8 @@
     <spring-framework6.version>6.0.0-SNAPSHOT</spring-framework6.version>
     <spring-security5.version>5.6.2</spring-security5.version>
     <spring-security6.version>6.0.0-SNAPSHOT</spring-security6.version>
-    <spring-webflow.version>2.5.1.RELEASE</spring-webflow.version>
+    <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>
+    <spring-webflow3.version>3.0.0-SNAPSHOT</spring-webflow3.version>
     <jackson.version>2.13.2.1</jackson.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-io.version>2.11.0</commons-io.version>

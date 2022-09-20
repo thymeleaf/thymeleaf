@@ -80,6 +80,11 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>spring-webflow</artifactId>
+        <version>${spring-webflow3.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
