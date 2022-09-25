@@ -1,0 +1,14 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%INPUT
+Something before
+<some sec:authorize="isAuthenticated()">
+auths only!
+</some>
+Something after
+# ------------------------------------------------------------
+%OUTPUT
+Something before
+
+Something after
+

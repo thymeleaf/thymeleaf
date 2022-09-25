@@ -1,0 +1,27 @@
+%EXTENDS admin.common
+# ------------------------------------------------------------
+%CONTEXT
+j_username = 'bob'
+j_password = 'demo'
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Thymeleafexamples - Spring security</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="/testing/css/main.css" />
+    </head>
+    <body>
+        <div class="logout">
+            Logged user: <span>bob</span> |
+            Roles: <span>[ROLE_USER]</span> |
+            <a href="/testing/j_spring_security_logout">Logout</a>
+        </div>
+        <h1>Thymeleafexamples - Spring security</h1>
+        <p>This is the <b>administration</b> zone</p>
+        <p>Only authenticated users with role <b>ADMIN</b> are allowed to see this page.</p>
+        <p><a href="/testing/index.html">Back to home page</a></p>
+    </body>
+</html>
