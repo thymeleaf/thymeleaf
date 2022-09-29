@@ -41,6 +41,7 @@ import org.thymeleaf.expression.Numbers;
 import org.thymeleaf.expression.Objects;
 import org.thymeleaf.expression.Sets;
 import org.thymeleaf.expression.Strings;
+import org.thymeleaf.expression.Temporals;
 import org.thymeleaf.expression.Uris;
 
 /**
@@ -79,6 +80,11 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
     public static final String CONVERSIONS_EXPRESSION_OBJECT_NAME = "conversions";
     public static final String URIS_EXPRESSION_OBJECT_NAME = "uris";
 
+    /**
+     * @since 3.1.0
+     */
+    public static final String TEMPORALS_EXPRESSION_OBJECT_NAME = "temporals";
+
     public static final String CALENDARS_EXPRESSION_OBJECT_NAME = "calendars";
     public static final String DATES_EXPRESSION_OBJECT_NAME = "dates";
     public static final String BOOLS_EXPRESSION_OBJECT_NAME = "bools";
@@ -109,6 +115,7 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
                             LOCALE_EXPRESSION_OBJECT_NAME,
                             CONVERSIONS_EXPRESSION_OBJECT_NAME,
                             URIS_EXPRESSION_OBJECT_NAME,
+                            TEMPORALS_EXPRESSION_OBJECT_NAME,
                             CALENDARS_EXPRESSION_OBJECT_NAME,
                             DATES_EXPRESSION_OBJECT_NAME,
                             BOOLS_EXPRESSION_OBJECT_NAME,
@@ -212,6 +219,9 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
         }
         if (CALENDARS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return new Calendars(context.getLocale());
+        }
+        if (TEMPORALS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            return new Temporals(context.getLocale());
         }
         if (DATES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return new Dates(context.getLocale());
