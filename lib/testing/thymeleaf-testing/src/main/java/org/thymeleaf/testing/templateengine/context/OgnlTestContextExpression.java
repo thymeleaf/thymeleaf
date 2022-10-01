@@ -38,6 +38,7 @@ import org.thymeleaf.expression.Numbers;
 import org.thymeleaf.expression.Objects;
 import org.thymeleaf.expression.Sets;
 import org.thymeleaf.expression.Strings;
+import org.thymeleaf.expression.Temporals;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
 
@@ -92,6 +93,7 @@ public final class OgnlTestContextExpression implements ITestContextExpression {
             objects = new HashMap<String, Object>(30);
 
             if (locale != null) {
+                objects.put(StandardExpressionObjectFactory.TEMPORALS_EXPRESSION_OBJECT_NAME, new Temporals(locale));
                 objects.put(StandardExpressionObjectFactory.CALENDARS_EXPRESSION_OBJECT_NAME, new Calendars(locale));
                 objects.put(StandardExpressionObjectFactory.DATES_EXPRESSION_OBJECT_NAME, new Dates(locale));
                 objects.put(StandardExpressionObjectFactory.NUMBERS_EXPRESSION_OBJECT_NAME, new Numbers(locale));

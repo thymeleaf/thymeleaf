@@ -1,0 +1,7 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+
+temp01 = #temporals.create(1492,10,12)
+temp02 = #temporals.create(1492,10,12,10,35)
+temp03 = #temporals.create(1492,10,12,10,35,23,455000000)

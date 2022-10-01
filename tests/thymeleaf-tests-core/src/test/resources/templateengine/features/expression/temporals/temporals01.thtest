@@ -1,0 +1,12 @@
+%EXTENDS temporals.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#temporals.format(temp01,'yyyy MM dd HH:mm:ss:SS')}">...</p>
+<p th:text="${#temporals.format(temp02,'yyyy MM dd HH:mm:ss:SS')}">...</p>
+<p th:text="${#temporals.format(temp03,'yyyy MM dd HH:mm:ss:SS')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>1492 10 12 00:00:00:00</p>
+<p>1492 10 12 10:35:00:00</p>
+<p>1492 10 12 10:35:23:45</p>
+

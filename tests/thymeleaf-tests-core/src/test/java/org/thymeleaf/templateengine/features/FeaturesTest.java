@@ -94,6 +94,19 @@ public class FeaturesTest {
 
     @ParameterizedTest
     @ArgumentsSource(ThrottleArgumentsProvider.class)
+    public void testExpressionTemporals(final int throttleStep) throws Exception {
+
+        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
+        executor.setThrottleStep(throttleStep);
+        executor.execute("classpath:templateengine/features/expression/temporals");
+
+        Assertions.assertTrue(executor.isAllOK());
+
+    }
+
+
+    @ParameterizedTest
+    @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testMessages(final int throttleStep) throws Exception {
 
         final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
