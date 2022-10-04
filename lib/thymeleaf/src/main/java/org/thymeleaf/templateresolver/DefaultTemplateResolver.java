@@ -100,8 +100,7 @@ public class DefaultTemplateResolver extends AbstractTemplateResolver {
      */
     public final void setTemplateMode(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Cannot set a null template mode value");
-        // We re-parse the specified template mode so that we make sure we get rid of deprecated values
-        this.templateMode = TemplateMode.parse(templateMode.toString());
+        this.templateMode = templateMode;
     }
 
 

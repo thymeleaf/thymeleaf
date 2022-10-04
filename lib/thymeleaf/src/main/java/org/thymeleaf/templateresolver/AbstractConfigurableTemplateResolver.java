@@ -256,8 +256,8 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   this template resolver.
      * </p>
      * <p>
-     *   If <i>template mode patterns</i> (see {@link #setXhtmlTemplateModePatterns(Set)}, 
-     *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
+     *   If <i>template mode patterns</i> (see {@link #setHtmlTemplateModePatterns(Set)},
+     *   {@link #setXmlTemplateModePatterns(Set)}, etc.) are also set, they have higher
      *   priority than the template mode set here (this would act as a <i>default</i>).
      * </p>
      * <p>
@@ -280,8 +280,8 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   Sets the template mode to be applied to templates resolved by this resolver.
      * </p>
      * <p>
-     *   If <i>template mode patterns</i> (see {@link #setXhtmlTemplateModePatterns(Set)},
-     *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
+     *   If <i>template mode patterns</i> (see {@link #setHtmlTemplateModePatterns(Set)},
+     *   {@link #setXmlTemplateModePatterns(Set)}, etc.) are also set, they have higher
      *   priority than the template mode set here (this would act as a <i>default</i>).
      * </p>
      * <p>
@@ -296,8 +296,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      */
     public final void setTemplateMode(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Cannot set a null template mode value");
-        // We re-parse the specified template mode so that we make sure we get rid of deprecated values
-        this.templateMode = TemplateMode.parse(templateMode.toString());
+        this.templateMode = templateMode;
     }
 
 
@@ -309,8 +308,8 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   Allowed templates modes are defined by the {@link TemplateMode} class.
      * </p>
      * <p>
-     *   If <i>template mode patterns</i> (see {@link #setXhtmlTemplateModePatterns(Set)},
-     *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
+     *   If <i>template mode patterns</i> (see {@link #setHtmlTemplateModePatterns(Set)},
+     *   {@link #setXmlTemplateModePatterns(Set)}, etc.) are also set, they have higher
      *   priority than the template mode set here (this would act as a <i>default</i>).
      * </p>
      * <p>
@@ -798,305 +797,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
 
 
 
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>pattern spec</i> specified for establishing the <strong>deprecated</strong> VALIDXML (validated XML)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#XML} template mode instead.
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final PatternSpec getValidXmlTemplateModePatternSpec() {
-        return this.xmlTemplateModePatternSpec;
-    }
-    
-    /**
-     * <p>
-     *   Returns the <i>patterns</i> specified for establishing the <strong>deprecated</strong> VALIDXML (validated XML)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#XML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getValidXmlTemplateModePatternSpec()}.getPatterns()
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final Set<String> getValidXmlTemplateModePatterns() {
-        return this.xmlTemplateModePatternSpec.getPatterns();
-    }
 
-    /**
-     * <p>
-     *   Sets the new <i>patterns</i> to be applied for establishing the <strong>deprecated</strong> VALIDXML (validated XML)
-     *   template mode as Strings. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#XML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getValidXmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
-     * </p>
-     * 
-     * @param newValidXmlTemplateModePatterns the new patterns
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final void setValidXmlTemplateModePatterns(final Set<String> newValidXmlTemplateModePatterns) {
-        this.xmlTemplateModePatternSpec.setPatterns(newValidXmlTemplateModePatterns);
-    }
-    
-    
-    
-
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>pattern spec</i> specified for establishing the <strong>deprecated</strong> XHTML
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final PatternSpec getXhtmlTemplateModePatternSpec() {
-        return this.htmlTemplateModePatternSpec;
-    }
-    
-    /**
-     * <p>
-     *   Returns the <i>patterns</i> specified for establishing the <strong>deprecated</strong> XHTML
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getXhtmlTemplateModePatternSpec()}.getPatterns()
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final Set<String> getXhtmlTemplateModePatterns() {
-        return this.htmlTemplateModePatternSpec.getPatterns();
-    }
-
-    /**
-     * <p>
-     *   Sets the new <i>patterns</i> to be applied for establishing the <strong>deprecated</strong> XHTML
-     *   template mode as Strings. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getXhtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
-     * </p>
-     * 
-     * @param newXhtmlTemplateModePatterns the new patterns
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final void setXhtmlTemplateModePatterns(final Set<String> newXhtmlTemplateModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newXhtmlTemplateModePatterns);
-    }
-    
-    
-    
-
-    
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>pattern spec</i> specified for establishing the <strong>deprecated</strong> VALIDXHTML (validated XHTML)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final PatternSpec getValidXhtmlTemplateModePatternSpec() {
-        return this.htmlTemplateModePatternSpec;
-    }
-    
-    /**
-     * <p>
-     *   Returns the <i>patterns</i> specified for establishing the <strong>deprecated</strong> VALIDXHTML (validated XHTML)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getValidXhtmlTemplateModePatternSpec()}.getPatterns()
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final Set<String> getValidXhtmlTemplateModePatterns() {
-        return this.htmlTemplateModePatternSpec.getPatterns();
-    }
-
-    /**
-     * <p>
-     *   Sets the new <i>patterns</i> to be applied for establishing the <strong>deprecated</strong> VALIDXHTML (validated XHTML)
-     *   template mode as Strings. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getValidXhtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
-     * </p>
-     * 
-     * @param newValidXhtmlTemplateModePatterns the new patterns
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final void setValidXhtmlTemplateModePatterns(final Set<String> newValidXhtmlTemplateModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newValidXhtmlTemplateModePatterns);
-    }
-    
-    
-    
-    
-    
-
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>pattern spec</i> specified for establishing the <strong>deprecated</strong> LEGACYHTML5 (non-XML-formed HTML5 that needs HTML-to-XML conversion)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final PatternSpec getLegacyHtml5TemplateModePatternSpec() {
-        return this.htmlTemplateModePatternSpec;
-    }
-    
-    /**
-     * <p>
-     *   Returns the <i>patterns</i> specified for establishing the <strong>deprecated</strong> LEGACYHTML5 (non-XML-formed HTML5 that needs HTML-to-XML conversion)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getLegacyHtml5TemplateModePatternSpec()}.getPatterns()
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final Set<String> getLegacyHtml5TemplateModePatterns() {
-        return this.htmlTemplateModePatternSpec.getPatterns();
-    }
-
-    /**
-     * <p>
-     *   Sets the new <i>patterns</i> to be applied for establishing the <strong>deprecated</strong> LEGACYHTML5 (non-XML-formed HTML5 that needs HTML-to-XML conversion)
-     *   template mode as Strings. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getLegacyHtml5TemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
-     * </p>
-     * 
-     * @param newLegacyHtml5TemplateModePatterns the new patterns
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final void setLegacyHtml5TemplateModePatterns(final Set<String> newLegacyHtml5TemplateModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newLegacyHtml5TemplateModePatterns);
-    }
-    
-    
-    
-
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>pattern spec</i> specified for establishing the <strong>deprecated</strong> HTML5 (correct, XML-formed HTML5)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final PatternSpec getHtml5TemplateModePatternSpec() {
-        return this.htmlTemplateModePatternSpec;
-    }
-    
-    /**
-     * <p>
-     *   Returns the <i>patterns</i> specified for establishing the <strong>deprecated</strong> HTML5 (correct, XML-formed HTML5)
-     *   template mode to resolved templates. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getHtml5TemplateModePatternSpec()}.getPatterns()
-     * </p>
-     * 
-     * @return the pattern spec
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final Set<String> getHtml5TemplateModePatterns() {
-        return this.htmlTemplateModePatternSpec.getPatterns();
-    }
-
-    /**
-     * <p>
-     *   Sets the new <i>patterns</i> to be applied for establishing the <strong>deprecated</strong> HTML5 (correct, XML-formed HTML5)
-     *   template mode as Strings. Note that, due to the deprecation of this template mode, these patterns
-     *   will be applied to the {@link TemplateMode#HTML} template mode instead.
-     * </p>
-     * <p>
-     *   This is a convenience method equivalent to {@link #getHtml5TemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
-     * </p>
-     * 
-     * @param newHtml5TemplateModePatterns the new patterns
-     * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
-     *             Will be removed in 3.1
-     */
-    @Deprecated
-    public final void setHtml5TemplateModePatterns(final Set<String> newHtml5TemplateModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newHtml5TemplateModePatterns);
-    }
-    
-    
-    
-    
-    
     /**
      * <p>
      *   Returns the <i>pattern spec</i> specified for establishing which
