@@ -21,7 +21,6 @@ package org.thymeleaf.standard.inline;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.TemplateEngine;
 
 /**
  * Enum specifying all the available inline modes (note the really available ones depend on the host template mode).
@@ -65,39 +64,8 @@ public enum StandardInlineMode {
         if ("CSS".equalsIgnoreCase(mode)) {
             return CSS;
         }
-        if (checkDartInline(mode)) {
-            return JAVASCRIPT;
-        }
         throw new IllegalArgumentException("Unrecognized inline mode: " + mode);
     }
 
-
-
-
-    /**
-     * Check for the pre-3.0 "dart" inlining mode, which was removed when inlining modes were matched to template modes,
-     * due to the inexistence of a (unneeded) "DART" template mode.
-     *
-     * NOTE this method is expressed here separately only in order to mark it as DEPRECATED and make it easily locatable
-     *      as such.
-     *
-     * @param inliner the name of the inliner we are asking for
-     * @return StandardJavaScriptInliner.INSTANCE if the inliner being asked for is "dart", null otherwise
-     * @deprecated in 3.0.0, "javascript" inlining should be used instead (since 3.0.0 all inlining modes refer to
-     *             template modes, and there is no "DART" template mode). Support for this default operation will be
-     *             removed in 3.1
-     */
-    @Deprecated
-    private static boolean checkDartInline(final String inliner) {
-        if ("DART".equalsIgnoreCase(inliner)) {
-            LOGGER.warn(
-                    "[THYMELEAF][{}] Found inline call with value \"dart\", which has been deprecated as no " +
-                    "corresponding template mode exists for it. Inline will be redirected to \"javascript\", which " +
-                    "should now be used instead. This redirection will be removed in future versions of Thymeleaf.",
-                    TemplateEngine.threadIndex());
-            return true;
-        }
-        return false;
-    }
 
 }
