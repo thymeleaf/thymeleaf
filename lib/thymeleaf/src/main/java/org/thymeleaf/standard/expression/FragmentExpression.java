@@ -399,27 +399,6 @@ public final class FragmentExpression extends SimpleExpression {
     }
 
 
-    /**
-     * <p>
-     *   Create the executed fragment expression.
-     * </p>
-     *
-     * @param context the context
-     * @param expression the expresson
-     * @param expContext the expression context
-     * @return the executed fragment expression
-     *
-     * @deprecated Deprecated in 3.0.9. Use the version without "expContext" itself, as all FragmentExpressions should
-     *             be executed in RESTRICTED mode (no request parameter use allowed).
-     */
-    @Deprecated
-    public static ExecutedFragmentExpression createExecutedFragmentExpression(
-            final IExpressionContext context,
-            final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
-        return doCreateExecutedFragmentExpression(context, expression, expContext);
-    }
-
-
     public static ExecutedFragmentExpression createExecutedFragmentExpression(
             final IExpressionContext context, final FragmentExpression expression) {
         // All FragmentExpressions will be executed as RESTRICTED (no URL parameters allowed)
