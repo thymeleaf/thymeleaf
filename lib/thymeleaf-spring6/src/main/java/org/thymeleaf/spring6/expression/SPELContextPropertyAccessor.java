@@ -25,9 +25,7 @@ import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * <p>
@@ -97,21 +95,6 @@ public final class SPELContextPropertyAccessor implements PropertyAccessor {
 
         try {
 
-            /*
-             * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
-             * because there already are specific expression objects for the most important of them, which should
-             * be used instead: #locale, #httpServletRequest, #httpSession, etc.
-             * The context should just be used as a map, without exposure of its more-internal methods...
-             */
-
-            // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
-            if ("execInfo".equals(name)) { // Quick check to avoid deprecated method call
-                final Object execInfoResult = checkExecInfo(name, evaluationContext);
-                if (execInfoResult != null) {
-                    return new TypedValue(execInfoResult);
-                }
-            }
-
             final IContext context = (IContext) target;
             return new TypedValue(context.getVariable(name));
 
@@ -125,46 +108,6 @@ public final class SPELContextPropertyAccessor implements PropertyAccessor {
 
     }
 
-
-
-
-    /**
-     * Translation from 'execInfo' context variable (${execInfo}) to 'execInfo' expression object (${#execInfo}), needed
-     * since 3.0.0.
-     *
-     * Note this is expressed as a separate method in order to mark this as deprecated and make it easily locatable.
-     *
-     * @param propertyName the name of the property being accessed (we are looking for 'execInfo').
-     * @param context the expression context, which should contain the expression objects.
-     * @deprecated created (and deprecated) in 3.0.0 in order to support automatic conversion of calls to the 'execInfo'
-     *             context variable (${execInfo}) into the 'execInfo' expression object (${#execInfo}), which is its
-     *             new only valid form. This method, along with the infrastructure for execInfo conversion in
-     *             StandardExpressionUtils#mightNeedExpressionObjects(...) will be removed in 3.1.
-     */
-    @Deprecated
-    static Object checkExecInfo(final String propertyName, final EvaluationContext context) {
-        if ("execInfo".equals(propertyName)) {
-            if (!(context instanceof IThymeleafEvaluationContext)) {
-                throw new TemplateProcessingException(
-                        "Found Thymeleaf Standard Expression containing a call to the context variable " +
-                        "\"execInfo\" (e.g. \"${execInfo.templateName}\"), which has been deprecated. The " +
-                        "Execution Info should be now accessed as an expression object instead " +
-                        "(e.g. \"${#execInfo.templateName}\"). Deprecated use is still allowed (will be removed " +
-                        "in future versions of Thymeleaf) when the SpringEL EvaluationContext implements the " +
-                        IThymeleafEvaluationContext.class + " interface, but the current evaluation context of " +
-                        "class " + context.getClass().getName() + " DOES NOT implement such interface.");
-            }
-            LOGGER.warn(
-                    "[THYMELEAF][{}] Found Thymeleaf Standard Expression containing a call to the context variable " +
-                    "\"execInfo\" (e.g. \"${execInfo.templateName}\"), which has been deprecated. The " +
-                    "Execution Info should be now accessed as an expression object instead " +
-                    "(e.g. \"${#execInfo.templateName}\"). Deprecated use is still allowed, but will be removed " +
-                    "in future versions of Thymeleaf.",
-                    TemplateEngine.threadIndex());
-            return ((IThymeleafEvaluationContext)context).getExpressionObjects().getObject("execInfo");
-        }
-        return null;
-    }
 
 
 

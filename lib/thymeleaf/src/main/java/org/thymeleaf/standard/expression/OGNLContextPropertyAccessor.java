@@ -28,7 +28,6 @@ import ognl.PropertyAccessor;
 import ognl.enhance.UnsupportedCompilationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 
 /**
@@ -83,12 +82,6 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
 
         final String propertyName = (name == null? null : name.toString());
 
-        // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
-        final Object execInfoResult = checkExecInfo(propertyName, ognlContext);
-        if (execInfoResult != null) {
-            return execInfoResult;
-        }
-
         /*
          * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
          * because there already are specific expression objects for the most important of them, which should
@@ -98,37 +91,6 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
         final IContext context = (IContext) target;
         return context.getVariable(propertyName);
 
-    }
-
-
-
-
-    /**
-     * Translation from 'execInfo' context variable (${execInfo}) to 'execInfo' expression object (${#execInfo}), needed
-     * since 3.0.0.
-     *
-     * Note this is expressed as a separate method in order to mark this as deprecated and make it easily locatable.
-     *
-     * @param propertyName the name of the property being accessed (we are looking for 'execInfo').
-     * @param context the expression context, which should contain the expression objects.
-     * @deprecated created (and deprecated) in 3.0.0 in order to support automatic conversion of calls to the 'execInfo'
-     *             context variable (${execInfo}) into the 'execInfo' expression object (${#execInfo}), which is its
-     *             new only valid form. This method, along with the infrastructure for execInfo conversion in
-     *             StandardExpressionUtils#mightNeedExpressionObjects(...) will be removed in 3.1.
-     */
-    @Deprecated
-    private static Object checkExecInfo(final String propertyName, final Map<String,Object> context) {
-        if ("execInfo".equals(propertyName)) {
-            LOGGER.warn(
-                    "[THYMELEAF][{}] Found Thymeleaf Standard Expression containing a call to the context variable " +
-                    "\"execInfo\" (e.g. \"${execInfo.templateName}\"), which has been deprecated. The " +
-                    "Execution Info should be now accessed as an expression object instead " +
-                    "(e.g. \"${#execInfo.templateName}\"). Deprecated use is still allowed, but will be removed " +
-                    "in future versions of Thymeleaf.",
-                    TemplateEngine.threadIndex());
-            return context.get("execInfo");
-        }
-        return null;
     }
 
 

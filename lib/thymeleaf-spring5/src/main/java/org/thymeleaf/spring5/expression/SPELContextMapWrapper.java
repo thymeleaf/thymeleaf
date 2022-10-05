@@ -111,21 +111,6 @@ public final class SPELContextMapWrapper implements Map {
             throw new TemplateProcessingException("Cannot read property on null target");
         }
 
-        /*
-         * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
-         * because there already are specific expression objects for the most important of them, which should
-         * be used instead: #locale, #httpServletRequest, #httpSession, etc.
-         * The context should just be used as a map, without exposure of its more-internal methods...
-         */
-
-        // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
-        if ("execInfo".equals(key)) { // Quick check to avoid deprecated method call
-            final Object execInfoResult = SPELContextPropertyAccessor.checkExecInfo(key.toString(), this.evaluationContext);
-            if (execInfoResult != null) {
-                return execInfoResult;
-            }
-        }
-
         return this.context.getVariable(key == null? null : key.toString());
 
     }
