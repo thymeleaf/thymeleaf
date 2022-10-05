@@ -947,49 +947,6 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * @param template the template (normally the template name, except for String templates).
      * @param prefix the prefix to be applied.
      * @param suffix the suffix to be applied.
-     * @param templateAliases the template aliases map.
-     * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
-     * @return the resource name that should be used for resolving
-     * @deprecated in 3.0.6. Use {@link #computeResourceName(IEngineConfiguration, String, String, String, String, boolean, Map, Map)} instead.
-     *             Will be removed in Thymeleaf 3.2.
-     */
-    @Deprecated
-    protected String computeResourceName(
-            final IEngineConfiguration configuration, final String ownerTemplate, final String template,
-            final String prefix, final String suffix, final Map<String, String> templateAliases,
-            final Map<String, Object> templateResolutionAttributes) {
-
-        return computeResourceName(
-                configuration, ownerTemplate, template, prefix, suffix, false, templateAliases,
-                templateResolutionAttributes);
-
-    }
-
-
-
-
-
-
-    /**
-     * <p>
-     *   Computes the resource name that will be used for resolving, from the template name and other
-     *   parameters configured at this <em>configurable</em> resolver.
-     * </p>
-     * <p>
-     *   This method can be overridden by subclasses that need to modify the standard way in which the
-     *   name of the template resource is computed by default before passing it to the real resource
-     *   resolution mechanism (in method {@link #computeTemplateResource(IEngineConfiguration, String, String, String, String, Map)}
-     * </p>
-     * <p>
-     *   By default, the resource name will be created by first applying the <em>template aliases</em>, and then
-     *   adding <em>prefix</em> and <em>suffix</em> to the specified <em>template</em> (template name).
-     * </p>
-     *
-     * @param configuration the engine configuration in use.
-     * @param ownerTemplate the owner template, if the resource being computed is a fragment. Might be null.
-     * @param template the template (normally the template name, except for String templates).
-     * @param prefix the prefix to be applied.
-     * @param suffix the suffix to be applied.
      * @param forceSuffix whether the suffix should be forced or not.
      * @param templateAliases the template aliases map.
      * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
