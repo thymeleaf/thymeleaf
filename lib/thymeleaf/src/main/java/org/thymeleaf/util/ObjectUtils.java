@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.util;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez
@@ -31,113 +27,16 @@ import java.util.List;
  *
  */
 public final class ObjectUtils {
-    
-    
+
     
     public static <T> T nullSafe(final T target, final T defaultValue) {
         return (target != null? target : defaultValue);
     }
 
 
-    /**
-     * 
-     * @param condition condition
-     * @return the result
-     * @deprecated since 2.1, you should use the
-     *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
-     *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtils}.
-     *            Will be removed in 3.0.
-     */
-    @Deprecated
-    public static boolean evaluateAsBoolean(final Object condition) {
-        return EvaluationUtils.evaluateAsBoolean(condition);
-    }
-
-
-
-
-    /**
-     * 
-     * @param object object
-     * @return the result
-     * @deprecated since 2.1, you should use the
-     *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
-     *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtils}.
-     *            Will be removed in 3.0.
-     */
-    @Deprecated
-    public static BigDecimal evaluateAsNumber(final Object object) {
-        return EvaluationUtils.evaluateAsNumber(object);
-    }
-
-
-
-    /**
-     * 
-     * @param value value
-     * @return the result
-     * @deprecated since 2.1, you should use the
-     *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
-     *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtils}.
-     *            Will be removed in 3.0.
-     */
-    @Deprecated
-    public static List<Object> convertToIterable(final Object value) {
-        return EvaluationUtils.evaluateAsList(value);
-    }
-
-
-
-    /**
-     * 
-     * @param value value
-     * @return the result
-     * @deprecated since 2.1, you should use the
-     *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
-     *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtils}.
-     *            Will be removed in 3.0.
-     */
-    @Deprecated
-    public static List<Object> convertToList(final Object value) {
-        if (value == null) {
-            // This mimics the old behaviour of the deprecated convertToList() method, which is not the same
-            // as the current EvaluationUtils.convertToList() method.
-            return Collections.singletonList(null);
-        }
-        return EvaluationUtils.evaluateAsList(value);
-    }
-
-
-
-
-    /**
-     * 
-     * @param value value
-     * @return the result
-     * @deprecated since 2.1, you should use the
-     *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
-     *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtils}.
-     *            Will be removed in 3.0.
-     */
-    @Deprecated
-    public static Object[] convertToArray(final Object value) {
-        return EvaluationUtils.evaluateAsArray(value);
-    }
-    
-    
-    
-    
-    
     private ObjectUtils() {
         super();
     }
     
-    
 
-    
 }
