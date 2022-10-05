@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.thymeleaf.util.Validate;
 import org.thymeleaf.util.temporal.TemporalArrayUtils;
 import org.thymeleaf.util.temporal.TemporalCreationUtils;
 import org.thymeleaf.util.temporal.TemporalFormattingUtils;
 import org.thymeleaf.util.temporal.TemporalListUtils;
 import org.thymeleaf.util.temporal.TemporalSetUtils;
-import org.thymeleaf.util.Validate;
 
 /**
  * <p>
