@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %CONTEXT
 applicationName = 'Testing App'

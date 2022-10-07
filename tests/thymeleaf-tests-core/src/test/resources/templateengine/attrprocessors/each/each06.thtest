@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %CONTEXT
 map = new java.util.EnumMap(@java.util.concurrent.TimeUnit@class)

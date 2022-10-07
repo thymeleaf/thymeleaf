@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %INPUT
 <p th:text="@{/something(onepar=2314)}">...</p>

@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %CONTEXT
 boundobj = new org.thymeleaf.templateengine.conversion.conversion2.Conversion2Object(#dates.create(1492,10,12))

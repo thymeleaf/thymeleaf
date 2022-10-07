@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %INPUT
 <a th:href="@{/order/details('one parameter'='one value')}">go</a>

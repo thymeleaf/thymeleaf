@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %CONTEXT
 etb = new org.thymeleaf.templateengine.attrprocessors.model.ExceptionThrowingBean()

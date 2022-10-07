@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 %TEMPLATE_MODE[frag] XML
 # ------------------------------------------------------------
 %EXACT_MATCH true

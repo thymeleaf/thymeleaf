@@ -29,24 +29,6 @@ public final class StandardExpressionUtilsTest {
 
 
     @Test
-    public void testMightNeedExpressionObjects() {
-
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("${execInfo}"));
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("${exexecInfo}"));
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("${exexecInfofo}"));
-        Assertions.assertFalse(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad lj"));
-        Assertions.assertFalse(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad\n"));
-        Assertions.assertFalse(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad\nexecInf"));
-        Assertions.assertFalse(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad\naxecInfo\na"));
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad\nexecInfo\na"));
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad#\n"));
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("alasdasd#isad\nexecInf"));
-        Assertions.assertTrue(StandardExpressionUtils.mightNeedExpressionObjects("alasdasdisad\n#axecInfo\na"));
-
-    }
-
-
-    @Test
     public void testcontainsOGNLInstantiationOrStaticOrParam() {
 
         Assertions.assertFalse(StandardExpressionUtils.containsOGNLInstantiationOrStaticOrParam("abcnew"));

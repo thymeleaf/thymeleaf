@@ -217,7 +217,7 @@ Let's see each topic separately.
 A test file is a text file with a name ending in `.thtest` It can look like this:
 
 ```
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------ separator comment -----------
 %CONTEXT
 onevar = 'Goodbye,'

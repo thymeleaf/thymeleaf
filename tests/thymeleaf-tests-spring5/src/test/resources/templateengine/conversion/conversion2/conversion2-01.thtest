@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %CONTEXT
 onedate = new org.thymeleaf.templateengine.conversion.conversion2.Conversion2Date(#dates.create(1492,10,12))

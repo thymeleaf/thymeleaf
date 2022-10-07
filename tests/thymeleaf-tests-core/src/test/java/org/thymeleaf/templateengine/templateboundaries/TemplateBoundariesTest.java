@@ -63,32 +63,4 @@ public class TemplateBoundariesTest {
     }
 
 
-    @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testGTVGHTML5(final int throttleStep) throws Exception {
-
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new TemplateBoundariesDialect()}));
-        executor.setThrottleStep(throttleStep);
-        executor.execute("classpath:templateengine/gtvg_html5");
-
-        Assertions.assertTrue(executor.isAllOK());
-
-    }
-
-
-    @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testGTVGXHTML(final int throttleStep) throws Exception {
-
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new TemplateBoundariesDialect()}));
-        executor.setThrottleStep(throttleStep);
-        executor.execute("classpath:templateengine/gtvg_xhtml");
-
-        Assertions.assertTrue(executor.isAllOK());
-
-    }
-
-    
 }

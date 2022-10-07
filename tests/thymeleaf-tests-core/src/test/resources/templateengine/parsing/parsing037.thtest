@@ -1,4 +1,4 @@
-%TEMPLATE_MODE HTML5
+%TEMPLATE_MODE HTML
 # ------------------------------------------------------------
 %INPUT
 \uFEFFThis contains a BOM (Byte Order Mark) Symbol, which should be output since 3.0
