@@ -106,18 +106,6 @@ public class AttrProcessorsTest {
 
     @ParameterizedTest
     @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testSubstituteby(final int throttleStep) throws Exception {
-
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
-        executor.execute("classpath:templateengine/attrprocessors/substituteby");
-
-        Assertions.assertTrue(executor.isAllOK());
-
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testReplace(final int throttleStep) throws Exception {
 
         final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();

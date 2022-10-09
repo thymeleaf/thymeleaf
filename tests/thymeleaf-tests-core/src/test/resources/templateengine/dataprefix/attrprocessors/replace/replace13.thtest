@@ -3,13 +3,13 @@
 %INPUT
 <div data-th-with="index=0">
   <p>This is some text</p>
-  <div data-th-substituteby="frag :: f">...</div>
+  <div data-th-replace="frag :: f">...</div>
 </div>
 %INPUT[frag]
 <div data-th-fragment="f" class="a">
   <div data-th-with="index=(${index}+1)">
     <p>before</p>
-    <div data-th-if="${index &lt; 3}" data-th-remove="tag"><div data-th-substituteby="frag :: f">...</div></div>
+    <div data-th-if="${index &lt; 3}" data-th-remove="tag"><div data-th-replace="frag :: f">...</div></div>
     <p>after</p>
   </div>
 </div>

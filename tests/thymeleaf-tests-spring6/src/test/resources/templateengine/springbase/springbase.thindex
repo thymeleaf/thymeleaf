@@ -83,7 +83,6 @@
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/remove/remove06.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/replace
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/simplevalue
-../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/substituteby
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/unless/unless02.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/unless/unless03.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/attrprocessors/unless/unless04.thtest
@@ -123,7 +122,6 @@
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/remove/remove06.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/replace
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/simplevalue
-../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/substituteby
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/unless/unless02.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/unless/unless03.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/dataprefix/attrprocessors/unless/unless04.thtest

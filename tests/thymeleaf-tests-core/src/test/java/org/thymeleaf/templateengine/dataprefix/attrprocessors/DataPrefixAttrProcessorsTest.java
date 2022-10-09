@@ -88,16 +88,6 @@ public class DataPrefixAttrProcessorsTest {
     }
 
     @Test
-    public void testSubstituteby() throws Exception {
-
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.execute("classpath:templateengine/dataprefix/attrprocessors/substituteby");
-
-        Assertions.assertTrue(executor.isAllOK());
-
-    }
-
-    @Test
     public void testReplace() throws Exception {
 
         final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();

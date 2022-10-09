@@ -4,7 +4,7 @@
 atext = 'Lorem ipsum blah blah'
 # ------------------------------------------------------------
 %INPUT
-<div class="one" th:substituteby="frag">
+<div class="one" th:insert="frag" th:remove="tag">
   <p>Some text over here</p>
 </div>
 # ------------------------------------------------------------
