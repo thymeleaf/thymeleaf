@@ -1,3 +1,11 @@
+3.0.0.M4
+========
+- Deprecation: Removed "th:substituteby".
+- Deprecation: Removed "execInfo" as a context variable.
+- Deprecation: Deprecated "th:include" and made it issue deprecation warnings.
+
+
+
 3.0.0.M3
 ========
 - Integrated module "thymeleaf-extras-java8time" into Thymeleaf core.
