@@ -1,7 +1,20 @@
+3.0.0.M3
+========
+- Integrated module "thymeleaf-extras-java8time" into Thymeleaf core.
+- Additional refactoring of project structure: merged thymeleaf-tests into the main "thymeleaf" repository.
+- Adapted and added all example applications from the "thymeleaf-examples-*" and "thymeleaf-sandbox-*" repositories
+  into the main "thymeleaf" repository.
+- Applied configuration of the "cargo" Maven plugin to war-based example applications to make them executable from
+  Maven command line.
+- Added example applications to Thymeleaf distribution artifacts in both binary form (Maven cargo / Spring Boot jar)
+  and source code form (buildable and executable from command line).
+
+
+
 3.1.0.M2
 ========
 - Refactored project structure: merged thymeleaf-spring, thymeleaf-testing and thymeleaf-dist
-  into main "thymeleaf" repository.
+  into the main "thymeleaf" repository.
 - Added Maven multiproject infrastructure: added thymeleaf-parent, thymeleaf-lib and thymeleaf-testing-lib
   pom artifacts.
 - Added project-wide BOM (thymeleaf-parent) for the unified management of dependency and plugin versions.
