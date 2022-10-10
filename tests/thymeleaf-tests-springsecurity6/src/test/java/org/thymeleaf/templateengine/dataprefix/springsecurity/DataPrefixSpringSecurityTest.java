@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.testing.templateengine.spring6.context.web.SpringSecurityMVCWebProcessingContextBuilder;
 import org.thymeleaf.util.SpringStandardDialectUtils;
 
