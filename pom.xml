@@ -148,6 +148,7 @@
     <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>
     <spring-webflow3.version>3.0.0-SNAPSHOT</spring-webflow3.version>
     <jackson.version>2.13.2.1</jackson.version>
+    <reactor.version>2020.0.23</reactor.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-io.version>2.11.0</commons-io.version>
     <commons-fileupload.version>1.4</commons-fileupload.version>
@@ -362,6 +363,14 @@
         <groupId>com.fasterxml.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
         <version>${jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.projectreactor</groupId>
+        <artifactId>reactor-bom</artifactId>
+        <version>${reactor.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
