@@ -1,5 +1,5 @@
-3.0.0.M4
-========
+3.0.0.RC1
+=========
 - Deprecation: Removed "th:substituteby".
 - Deprecation: Removed "execInfo" as a context variable.
 - Deprecation: Deprecated "th:include" and made it issue deprecation warnings.
