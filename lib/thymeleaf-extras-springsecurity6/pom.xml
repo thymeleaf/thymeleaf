@@ -129,7 +129,6 @@
       <optional>true</optional>
     </dependency>
 
-
     <!-- In runtime, reactor-core should be provided by Spring, so by  -->
     <!-- marking it as provided we intend to give Spring priority on   -->
     <!-- the specification of version.                                 -->

@@ -27,45 +27,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.thymeleaf</groupId>
-    <artifactId>thymeleaf-lib</artifactId>
+    <groupId>org.thymeleaf.tests</groupId>
+    <artifactId>thymeleaf-tests</artifactId>
     <version>3.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <!-- For backwards compatibility reasons, this module will remain in the -->
-  <!-- "extras" groupID, artifact naming scheme and JPMS naming schema     -->
-  <!-- until Thymeleaf 4.0.                                                -->
-  <groupId>org.thymeleaf.extras</groupId>
-  <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+  <artifactId>thymeleaf-tests-springsecurity5</artifactId>
   <packaging>jar</packaging>
-  <name>thymeleaf-extras-springsecurity5</name>
-
-  <properties>
-    <!-- A project-name-based approach is adopted for module name (instead a reverse-DNS).      -->
-    <!-- NOTE module name is fixed and not set to project.artifactId because this would not be  -->
-    <!-- a valid approach for project names containing hyphens (not allowed in module names).   -->
-    <module.name>thymeleaf.extras.springsecurity5</module.name>
-  </properties>
-
-  <build>
-
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-      </plugin>
-    </plugins>
-
-  </build>
+  <name>thymeleaf tests - springsecurity5</name>
 
   <dependencyManagement>
     <dependencies>
@@ -89,44 +59,45 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring5</artifactId>
-      <scope>compile</scope>
+      <groupId>org.thymeleaf.extras</groupId>
+      <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.thymeleaf.testing</groupId>
+      <artifactId>thymeleaf-testing-spring5</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-acl</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
 
     <!-- In runtime, reactor-core should be provided by Spring, so by  -->
@@ -135,15 +106,34 @@
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
+
 
 </project>

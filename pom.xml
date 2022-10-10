@@ -203,6 +203,18 @@
       </dependency>
 
       <dependency>
+        <groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+        <version>${thymeleaf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        <version>${thymeleaf.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.thymeleaf.testing</groupId>
         <artifactId>thymeleaf-testing</artifactId>
         <version>${thymeleaf.version}</version>
