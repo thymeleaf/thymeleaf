@@ -22,6 +22,7 @@ package org.thymeleaf.extras.springsecurity6.util;
 import java.util.Enumeration;
 
 import jakarta.servlet.ServletContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -38,7 +39,6 @@ import org.thymeleaf.context.WebEngineContext;
 import org.thymeleaf.web.IWebExchange;
 import org.thymeleaf.web.servlet.IServletWebApplication;
 import org.thymeleaf.web.servlet.IServletWebExchange;
-import org.thymeleaf.web.servlet.IServletWebRequest;
 
 /**
  *
