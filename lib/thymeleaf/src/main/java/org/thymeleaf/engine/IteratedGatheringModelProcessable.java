@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
@@ -490,6 +491,9 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
                 }
 
             };
+        }
+        if (iteratedObject instanceof Stream<?>) {
+            return ((Stream<?>)iteratedObject).iterator();
         }
         return Collections.singletonList(iteratedObject).iterator();
     }
