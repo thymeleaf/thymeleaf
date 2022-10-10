@@ -1,5 +1,6 @@
 3.0.0.RC1
 =========
+- Added support for iterating (th:each) on Java 8 streams.
 - Deprecation: Removed "th:substituteby".
 - Deprecation: Removed "execInfo" as a context variable.
 - Deprecation: Deprecated "th:include" and made it issue deprecation warnings.
