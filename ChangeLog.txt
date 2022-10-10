@@ -3,6 +3,7 @@
 - Deprecation: Removed "th:substituteby".
 - Deprecation: Removed "execInfo" as a context variable.
 - Deprecation: Deprecated "th:include" and made it issue deprecation warnings.
+- Deprecation: Deprecated unwrapped fragment expression syntax and made it issue deprecation warnings.
 
 
 
