@@ -19,26 +19,25 @@
  */
 package org.thymeleaf.examples.springsecurity5.websecurity.security;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
-
-
-
+public class SpringSecurityConfig {
 
     public SpringSecurityConfig() {
         super();
     }
 
 
-    @Override
-    protected void configure(final HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
                 .formLogin()
                 .loginPage("/login.html")
@@ -54,17 +53,16 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .exceptionHandling()
                 .accessDeniedPage("/403.html");
-
+        return http.build();
     }
 
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .inMemoryAuthentication()
-                .withUser("jim").password("{noop}demo").roles("ADMIN").and()
-                .withUser("bob").password("{noop}demo").roles("USER").and()
-                .withUser("ted").password("{noop}demo").roles("USER","ADMIN");
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        return new InMemoryUserDetailsManager(
+                User.withUsername("jim").password("{noop}demo").roles("ADMIN").build(),
+                User.withUsername("bob").password("{noop}demo").roles("USER").build(),
+                User.withUsername("ted").password("{noop}demo").roles("USER","ADMIN").build());
     }
 
 
