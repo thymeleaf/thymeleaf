@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.springsecurity.security;
+package org.thymeleaf.examples.springsecurity5.websecurity.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

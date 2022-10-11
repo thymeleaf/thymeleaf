@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springsecurity.web.controller;
+package org.thymeleaf.examples.springsecurity5.websecurity.web.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +38,7 @@ public class ErrorController {
         logger.error("Exception during execution of SpringSecurity application", throwable);
         String errorMessage = (throwable != null ? throwable.getMessage() : "Unknown error");
         model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute("httpStatus", HttpStatus.INTERNAL_SERVER_ERROR);
         return "error";
     }
 

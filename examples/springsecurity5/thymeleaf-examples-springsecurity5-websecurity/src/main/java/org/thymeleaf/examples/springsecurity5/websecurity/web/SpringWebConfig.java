@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.springsecurity.web;
+package org.thymeleaf.examples.springsecurity5.websecurity.web;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

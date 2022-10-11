@@ -1,4 +1,4 @@
-package thymeleafexamples.springsecurity.web.controller;
+package org.thymeleaf.examples.springsecurity5.websecurity.web.controller;
 
 import java.util.Locale;
 

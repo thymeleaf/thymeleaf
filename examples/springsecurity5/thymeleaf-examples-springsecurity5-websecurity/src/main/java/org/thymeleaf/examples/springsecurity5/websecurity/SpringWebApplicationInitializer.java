@@ -17,15 +17,15 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springsecurity;
+package org.thymeleaf.examples.springsecurity5.websecurity;
 
 import javax.servlet.Filter;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-import thymeleafexamples.springsecurity.security.SpringSecurityConfig;
-import thymeleafexamples.springsecurity.web.SpringWebConfig;
+import org.thymeleaf.examples.springsecurity5.websecurity.security.SpringSecurityConfig;
+import org.thymeleaf.examples.springsecurity5.websecurity.web.SpringWebConfig;
 
 
 @Order(1) // Filters declared at the Dispatcher initializer should be registered first
