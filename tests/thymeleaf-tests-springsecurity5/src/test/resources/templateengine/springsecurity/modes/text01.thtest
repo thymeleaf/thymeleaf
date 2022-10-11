@@ -1,0 +1,20 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+j_username = 'jim'
+j_password = 'demo'
+# ------------------------------------------------------------
+%INPUT
+Something before
+[# sec:authorize="isAuthenticated()"]
+auths only!
+[/]
+Something after
+# ------------------------------------------------------------
+%OUTPUT
+Something before
+
+auths only!
+
+Something after
+

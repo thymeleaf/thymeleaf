@@ -1,0 +1,20 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%CONTEXT
+j_username = 'jim'
+j_password = 'demo'
+# ------------------------------------------------------------
+%INPUT
+Something before
+<some sec:authorize="isAuthenticated()">
+auths only!
+</some>
+Something after
+# ------------------------------------------------------------
+%OUTPUT
+Something before
+<some>
+auths only!
+</some>
+Something after
+
