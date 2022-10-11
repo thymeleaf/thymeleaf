@@ -15,6 +15,7 @@
       <useAllReactorProjects>true</useAllReactorProjects>
       <includes>
         <include>org.thymeleaf:*</include>
+        <include>org.thymeleaf.extras:*</include>
       </includes>
       <binaries>
         <outputDirectory>/dist</outputDirectory>
@@ -26,6 +27,7 @@
             <useProjectArtifact>false</useProjectArtifact>
             <excludes>
               <exclude>org.thymeleaf:*</exclude>
+              <exclude>org.thymeleaf.extras:*</exclude>
               <exclude>org.thymeleaf.testing:*</exclude>
               <exclude>org.thymeleaf.examples:*</exclude>
             </excludes>
@@ -38,6 +40,7 @@
       <useAllReactorProjects>true</useAllReactorProjects>
       <includes>
         <include>org.thymeleaf:*</include>
+        <include>org.thymeleaf.extras:*</include>
       </includes>
       <binaries>
         <attachmentClassifier>sources</attachmentClassifier>
@@ -51,6 +54,7 @@
       <useAllReactorProjects>true</useAllReactorProjects>
       <includes>
         <include>org.thymeleaf:*</include>
+        <include>org.thymeleaf.extras:*</include>
       </includes>
       <binaries>
         <attachmentClassifier>javadoc</attachmentClassifier>
@@ -64,6 +68,7 @@
       <useAllReactorProjects>true</useAllReactorProjects>
       <includes>
         <include>org.thymeleaf:*</include>
+        <include>org.thymeleaf.extras:*</include>
       </includes>
       <binaries>
         <attachmentClassifier>javadoc</attachmentClassifier>
