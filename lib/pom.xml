@@ -162,6 +162,8 @@
     <module>thymeleaf</module>
     <module>thymeleaf-spring5</module>
     <module>thymeleaf-spring6</module>
+    <module>thymeleaf-extras-springsecurity5</module>
+    <module>thymeleaf-extras-springsecurity6</module>
     <module>testing</module>
   </modules>
 
