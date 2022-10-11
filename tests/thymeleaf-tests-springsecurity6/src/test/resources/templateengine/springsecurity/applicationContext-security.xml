@@ -31,5 +31,10 @@
         <intercept-url pattern="/user/**" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/shared/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
     </http>
-    
+
+    <beans:bean name="mvcHandlerMappingIntrospector"
+                class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" />
+    <beans:bean name="securityExpressionHandler"
+                class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+
 </beans:beans>
