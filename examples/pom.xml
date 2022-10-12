@@ -69,6 +69,7 @@
     <module>springboot2</module>
     <module>springboot3</module>
     <module>springsecurity5</module>
+    <module>springsecurity6</module>
   </modules>
 
 </project>
