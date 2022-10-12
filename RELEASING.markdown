@@ -24,6 +24,9 @@ Configure access to the snapshots and staging servers in `settings.xml`:
 If this is an GA or RC version of Thymeleaf being published, check that no
 dependencies are in SNAPSHOT version (thymeleaf-parent's pom.xml).
 
+(Make sure the Spring Boot parent dependencies in Spring Boot-based example
+application pom.xml's are also checked for SNAPSHOTs).
+
 If any SNAPSHOTs exist, set to a fixed version and commit.
 
 ## 3. Set the new version
