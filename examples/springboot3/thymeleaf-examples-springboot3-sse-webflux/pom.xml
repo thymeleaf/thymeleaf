@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.thymeleaf.examples</groupId>
     <artifactId>thymeleaf-examples-springboot3</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0.RC1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>thymeleaf-examples-springboot3-sse-webflux</artifactId>
