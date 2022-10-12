@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Objects;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +60,7 @@ public final class JakartaServletWebApplication implements IServletWebApplicatio
 
         Validate.notNull(httpServletRequest, "Request cannot be null");
         Validate.notNull(httpServletResponse, "Response cannot be null");
-        Validate.isTrue(this.servletContext == httpServletRequest.getServletContext(),
+        Validate.isTrue(servletContextMatches(httpServletRequest),
                 "Cannot build an application for a request which servlet context does not match with " +
                 "the application that it is being built for.");
 
@@ -105,6 +106,14 @@ public final class JakartaServletWebApplication implements IServletWebApplicatio
     @Override
     public Object getNativeServletContextObject() {
         return this.servletContext;
+    }
+
+
+    private boolean servletContextMatches(final HttpServletRequest httpServletRequest) {
+        // We should not be directly matching servletContext objects because a wrapper might have been applied
+        final String servletContextPath = this.servletContext.getContextPath();
+        final String requestServletContextPath = httpServletRequest.getContextPath();
+        return Objects.equals(servletContextPath, requestServletContextPath);
     }
 
 }
