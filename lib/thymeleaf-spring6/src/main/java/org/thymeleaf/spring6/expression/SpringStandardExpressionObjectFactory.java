@@ -85,6 +85,7 @@ public class SpringStandardExpressionObjectFactory extends StandardExpressionObj
 
 
 
+    @SuppressWarnings("deprecation")
     public Object buildObject(final IExpressionContext context, final String expressionObjectName) {
 
 
@@ -92,6 +93,8 @@ public class SpringStandardExpressionObjectFactory extends StandardExpressionObj
             return MVC_EXPRESSION_OBJECT;
         }
         if (THEMES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            // Themes was deprecated in 3.1.0 because Spring 6 dropped support for themes.
+            // This expression object will be removed when Spring removes support.
             return new Themes(context);
         }
         if (FIELDS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {

@@ -30,6 +30,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
+import org.springframework.web.servlet.support.RequestContext;
 
 /**
  * <p>
@@ -82,6 +83,11 @@ public interface IThymeleafRequestContext {
     public Optional<Errors> getErrors(String name);
     public Optional<Errors> getErrors(String name, boolean htmlEscape);
 
+    /**
+     * @deprecated {@link RequestContext#getTheme()} was deprecated in Spring 6, with no
+     *             direct replacement.
+     */
+    @Deprecated(since="3.1.0")
     public Theme getTheme();
 
     public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor();

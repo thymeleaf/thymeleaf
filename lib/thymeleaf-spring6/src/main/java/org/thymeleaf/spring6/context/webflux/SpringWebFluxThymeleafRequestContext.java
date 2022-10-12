@@ -206,7 +206,12 @@ public class SpringWebFluxThymeleafRequestContext implements IThymeleafRequestCo
         return Optional.ofNullable(this.requestContext.getErrors(name, htmlEscape));
     }
 
+    /**
+     * @deprecated {@link org.springframework.web.servlet.support.RequestContext#getTheme()} was
+     *             deprecated in Spring 6, with no direct replacement.
+     */
     @Override
+    @Deprecated(since="3.1.0")
     public Theme getTheme() {
         throw new TemplateProcessingException("Themes are not supported in Thymeleaf's Spring WebFlux integration");
     }

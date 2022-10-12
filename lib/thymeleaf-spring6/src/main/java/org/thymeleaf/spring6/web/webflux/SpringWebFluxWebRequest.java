@@ -48,7 +48,7 @@ final class SpringWebFluxWebRequest implements ISpringWebFluxWebRequest {
 
     @Override
     public String getMethod() {
-        return this.request.getMethodValue();
+        return this.request.getMethod().name();
     }
 
     @Override

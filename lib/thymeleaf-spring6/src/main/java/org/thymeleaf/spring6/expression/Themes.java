@@ -35,7 +35,9 @@ import org.thymeleaf.spring6.context.SpringContextUtils;
  *
  * @author Emanuel Rabina
  * @author Daniel Fern&aacute;ndez
+ * @deprecated Theme support was deprecated in Spring 6 with no replacement.
  */
+@Deprecated(since="3.1.0")
 public class Themes {
 
     private final Theme theme;

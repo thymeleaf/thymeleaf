@@ -206,7 +206,12 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
         return Optional.ofNullable(this.requestContext.getErrors(name, htmlEscape));
     }
 
+    /**
+     * @deprecated {@link RequestContext#getTheme()} was deprecated in Spring 6, with no
+     *             direct replacement.
+     */
     @Override
+    @Deprecated(since="3.1.0")
     public Theme getTheme() {
         return this.requestContext.getTheme();
     }

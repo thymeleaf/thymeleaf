@@ -189,7 +189,7 @@ public class SpringWebFluxTemplateEngine
                                         new Object[]{TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
                             }
 
-                            final DataBuffer dataBuffer = bufferFactory.allocateBuffer();
+                            final DataBuffer dataBuffer = bufferFactory.allocateBuffer(1024);
                             // OutputStreamWriter object have an 8K buffer, but process(...) will flush it at the end
                             final OutputStreamWriter writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
 
@@ -486,7 +486,7 @@ public class SpringWebFluxTemplateEngine
                             final DataBuffer buffer =
                                     (responseMaxChunkSizeBytes != Integer.MAX_VALUE ?
                                             bufferFactory.allocateBuffer(responseMaxChunkSizeBytes) :
-                                            bufferFactory.allocateBuffer());
+                                            bufferFactory.allocateBuffer(1024));
 
                             final int bytesProduced;
                             try {
