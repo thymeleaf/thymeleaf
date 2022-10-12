@@ -110,6 +110,7 @@ public final class TestingServerHttpRequest implements ServerHttpRequest {
     }
 
     @Override
+    @Deprecated
     public String getMethodValue() {
         return HttpMethod.GET.name();
     }
