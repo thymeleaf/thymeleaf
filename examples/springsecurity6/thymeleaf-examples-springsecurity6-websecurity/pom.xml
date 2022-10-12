@@ -37,6 +37,11 @@
   <packaging>war</packaging>
   <name>thymeleaf examples springsecurity6 - WebSecurity</name>
 
+  <properties>
+    <!-- This is temporarily needed due to request matchers API not being up to date in 6.0.0-M7 -->
+    <spring-security6.version>6.0.0-SNAPSHOT</spring-security6.version>
+  </properties>
+
   <build>
 
     <resources>
