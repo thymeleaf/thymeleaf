@@ -40,6 +40,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.core.io.SerializedString;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -157,7 +158,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
             this.mapper = new ObjectMapper();
             this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             this.mapper.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
-            this.mapper.enable(JsonGenerator.Feature.ESCAPE_NON_ASCII);
+            this.mapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
             this.mapper.getFactory().setCharacterEscapes(new JacksonThymeleafCharacterEscapes());
             this.mapper.setDateFormat(new JacksonThymeleafISO8601DateFormat());
 
