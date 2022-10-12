@@ -19,7 +19,14 @@ Configure access to the snapshots and staging servers in `settings.xml`:
   </servers>
 ```
 
-## 2. Set the new version
+## 2. Check dependency snapshots
+
+If this is an GA or RC version of Thymeleaf being published, check that no
+dependencies are in SNAPSHOT version (thymeleaf-parent's pom.xml).
+
+If any SNAPSHOTs exist, set to a fixed version and commit.
+
+## 3. Set the new version
 
 ```shell
 mvn versions:set -DprocessAllModules=true -DnewVersion=X.Y.Z
@@ -29,13 +36,13 @@ git commit -m "Prepare release thymeleaf-X.Y.Z"
 git push
 ```
 
-## 3. Create and deploy the release into the staging repositories
+## 4. Create and deploy the release into the staging repositories
 
 ```shell
 mvn clean compile deploy
 ```
 
-## 4. Create tag and set to new development version
+## 5. Create tag and set to new development version
 
 ```shell
 mvn scm:tag -Dtag=thymeleaf-X.Y.Z
@@ -46,7 +53,12 @@ git commit -m "Prepare for next development iteration"
 git push
 ```
 
-## 5. Manage staging repository in Central
+## 6. Create tag and set to new development version
+
+If any SNAPSHOT dependencies had to have their versions fixed before building, go
+back to SNAPSHOT versions wherever needed and commit.
+
+## 7. Manage staging repository in Central
 
 Follow instructions at https://central.sonatype.org/publish/publish-guide/
 
