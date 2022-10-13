@@ -47,9 +47,9 @@ public class SpringSecurityConfig {
                 .logoutSuccessUrl("/index.html")
             .and()
                 .authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasRole("USER")
-                .antMatchers("/shared/**").hasAnyRole("USER","ADMIN")
+                .mvcMatchers("/admin/**").hasRole("ADMIN")
+                .mvcMatchers("/user/**").hasRole("USER")
+                .mvcMatchers("/shared/**").hasAnyRole("USER","ADMIN")
             .and()
                 .exceptionHandling()
                 .accessDeniedPage("/403.html");
