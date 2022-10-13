@@ -54,7 +54,7 @@ public class Mvc {
 
         try {
             final Class<?> implClass = ClassLoaderUtils.loadClass(delegateClassName);
-            mvcUriComponentsBuilderDelegate = (MvcUriComponentsBuilderDelegate) implClass.newInstance();
+            mvcUriComponentsBuilderDelegate = (MvcUriComponentsBuilderDelegate) implClass.getDeclaredConstructor().newInstance();
         } catch (final Exception e) {
             throw new ExceptionInInitializerError(
                     new ConfigurationException(
