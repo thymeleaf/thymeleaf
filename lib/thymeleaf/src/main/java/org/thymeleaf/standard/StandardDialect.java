@@ -431,6 +431,7 @@ public class StandardDialect
      * @param dialectPrefix the prefix established for the Standard Dialect, needed for initialization
      * @return the set of Standard processors.
      */
+    @SuppressWarnings("deprecation")
     public static Set<IProcessor> createStandardProcessorsSet(final String dialectPrefix) {
 
         /*
