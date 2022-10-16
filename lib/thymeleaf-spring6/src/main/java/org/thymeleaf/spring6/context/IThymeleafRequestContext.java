@@ -87,7 +87,7 @@ public interface IThymeleafRequestContext {
      * @deprecated {@link RequestContext#getTheme()} was deprecated in Spring 6, with no
      *             direct replacement.
      */
-    @Deprecated(since="3.1.0")
+    @Deprecated
     public Theme getTheme();
 
     public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor();

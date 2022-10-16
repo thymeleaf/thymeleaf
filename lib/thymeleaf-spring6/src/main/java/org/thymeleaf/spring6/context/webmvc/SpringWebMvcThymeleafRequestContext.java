@@ -211,7 +211,7 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
      *             direct replacement.
      */
     @Override
-    @Deprecated(since="3.1.0")
+    @Deprecated
     public Theme getTheme() {
         return this.requestContext.getTheme();
     }

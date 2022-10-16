@@ -169,7 +169,7 @@
     <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
     <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
     <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
-    <maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
