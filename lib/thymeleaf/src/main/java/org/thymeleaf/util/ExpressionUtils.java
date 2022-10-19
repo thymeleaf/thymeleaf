@@ -76,7 +76,7 @@ public final class ExpressionUtils {
             new HashSet<>(Arrays.asList(
                     // java.util
                     Collection.class, Iterable.class, List.class, Map.class, Map.Entry.class, Set.class,
-                    Calendar.class));
+                    Calendar.class, Stream.class));
 
 
     static {
