@@ -3,4 +3,4 @@
 %INPUT
 <div th:text="'00__${null.toString()}__00'">...</div>
 # ------------------------------------------------------------
-%EXCEPTION java.lang.NullPointerException
+%EXCEPTION java.lang.Exception

@@ -1,11 +1,16 @@
 %EXTENDS ../html5.01.common
 # ------------------------------------------------------------
+# Using numeric constants to avoid statically accessing public fields
+# Calendar.HOUR_OF_DAY = 11
+# Calendar.MINUTE = 12
+# Calendar.SECOND = 13
+# Calendar.MILLISECOND = 14
 %INPUT
 <p th:with="date = ${#calendars.createToday()}" 
-   th:text="${date.get(@java.util.Calendar@HOUR_OF_DAY) + ' ' + 
-              date.get(@java.util.Calendar@MINUTE) + ' ' + 
-              date.get(@java.util.Calendar@SECOND) + ' ' + 
-              date.get(@java.util.Calendar@MILLISECOND)}">should all be zero</p>
+   th:text="${date.get(11) + ' ' +
+              date.get(12) + ' ' +
+              date.get(13) + ' ' +
+              date.get(14)}">should all be zero</p>
 # ------------------------------------------------------------
 %OUTPUT
 <p>0 0 0 0</p>

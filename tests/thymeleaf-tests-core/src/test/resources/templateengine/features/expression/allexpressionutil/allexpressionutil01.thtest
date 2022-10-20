@@ -1,45 +1,65 @@
 %EXTENDS ../../html5.01.common
 # ------------------------------------------------------------
+%CONTEXT
+datesClassName = @org.thymeleaf.expression.Dates@class.name
+calendarsClassName = @org.thymeleaf.expression.Calendars@class.name
+numbersClassName = @org.thymeleaf.expression.Numbers@class.name
+stringsClassName = @org.thymeleaf.expression.Strings@class.name
+objectsClassName = @org.thymeleaf.expression.Objects@class.name
+boolsClassName = @org.thymeleaf.expression.Bools@class.name
+arraysClassName = @org.thymeleaf.expression.Arrays@class.name
+listsClassName = @org.thymeleaf.expression.Lists@class.name
+setsClassName = @org.thymeleaf.expression.Sets@class.name
+mapsClassName = @org.thymeleaf.expression.Maps@class.name
+aggregatesClassName = @org.thymeleaf.expression.Aggregates@class.name
+messagesClassName = @org.thymeleaf.expression.Messages@class.name
+idsClassName = @org.thymeleaf.expression.Ids@class.name
+temporalsClassName = @org.thymeleaf.expression.Temporals@class.name
+
+# ------------------------------------------------------------
 %INPUT
 
 <p th:text="${#dates} ? 'dates exists' : 'dates does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Dates@class.name == (#dates.class.name)}">...</p>
+<p th:text="${datesClassName == (#dates.class.name)}">...</p>
 
 <p th:text="${#calendars} ? 'calendars exists' : 'calendars does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Calendars@class.name == (#calendars.class.name)}">...</p>
+<p th:text="${calendarsClassName == (#calendars.class.name)}">...</p>
 
 <p th:text="${#numbers} ? 'numbers exists' : 'numbers does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Numbers@class.name == (#numbers.class.name)}">...</p>
+<p th:text="${numbersClassName == (#numbers.class.name)}">...</p>
 
 <p th:text="${#strings} ? 'strings exists' : 'strings does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Strings@class.name == (#strings.class.name)}">...</p>
+<p th:text="${stringsClassName == (#strings.class.name)}">...</p>
 
 <p th:text="${#objects} ? 'objects exists' : 'objects does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Objects@class.name == (#objects.class.name)}">...</p>
+<p th:text="${objectsClassName == (#objects.class.name)}">...</p>
 
 <p th:text="${#bools} ? 'bools exists' : 'bools does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Bools@class.name == (#bools.class.name)}">...</p>
+<p th:text="${boolsClassName == (#bools.class.name)}">...</p>
 
 <p th:text="${#arrays} ? 'arrays exists' : 'arrays does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Arrays@class.name == (#arrays.class.name)}">...</p>
+<p th:text="${arraysClassName == (#arrays.class.name)}">...</p>
 
 <p th:text="${#lists} ? 'lists exists' : 'lists does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Lists@class.name == (#lists.class.name)}">...</p>
+<p th:text="${listsClassName == (#lists.class.name)}">...</p>
 
 <p th:text="${#sets} ? 'sets exists' : 'sets does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Sets@class.name == (#sets.class.name)}">...</p>
+<p th:text="${setsClassName == (#sets.class.name)}">...</p>
 
 <p th:text="${#maps} ? 'maps exists' : 'maps does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Maps@class.name == (#maps.class.name)}">...</p>
+<p th:text="${mapsClassName == (#maps.class.name)}">...</p>
 
 <p th:text="${#aggregates} ? 'aggregates exists' : 'aggregates does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Aggregates@class.name == (#aggregates.class.name)}">...</p>
+<p th:text="${aggregatesClassName == (#aggregates.class.name)}">...</p>
 
 <p th:text="${#messages} ? 'messages exists' : 'messages does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Messages@class.name == (#messages.class.name)}">...</p>
+<p th:text="${messagesClassName == (#messages.class.name)}">...</p>
 
 <p th:text="${#ids} ? 'ids exists' : 'ids does not exist'">...</p>
-<p th:text="${@org.thymeleaf.expression.Ids@class.name == (#ids.class.name)}">...</p>
+<p th:text="${idsClassName == (#ids.class.name)}">...</p>
+
+<p th:text="${#temporals} ? 'temporals exists' : 'temporals does not exist'">...</p>
+<p th:text="${temporalsClassName == (#temporals.class.name)}">...</p>
 
 # ------------------------------------------------------------
 %OUTPUT
@@ -81,5 +101,8 @@
 <p>true</p>
 
 <p>ids exists</p>
+<p>true</p>
+
+<p>temporals exists</p>
 <p>true</p>
 
