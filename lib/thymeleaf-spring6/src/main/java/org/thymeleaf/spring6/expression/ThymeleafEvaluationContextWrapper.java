@@ -19,10 +19,11 @@
  */
 package org.thymeleaf.spring6.expression;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.BeanResolver;
@@ -35,8 +36,12 @@ import org.springframework.expression.TypeComparator;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.ReflectiveMethodResolver;
+import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLMethodResolver;
+import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLPropertyAccessor;
+import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLTypeLocator;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -64,6 +69,8 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
     private final EvaluationContext delegate;
     private final List<PropertyAccessor> propertyAccessors; // can be initialized to null if we can delegate
+    private final TypeLocator typeLocator;                  // can be initialized to null if we can delegate
+    private final List<MethodResolver> methodResolvers;     // can be initialized to null if we can delegate
 
     private IExpressionObjects expressionObjects = null;
     private boolean requestParametersRestricted = false;
@@ -80,24 +87,33 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
         this.delegate = delegate;
 
-        if ((this.delegate instanceof ThymeleafEvaluationContext)) {
+        if (this.delegate instanceof ThymeleafEvaluationContext) {
 
-            this.propertyAccessors = null; // No need to initialize our own list
-
-        } else if (this.delegate instanceof StandardEvaluationContext) {
-
-            ((StandardEvaluationContext) this.delegate).addPropertyAccessor(SPELContextPropertyAccessor.INSTANCE);
-            ((StandardEvaluationContext) this.delegate).addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
-            this.propertyAccessors = null; // No need to initialize our own list
+            this.propertyAccessors = null; // No need to initialize our own property accessors
+            this.typeLocator = null;       // No need to initialize our own type locator
+            this.methodResolvers = null;   // No need to initialize our own method resolvers
 
         } else {
 
-            // We don't know the specific EvaluationContext implementation, so we need to initialize our own PA list
+            // We need to wrap any reflective method resolvers in order to forbid calling methods on any of the blocked classes
+            this.propertyAccessors =
+                    Stream.concat(
+                            Stream.of(SPELContextPropertyAccessor.INSTANCE, MAP_ACCESSOR_INSTANCE),
+                            this.delegate.getPropertyAccessors().stream()
+                                    .map(pa -> (pa instanceof ReflectivePropertyAccessor) ?
+                                            new ThymeleafEvaluationContextACLPropertyAccessor((ReflectivePropertyAccessor) pa) : pa))
+                        .collect(Collectors.toList());
 
-            this.propertyAccessors = new ArrayList<PropertyAccessor>(5);
-            this.propertyAccessors.addAll(this.delegate.getPropertyAccessors());
-            this.propertyAccessors.add(SPELContextPropertyAccessor.INSTANCE);
-            this.propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
+            // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
+            this.typeLocator =
+                    new ThymeleafEvaluationContextACLTypeLocator(this.delegate.getTypeLocator());
+
+            // We need to wrap any reflective method resolvers in order to forbid calling methods on any of the blocked classes
+            this.methodResolvers =
+                    this.delegate.getMethodResolvers().stream()
+                        .map(mr -> (mr instanceof ReflectiveMethodResolver) ?
+                                new ThymeleafEvaluationContextACLMethodResolver((ReflectiveMethodResolver) mr) : mr)
+                        .collect(Collectors.toList());
 
         }
 
@@ -113,7 +129,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
     public List<MethodResolver> getMethodResolvers() {
-        return this.delegate.getMethodResolvers();
+        return this.methodResolvers == null ? this.delegate.getMethodResolvers() : this.methodResolvers;
     }
 
     public List<PropertyAccessor> getPropertyAccessors() {
@@ -121,7 +137,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
     public TypeLocator getTypeLocator() {
-        return this.delegate.getTypeLocator();
+        return this.typeLocator == null ? this.delegate.getTypeLocator() : this.typeLocator;
     }
 
     public TypeConverter getTypeConverter() {

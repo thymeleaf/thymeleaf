@@ -163,14 +163,21 @@ public final class ThymeleafEvaluationContext
 
     static final class ThymeleafEvaluationContextACLTypeLocator implements TypeLocator {
 
-        private final StandardTypeLocator typeLocator;
+        private final TypeLocator typeLocator;
 
         ThymeleafEvaluationContextACLTypeLocator() {
+            this(new StandardTypeLocator());
+        }
+
+        ThymeleafEvaluationContextACLTypeLocator(final TypeLocator typeLocator) {
             super();
-            this.typeLocator = new StandardTypeLocator();
-            // A default prefix on "java.lang" is added by default, but we will remove it in order to avoid
-            // the filter forbidding all "java.lang.*" classes to be bypassed.
-            this.typeLocator.removeImport("java.lang");
+            // typeLocator CAN be null
+            this.typeLocator = typeLocator;
+            if (this.typeLocator instanceof StandardTypeLocator) {
+                // A default prefix on "java.lang" is added by default, but we will remove it in order to avoid
+                // the filter forbidding all "java.lang.*" classes to be bypassed.
+                ((StandardTypeLocator)this.typeLocator).removeImport("java.lang");
+            }
         }
 
         @Override
@@ -182,6 +189,9 @@ public final class ThymeleafEvaluationContext
                                 "Blocked classes are: %s. Allowed classes are: %s.",
                                 typeName, ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
+            if (this.typeLocator == null) {
+                throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
+            }
             return this.typeLocator.findType(typeName);
         }
 
@@ -191,9 +201,16 @@ public final class ThymeleafEvaluationContext
 
     static final class ThymeleafEvaluationContextACLPropertyAccessor extends ReflectivePropertyAccessor {
 
+        private final ReflectivePropertyAccessor propertyAccessor;
+
         ThymeleafEvaluationContextACLPropertyAccessor() {
-            // allowWrite = false
-            super(false);
+            this(null);
+        }
+
+        ThymeleafEvaluationContextACLPropertyAccessor(final ReflectivePropertyAccessor propertyAccessor) {
+            super(false); // allowWrite = false
+            // propertyAccessor CAN be null
+            this.propertyAccessor = propertyAccessor;
         }
 
 
@@ -215,6 +232,9 @@ public final class ThymeleafEvaluationContext
                                 ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
 
+            if (this.propertyAccessor != null) {
+                return this.propertyAccessor.canRead(context, targetObject, name);
+            }
             return super.canRead(context, targetObject, name);
 
         }
@@ -225,8 +245,16 @@ public final class ThymeleafEvaluationContext
 
     static final class ThymeleafEvaluationContextACLMethodResolver extends ReflectiveMethodResolver {
 
+        private final ReflectiveMethodResolver methodResolver;
+
         ThymeleafEvaluationContextACLMethodResolver() {
+            this(null);
+        }
+
+        ThymeleafEvaluationContextACLMethodResolver(final ReflectiveMethodResolver methodResolver) {
             super();
+            // methodResolver CAN be null
+            this.methodResolver = methodResolver;
         }
 
         @Override
@@ -243,6 +271,9 @@ public final class ThymeleafEvaluationContext
                                 ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
 
+            if (this.methodResolver != null) {
+                return this.methodResolver.resolve(context, targetObject, name, argumentTypes);
+            }
             return super.resolve(context, targetObject, name, argumentTypes);
 
         }
