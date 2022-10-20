@@ -32,18 +32,22 @@ public final class TestExecutorFactory {
     private static final ITestReporter MINIMAL_TEST_REPORTER = new MinimalConsoleTestReporter();
 
 
-    public static TestExecutor createTestExecutor(final IProcessingContextBuilder processingContextBuilder) {
-        final TestExecutor testExecutor = new TestExecutor(processingContextBuilder);
+    public static TestExecutor createTestExecutor(final String name, final IProcessingContextBuilder processingContextBuilder) {
+        final TestExecutor testExecutor = new TestExecutor(name, processingContextBuilder);
         testExecutor.setReporter(MINIMAL_TEST_REPORTER);
         return testExecutor;
     }
 
+    public static TestExecutor createTestExecutor(final IProcessingContextBuilder processingContextBuilder) {
+        return createTestExecutor("default", processingContextBuilder);
+    }
+
     public static TestExecutor createJakartaWebTestExecutor() {
-        return createTestExecutor(new WebProcessingContextBuilder(JakartaServletTestWebExchangeBuilder.create()));
+        return createTestExecutor("jakarta", new WebProcessingContextBuilder(JakartaServletTestWebExchangeBuilder.create()));
     }
 
     public static TestExecutor createJavaxWebTestExecutor() {
-        return createTestExecutor(new WebProcessingContextBuilder(JavaxServletTestWebExchangeBuilder.create()));
+        return createTestExecutor("javax", new WebProcessingContextBuilder(JavaxServletTestWebExchangeBuilder.create()));
     }
 
 

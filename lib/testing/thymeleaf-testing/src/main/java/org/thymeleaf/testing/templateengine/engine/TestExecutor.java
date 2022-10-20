@@ -65,6 +65,7 @@ public final class TestExecutor {
 
     private final IProcessingContextBuilder processingContextBuilder;
 
+    private final String name;
     private ITestableResolver testableResolver = new StandardTestableResolver();
     private List<IDialect> dialects = Collections.singletonList((IDialect)new StandardDialect());
     private int throttleStep = Integer.MAX_VALUE;
@@ -102,13 +103,18 @@ public final class TestExecutor {
     private static void setThreadTest(final ITest test) {
         threadTest.set(test);
     }
-    
-    
-    
-    
+
+
+
     public TestExecutor(final IProcessingContextBuilder processingContextBuilder) {
+        this(null, processingContextBuilder);
+    }
+
+    public TestExecutor(final String name, final IProcessingContextBuilder processingContextBuilder) {
         super();
+        Validate.notNull(name, "Text Executor name cannot be null");
         Validate.notNull(processingContextBuilder, "Processing Context Builder cannot be null");
+        this.name = name;
         this.processingContextBuilder = processingContextBuilder;
     }
 
@@ -498,6 +504,24 @@ public final class TestExecutor {
         
         
     }
-    
-    
+
+    @Override
+    public String toString() {
+        if (this.name != null && this.name.length() > 0) {
+            if (this.throttleStep != Integer.MAX_VALUE) {
+                return "TestExecutor{" + this.name + '(' + this.throttleStep + ")}";
+            } else {
+                return "TestExecutor{" + this.name + '}';
+            }
+        }
+        return "TestExecutor{" +
+                "processingContextBuilder=" + processingContextBuilder +
+                ", testableResolver=" + testableResolver +
+                ", dialects=" + dialects +
+                ", throttleStep=" + throttleStep +
+                ", throttleType=" + throttleType +
+                ", reporter=" + reporter +
+                '}';
+    }
+
 }
