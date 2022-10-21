@@ -138,7 +138,7 @@
     <javax-mail-api.version>1.6.2</javax-mail-api.version>
     <apache-taglibs-standard.version>1.2.5</apache-taglibs-standard.version>
     <glassfish-jakarta-servlet-jsp-jstl.version>3.0.0</glassfish-jakarta-servlet-jsp-jstl.version>
-    <ognl.version>3.2.21</ognl.version>
+    <ognl.version>3.3.4</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <spring-framework5.version>5.3.23</spring-framework5.version>
