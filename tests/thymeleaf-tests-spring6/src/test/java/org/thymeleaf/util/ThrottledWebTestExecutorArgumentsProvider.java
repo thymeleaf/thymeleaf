@@ -42,7 +42,7 @@ public class ThrottledWebTestExecutorArgumentsProvider implements ArgumentsProvi
 
 
     private static TestExecutor createTestExecutorStream(final int throttleStep) {
-        final TestExecutor testExecutor = TestExecutorFactory.createJavaxWebTestExecutor();
+        final TestExecutor testExecutor = TestExecutorFactory.createJakartaWebTestExecutor();
         testExecutor.setThrottleStep(throttleStep);
         testExecutor.setDialects(Arrays.asList(new IDialect[]{SpringStandardDialectUtils.createSpringStandardDialectInstance()}));
         return testExecutor;
