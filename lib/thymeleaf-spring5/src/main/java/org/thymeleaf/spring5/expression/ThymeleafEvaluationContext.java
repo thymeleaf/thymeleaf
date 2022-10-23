@@ -182,17 +182,18 @@ public final class ThymeleafEvaluationContext
 
         @Override
         public Class<?> findType(final String typeName) throws EvaluationException {
-            if (typeName != null && !ExpressionUtils.isTypeAllowed(typeName)) {
+            if (this.typeLocator == null) {
+                throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
+            }
+            final Class<?> type = this.typeLocator.findType(typeName);
+            if (type != null && !ExpressionUtils.isTypeAllowed(typeName)) {
                 throw new EvaluationException(
                         String.format(
                                 "Access is forbidden for type '%s' in Thymeleaf expressions. " +
                                 "Blocked classes are: %s. Allowed classes are: %s.",
                                 typeName, ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
-            if (this.typeLocator == null) {
-                throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
-            }
-            return this.typeLocator.findType(typeName);
+            return type;
         }
 
     }
@@ -217,25 +218,31 @@ public final class ThymeleafEvaluationContext
         @Override
         public boolean canRead(final EvaluationContext context, final Object targetObject, final String name) throws AccessException {
 
-            // We need to perform the check on the getter equivalent to the member being called
-            final String methodEquiv =
-                    ("empty".equals(name) || "blank".equals(name)) ?
-                        "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) :
-                        "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-
-            if (!ExpressionUtils.isMemberAllowed(targetObject, methodEquiv)) {
-                throw new EvaluationException(
-                        String.format(
-                                "Accessing member '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
-                                "Blocked classes are: %s. Allowed classes are: %s.",
-                                name, targetObject.getClass(),
-                                ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
-            }
-
+            final boolean canRead;
             if (this.propertyAccessor != null) {
-                return this.propertyAccessor.canRead(context, targetObject, name);
+                canRead =  this.propertyAccessor.canRead(context, targetObject, name);
+            } else {
+                canRead = super.canRead(context, targetObject, name);
             }
-            return super.canRead(context, targetObject, name);
+
+            if (canRead) {
+                // We need to perform the check on the getter equivalent to the member being called
+                final String methodEquiv =
+                        ("empty".equals(name) || "blank".equals(name)) ?
+                            "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) :
+                            "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+
+                if (!ExpressionUtils.isMemberAllowed(targetObject, methodEquiv)) {
+                    throw new EvaluationException(
+                            String.format(
+                                    "Accessing member '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
+                                    "Blocked classes are: %s. Allowed classes are: %s.",
+                                    name, targetObject.getClass(),
+                                    ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                }
+            }
+
+            return canRead;
 
         }
 
@@ -262,19 +269,25 @@ public final class ThymeleafEvaluationContext
                 final EvaluationContext context, final Object targetObject,
                 final String name, final List<TypeDescriptor> argumentTypes) throws AccessException {
 
-            if (!ExpressionUtils.isMemberAllowed(targetObject, name)) {
-                throw new EvaluationException(
-                        String.format(
-                                "Calling method '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
-                                "Blocked classes are: %s. Allowed classes are: %s.",
-                                name, targetObject.getClass(),
-                                ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+            final MethodExecutor methodExecutor;
+            if (this.methodResolver != null) {
+                methodExecutor = this.methodResolver.resolve(context, targetObject, name, argumentTypes);
+            } else {
+                methodExecutor = super.resolve(context, targetObject, name, argumentTypes);
             }
 
-            if (this.methodResolver != null) {
-                return this.methodResolver.resolve(context, targetObject, name, argumentTypes);
+            if (methodExecutor != null) {
+                if (!ExpressionUtils.isMemberAllowed(targetObject, name)) {
+                    throw new EvaluationException(
+                            String.format(
+                                    "Calling method '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
+                                    "Blocked classes are: %s. Allowed classes are: %s.",
+                                    name, targetObject.getClass(),
+                                    ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                }
             }
-            return super.resolve(context, targetObject, name, argumentTypes);
+
+            return methodExecutor;
 
         }
 
