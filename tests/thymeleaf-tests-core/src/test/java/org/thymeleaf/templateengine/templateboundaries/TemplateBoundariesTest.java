@@ -24,12 +24,11 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.templateengine.templateboundaries.dialect.TemplateBoundariesDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class TemplateBoundariesTest {
@@ -37,12 +36,10 @@ public class TemplateBoundariesTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testAttrProcessor(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testAttrProcessor(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new TemplateBoundariesDialect()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -50,12 +47,10 @@ public class TemplateBoundariesTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testConditionalComments(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testConditionalComments(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new TemplateBoundariesDialect()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/conditionalcomments");
         
         Assertions.assertTrue(executor.isAllOK());

@@ -31,6 +31,7 @@ import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.templateengine.context.dialect.ContextDialect;
 import org.thymeleaf.templateengine.context.dialect.ContextVarTestDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class ContextTest {
@@ -40,13 +41,11 @@ public class ContextTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testContextBase(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testContextBase(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(), new ContextDialect()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/context/base");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -54,13 +53,11 @@ public class ContextTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testContextVarTest(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testContextVarTest(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(), new ContextVarTestDialect()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/context/vartest");
 
         Assertions.assertTrue(executor.isAllOK());

@@ -22,9 +22,8 @@ package org.thymeleaf.templateengine.attrprocessors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
-import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class AttrProcessorsTest {
@@ -33,11 +32,9 @@ public class AttrProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testRemove(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testRemove(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/remove");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -45,11 +42,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testIf(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testIf(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/if");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -57,11 +52,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testUnless(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testUnless(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/unless");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -69,11 +62,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testInline(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testInline(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/inline");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -81,11 +72,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testInclude(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testInclude(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/include");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -93,11 +82,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testInsert(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testInsert(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/insert");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -105,11 +92,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testReplace(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testReplace(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/replace");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -117,11 +102,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testEach(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testEach(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/each");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -129,11 +112,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testObject(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testObject(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/object");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -141,11 +122,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testAttr(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testAttr(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/attr");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -153,11 +132,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testSimpleValue(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testSimpleValue(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/simplevalue");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -166,11 +143,9 @@ public class AttrProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDoubleValue(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDoubleValue(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/doublevalue");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -179,11 +154,9 @@ public class AttrProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testAppendPrepend(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testAppendPrepend(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/appendprepend");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -192,11 +165,9 @@ public class AttrProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testFixedValue(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testFixedValue(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/fixedvalue");
         
         Assertions.assertTrue(executor.isAllOK());
@@ -205,11 +176,9 @@ public class AttrProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testSwitch(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testSwitch(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/switch");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -218,11 +187,9 @@ public class AttrProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testWith(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testWith(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/with");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -230,11 +197,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDOMEvent(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDOMEvent(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/domevent");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -242,11 +207,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testAssert(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testAssert(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/assert");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -254,11 +217,9 @@ public class AttrProcessorsTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDefault(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDefault(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/attrprocessors/default");
 
         Assertions.assertTrue(executor.isAllOK());

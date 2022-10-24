@@ -29,6 +29,7 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class ConditionalCommentsTest {
@@ -37,12 +38,10 @@ public class ConditionalCommentsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testConditionalComments(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testConditionalComments(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{ new StandardDialect() }));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/conditionalcomments");
         
         Assertions.assertTrue(executor.isAllOK());

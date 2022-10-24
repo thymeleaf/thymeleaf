@@ -24,13 +24,12 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.templateengine.elementprocessors.dialect.MarkupDialect;
 import org.thymeleaf.templateengine.elementprocessors.dialect.PrecedenceDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class ElementProcessorsTest {
@@ -40,11 +39,9 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testBlock(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testBlock(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/block");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -54,12 +51,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testElementMarkupProcessors(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testElementMarkupProcessors(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new MarkupDialect()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/markup");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -69,12 +64,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDialectPrecedenceModelBefore(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDialectPrecedenceModelBefore(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new PrecedenceDialect(StandardDialect.PROCESSOR_PRECEDENCE - 1)}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/precedencemodelbefore");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -84,12 +77,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDialectPrecedenceModelSame(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDialectPrecedenceModelSame(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new PrecedenceDialect(StandardDialect.PROCESSOR_PRECEDENCE)}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/precedencemodelsame");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -99,12 +90,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDialectPrecedenceModelAfter(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDialectPrecedenceModelAfter(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new PrecedenceDialect(StandardDialect.PROCESSOR_PRECEDENCE + 1)}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/precedencemodelafter");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -114,12 +103,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDialectPrecedenceTagBefore(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDialectPrecedenceTagBefore(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new PrecedenceDialect(StandardDialect.PROCESSOR_PRECEDENCE - 1)}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/precedencetagbefore");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -129,12 +116,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDialectPrecedenceTagSame(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDialectPrecedenceTagSame(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new PrecedenceDialect(StandardDialect.PROCESSOR_PRECEDENCE)}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/precedencetagsame");
 
         Assertions.assertTrue(executor.isAllOK());
@@ -144,12 +129,10 @@ public class ElementProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testDialectPrecedenceTagAfter(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testDialectPrecedenceTagAfter(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new StandardDialect(), new PrecedenceDialect(StandardDialect.PROCESSOR_PRECEDENCE + 1)}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/elementprocessors/precedencetagafter");
 
         Assertions.assertTrue(executor.isAllOK());

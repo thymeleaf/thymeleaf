@@ -30,6 +30,7 @@ import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.templateengine.prepostprocessors.dialect.Dialect01;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class PrePostProcessorsTest {
@@ -38,13 +39,11 @@ public class PrePostProcessorsTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testPrePostProcessors(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testPrePostProcessors(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(),  new Dialect01()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/prepostprocessors");
         
         Assertions.assertTrue(executor.isAllOK());

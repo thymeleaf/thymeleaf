@@ -22,9 +22,8 @@ package org.thymeleaf.templateengine.parsing;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
-import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class ParsingTest {
@@ -33,11 +32,9 @@ public class ParsingTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testParsing(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testParsing(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/parsing");
 
         Assertions.assertTrue(executor.isAllOK());

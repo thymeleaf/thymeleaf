@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class GTVGTest {
@@ -33,11 +34,9 @@ public class GTVGTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testGTVG(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testGTVG(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/gtvg");
 
         Assertions.assertTrue(executor.isAllOK());

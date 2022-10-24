@@ -24,13 +24,12 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.thymeleaf.testing.templateengine.engine.TestExecutorFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.util.ThrottleArgumentsProvider;
 import org.thymeleaf.templateengine.aggregation.dialect.Dialect01;
 import org.thymeleaf.templateengine.aggregation.dialect.Dialect02;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.util.ThrottledWebTestExecutorArgumentsProvider;
 
 
 public class AggregationTest {
@@ -39,13 +38,11 @@ public class AggregationTest {
 
 
     @ParameterizedTest
-    @ArgumentsSource(ThrottleArgumentsProvider.class)
-    public void testContext(final int throttleStep) throws Exception {
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testContext(final TestExecutor executor) throws Exception {
 
-        final TestExecutor executor = TestExecutorFactory.createJakartaWebTestExecutor();
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new StandardDialect(), new Dialect01(), new Dialect02()}));
-        executor.setThrottleStep(throttleStep);
         executor.execute("classpath:templateengine/aggregation");
         
         Assertions.assertTrue(executor.isAllOK());
