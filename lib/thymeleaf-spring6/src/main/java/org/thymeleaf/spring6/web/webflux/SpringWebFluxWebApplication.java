@@ -38,7 +38,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.1.0
  *
  */
-public final class SpringWebFluxWebApplication implements ISpringWebFluxWebApplication {
+public class SpringWebFluxWebApplication implements ISpringWebFluxWebApplication {
+// This class is made NOT final so that it can be proxied by Dependency Injection frameworks
 
     /*
      * There is no equivalent in Spring WebFlux to an application-level attribute container (e.g. ServletContext).

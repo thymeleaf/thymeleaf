@@ -39,7 +39,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.1.0
  *
  */
-final class JavaxServletWebApplication implements IServletWebApplication {
+public class JavaxServletWebApplication implements IServletWebApplication {
 // This class is made NOT final so that it can be proxied by Dependency Injection frameworks
 
     private final ServletContext servletContext;
