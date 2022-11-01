@@ -39,20 +39,20 @@ import org.thymeleaf.spring5.messageresolver.SpringMessageResolver;
  * </p>
  * <p>
  *   It also configures a {@link SpringMessageResolver} as message resolver, and
- *   implements the {@link MessageSourceAware} interface in order to let Spring 
+ *   implements the {@link MessageSourceAware} interface in order to let Spring
  *   automatically setting the {@link MessageSource} used at the application
  *   (bean needs to have id {@code "messageSource"}). If this Spring standard setting
  *   needs to be overridden, the {@link #setTemplateEngineMessageSource(MessageSource)} can
- *   be used. 
+ *   be used.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
- * 
+ *
  * @since 3.0.3
  *
  */
-public class SpringTemplateEngine 
-        extends TemplateEngine 
+public class SpringTemplateEngine
+        extends TemplateEngine
         implements ISpringTemplateEngine, MessageSourceAware {
 
 
