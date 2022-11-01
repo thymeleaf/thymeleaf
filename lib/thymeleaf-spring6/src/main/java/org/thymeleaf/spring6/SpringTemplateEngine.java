@@ -280,12 +280,6 @@ public class SpringTemplateEngine
     @Override
     protected final void initializeSpecific() {
 
-        // First of all, give the opportunity to subclasses to apply their own configurations
-        initializeSpringSpecific();
-
-        // Once the subclasses have had their opportunity, compute configurations belonging to SpringTemplateEngine
-        super.initializeSpecific();
-
         final MessageSource messageSource =
                 this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource;
 
@@ -299,6 +293,9 @@ public class SpringTemplateEngine
         }
 
         super.setMessageResolver(messageResolver);
+
+        // Lastly, give the opportunity to subclasses to apply their own configurations
+        initializeSpringSpecific();
 
     }
 
