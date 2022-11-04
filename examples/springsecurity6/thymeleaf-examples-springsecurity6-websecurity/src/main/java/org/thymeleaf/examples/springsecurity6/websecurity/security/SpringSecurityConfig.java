@@ -40,19 +40,21 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
                 .formLogin()
-                .loginPage("/login.html")
-                .failureUrl("/login-error.html")
-                .and()
+                    .loginPage("/login.html")
+                    .failureUrl("/login-error.html")
+            .and()
                 .logout()
-                .logoutSuccessUrl("/index.html")
-                .and()
+                    .logoutSuccessUrl("/index.html")
+            .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/user/**").hasRole("USER")
-                .requestMatchers("/shared/**").hasAnyRole("USER","ADMIN")
-                .and()
+                    .requestMatchers("/", "/index.html","/login.html","/css/**","/favicon.ico").permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasRole("USER")
+                    .requestMatchers("/shared/**").hasAnyRole("USER","ADMIN")
+                    .anyRequest().authenticated()
+            .and()
                 .exceptionHandling()
-                .accessDeniedPage("/403.html");
+                    .accessDeniedPage("/403.html");
         return http.build();
     }
 
