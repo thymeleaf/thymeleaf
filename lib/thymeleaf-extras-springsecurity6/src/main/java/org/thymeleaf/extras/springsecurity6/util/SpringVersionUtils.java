@@ -21,8 +21,12 @@ package org.thymeleaf.extras.springsecurity6.util;
 
 import org.springframework.core.SpringVersion;
 import org.thymeleaf.util.ClassLoaderUtils;
+import org.thymeleaf.util.VersionUtils;
 
 /**
+ * <p>
+ *   Utility class useful for determining the version of Spring that is on the classpath.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -31,9 +35,7 @@ import org.thymeleaf.util.ClassLoaderUtils;
  */
 public final class SpringVersionUtils {
 
-
-    private static final int SPRING_VERSION_MAJOR;
-    private static final int SPRING_VERSION_MINOR;
+    private static final VersionUtils.VersionSpec SPRING_VERSION_SPEC;
 
     private static final boolean SPRING_WEB_MVC_PRESENT;
     private static final boolean SPRING_WEB_REACTIVE_PRESENT;
@@ -52,52 +54,46 @@ public final class SpringVersionUtils {
         // There might be times when SpringVersion cannot determine the version due to CL restrictions (see doc)
         if (springVersion != null) {
 
-            try {
+            SPRING_VERSION_SPEC = VersionUtils.parseVersion(springVersion);
 
-                String versionRemainder = springVersion;
-
-                int separatorIdx = versionRemainder.indexOf('.');
-                SPRING_VERSION_MAJOR = Integer.parseInt(versionRemainder.substring(0, separatorIdx));
-
-                int separator2Idx = versionRemainder.indexOf('.', separatorIdx + 1);
-                SPRING_VERSION_MINOR = Integer.parseInt(versionRemainder.substring(separatorIdx + 1, separator2Idx));
-
-            } catch (final Exception e) {
+            if (SPRING_VERSION_SPEC.isUnknown()) {
                 throw new ExceptionInInitializerError(
                         "Exception during initialization of Spring versioning utilities. Identified Spring " +
-                                "version is '" + springVersion + "', which does not follow the {major}.{minor}.{...} scheme");
+                        "version is '" + springVersion + "', which does not follow the " +
+                        "{major}.{minor}.{patch}[.{...}] scheme");
             }
 
         } else {
 
             if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.io.buffer.DataBuffer")) {
-                SPRING_VERSION_MAJOR = 5;
-                SPRING_VERSION_MINOR = 0;
+                if (!ClassLoaderUtils.isClassPresent(springPackageName + ".lang.UsesJava8")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("6.0.0");
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.ConcurrentLruCache")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.3.0");
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.SimpleRouteMatcher")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.2.0.RELEASE");
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.function.SupplierUtils")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.1.0.RELEASE");
+                } else {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.0.0.RELEASE");
+                }
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".context.annotation.ComponentScans")) {
-                SPRING_VERSION_MAJOR = 4;
-                SPRING_VERSION_MINOR = 3;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("4.3.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.annotation.AliasFor")) {
-                SPRING_VERSION_MAJOR = 4;
-                SPRING_VERSION_MINOR = 2;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("4.2.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".cache.annotation.CacheConfig")) {
-                SPRING_VERSION_MAJOR = 4;
-                SPRING_VERSION_MINOR = 1;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("4.1.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.io.PathResource")) {
-                SPRING_VERSION_MAJOR = 4;
-                SPRING_VERSION_MINOR = 0;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("4.0.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".web.context.request.async.DeferredResult")) {
-                SPRING_VERSION_MAJOR = 3;
-                SPRING_VERSION_MINOR = 2;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("3.2.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".web.servlet.support.RequestDataValueProcessor")) {
-                SPRING_VERSION_MAJOR = 3;
-                SPRING_VERSION_MINOR = 1;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("3.1.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".web.bind.annotation.RequestBody")) {
-                SPRING_VERSION_MAJOR = 3;
-                SPRING_VERSION_MINOR = 0;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("3.0.0.RELEASE");
             } else {
                 // We will default to 2.5
-                SPRING_VERSION_MAJOR = 2;
-                SPRING_VERSION_MINOR = 5;
+                SPRING_VERSION_SPEC = VersionUtils.parseVersion("2.5.0.RELEASE");
             }
 
 
@@ -105,65 +101,97 @@ public final class SpringVersionUtils {
 
         SPRING_WEB_MVC_PRESENT = ClassLoaderUtils.isClassPresent(springPackageName + ".web.servlet.View");
         SPRING_WEB_REACTIVE_PRESENT =
-                SPRING_VERSION_MAJOR >= 5 && ClassLoaderUtils.isClassPresent(springPackageName + ".web.reactive.result.view.View");
+                SPRING_VERSION_SPEC.isAtLeast(5) && ClassLoaderUtils.isClassPresent(springPackageName + ".web.reactive.result.view.View");
 
     }
 
 
 
+    public static String getSpringVersion() {
+        return SPRING_VERSION_SPEC.getVersion();
+    }
 
     public static int getSpringVersionMajor() {
-        return SPRING_VERSION_MAJOR;
+        return SPRING_VERSION_SPEC.getMajor();
     }
 
     public static int getSpringVersionMinor() {
-        return SPRING_VERSION_MINOR;
+        return SPRING_VERSION_SPEC.getMinor();
+    }
+
+    public static int getSpringVersionPatch() {
+        return SPRING_VERSION_SPEC.getPatch();
     }
 
 
 
     public static boolean isSpring30AtLeast() {
-        return SPRING_VERSION_MAJOR >= 3;
+        return isSpringAtLeast(3,0);
     }
 
 
     public static boolean isSpring31AtLeast() {
-        return SPRING_VERSION_MAJOR > 3 || (SPRING_VERSION_MAJOR == 3 && SPRING_VERSION_MINOR >= 1);
+        return isSpringAtLeast(3,1);
     }
 
 
     public static boolean isSpring32AtLeast() {
-        return SPRING_VERSION_MAJOR > 3 || (SPRING_VERSION_MAJOR == 3 && SPRING_VERSION_MINOR >= 2);
+        return isSpringAtLeast(3,2);
     }
 
 
     public static boolean isSpring40AtLeast() {
-        return SPRING_VERSION_MAJOR >= 4;
+        return isSpringAtLeast(4,0);
     }
 
 
     public static boolean isSpring41AtLeast() {
-        return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 1);
+        return isSpringAtLeast(4,1);
     }
 
 
     public static boolean isSpring42AtLeast() {
-        return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 2);
+        return isSpringAtLeast(4,2);
     }
 
 
     public static boolean isSpring43AtLeast() {
-        return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 3);
+        return isSpringAtLeast(4,3);
     }
 
 
     public static boolean isSpring50AtLeast() {
-        return SPRING_VERSION_MAJOR >= 5;
+        return isSpringAtLeast(5, 0);
+    }
+
+
+    public static boolean isSpring51AtLeast() {
+        return isSpringAtLeast(5,1);
+    }
+
+
+    public static boolean isSpring52AtLeast() {
+        return isSpringAtLeast(5,2);
+    }
+
+
+    public static boolean isSpring53AtLeast() {
+        return isSpringAtLeast(5,3);
     }
 
 
     public static boolean isSpring60AtLeast() {
-        return SPRING_VERSION_MAJOR >= 6;
+        return isSpringAtLeast(6,0);
+    }
+
+
+    public static boolean isSpringAtLeast(final int major, final int minor) {
+        return isSpringAtLeast(major, minor, 0);
+    }
+
+
+    public static boolean isSpringAtLeast(final int major, final int minor, final int patch) {
+        return SPRING_VERSION_SPEC.isAtLeast(major, minor, patch);
     }
 
 
