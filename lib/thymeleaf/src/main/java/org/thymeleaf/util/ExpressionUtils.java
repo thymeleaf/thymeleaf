@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public final class ExpressionUtils {
                     // java.util
                     ArrayList.class, LinkedList.class, HashMap.class, LinkedHashMap.class, HashSet.class,
                     LinkedHashSet.class, Iterator.class, Enumeration.class, Locale.class, Properties.class,
-                    Date.class, Calendar.class, Collection.class));
+                    Date.class, Calendar.class, Collection.class, Optional.class));
 
     private static final Set<String> ALLOWED_JAVA_SUPERS_NAMES;
     private static final Set<Class<?>> ALLOWED_JAVA_SUPERS =

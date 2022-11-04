@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+opt = @java.util.Optional@of('sometext')
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${opt.orElse('other')}">SHOULD BE sometext</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>sometext</p>
