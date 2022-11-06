@@ -80,12 +80,30 @@ public class TemporalsFormattingTest {
     }
 
     @Test
-    public void testFormatStandardPattern() {
+    public void testFormatStandardPatternDateTime() {
         Temporal time = LocalDateTime.of(2015, 12, 31, 23, 59);
         assertEquals("12/31/15, 11:59 PM", temporals.format(time, "SHORT", Locale.US));
         assertEquals("Dec 31, 2015, 11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US));
         assertEquals("December 31, 2015 at 11:59:00 PM Z", temporals.format(time, "LONG", Locale.US));
         assertEquals("Thursday, December 31, 2015 at 11:59:00 PM Z", temporals.format(time, "FULL", Locale.US));
+    }
+
+    @Test
+    public void testFormatStandardPatternDate() {
+        Temporal time = LocalDate.of(2015, 12, 31);
+        assertEquals("12/31/15", temporals.format(time, "SHORT", Locale.US));
+        assertEquals("Dec 31, 2015", temporals.format(time, "MEDIUM", Locale.US));
+        assertEquals("December 31, 2015", temporals.format(time, "LONG", Locale.US));
+        assertEquals("Thursday, December 31, 2015", temporals.format(time, "FULL", Locale.US));
+    }
+
+    @Test
+    public void testFormatStandardPatternTime() {
+        Temporal time = LocalTime.of( 23, 59);
+        assertEquals("11:59 PM", temporals.format(time, "SHORT", Locale.US));
+        assertEquals("11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US));
+        assertEquals("11:59:00 PM Z", temporals.format(time, "LONG", Locale.US));
+        assertEquals("11:59:00 PM Z", temporals.format(time, "FULL", Locale.US));
     }
 
     @Test
