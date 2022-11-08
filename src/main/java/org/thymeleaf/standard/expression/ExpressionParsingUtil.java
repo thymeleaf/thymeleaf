@@ -636,7 +636,18 @@ final class ExpressionParsingUtil {
         if (state.hasExpressionAt(nodeIndex)) {
             return state;
         }
+        
+        /*
+         * STEP 12: Try composing this node as a SWITCH CASE expression
+         */
 
+        if (SwitchCaseExpression.composeSwitchCaseExpression(state, nodeIndex) == null) {
+            return null;
+        }
+        if (state.hasExpressionAt(nodeIndex)) {
+            return state;
+        }
+        
         return null;
 
     }
