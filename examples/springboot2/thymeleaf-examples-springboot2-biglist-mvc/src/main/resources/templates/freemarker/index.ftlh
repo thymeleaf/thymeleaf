@@ -9,7 +9,7 @@
 
   <body>
 
-    <h2>Spring MVC - Thymeleaf Sandbox application</h2>
+    <h2>Spring BigList MVC - Thymeleaf Sandbox application</h2>
 
     <p>Using template engine: <strong>FreeMarker</strong> (see logo below)</p>
 
