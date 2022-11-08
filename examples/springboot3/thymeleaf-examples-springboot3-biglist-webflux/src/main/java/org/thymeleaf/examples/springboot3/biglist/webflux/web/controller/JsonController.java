@@ -47,19 +47,19 @@ public class JsonController {
 
 
 
-    @RequestMapping("/data")
+    @RequestMapping("/json")
     public String index() {
-        return "Use '/smalllist.data' or '/biglist.data'";
+        return "Use '/smalllist.json' or '/biglist.json'";
     }
 
 
-    @RequestMapping("/smalllist.data")
+    @RequestMapping("/smalllist.json")
     public Flux<PlaylistEntry> smallList() {
         return Flux.fromIterable(this.playlistEntryRepository.findAllPlaylistEntries());
     }
 
 
-    @RequestMapping("/biglist.data")
+    @RequestMapping("/biglist.json")
     public Flux<PlaylistEntry> bigList() {
         return this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
     }
