@@ -144,9 +144,9 @@
     <spring-framework5.version>5.3.24</spring-framework5.version>
     <spring-framework6.version>6.0.0</spring-framework6.version>
     <spring-security5.version>5.7.3</spring-security5.version>
-    <spring-security6.version>6.0.0-SNAPSHOT</spring-security6.version>
+    <spring-security6.version>6.0.0-RC2</spring-security6.version>
     <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>
-    <spring-webflow3.version>3.0.0-SNAPSHOT</spring-webflow3.version>
+    <spring-webflow3.version>3.0.0-M1</spring-webflow3.version>
     <jackson.version>2.14.0</jackson.version>
     <reactor.version>2020.0.24</reactor.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
