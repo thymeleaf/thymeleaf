@@ -1,4 +1,30 @@
-3.0.0.RC1
+3.1.1
+=====
+- Fixed issue with mapping servlet context to requests when reverse proxies or multiple context
+  paths are being used.
+
+
+
+3.1.0
+=====
+- Refactor project structure (new "thymeleaf/thymeleaf" repository).
+- Allowed example applications to be executed from command line.
+- Make Thymeleaf distribution package include all relevant project artifacts.
+
+
+
+3.1.0.RC2
+=========
+- Added java.util.Optional to the list of allowed classes in expressions.
+- Added the possibility to set a custom IMessageResolver in SpringTemplateEngine instances.
+- Improved rendering of time / date using formatstyle with temporals that are not complete datetimes.
+- Improved exception message when a method called in expressions does not exist.
+- Made JakartaServletWebApplication and JavaxServletWebApplication non-final so that they can be proxied.
+- Allowed the execution of methods in java.util.stream.Stream from expressions.
+
+
+
+3.1.0.RC1
 =========
 - Added support for iterating (th:each) on Java 8 streams.
 - Deprecation: Removed "th:substituteby".
@@ -8,7 +34,7 @@
 
 
 
-3.0.0.M3
+3.1.0.M3
 ========
 - Integrated module "thymeleaf-extras-java8time" into Thymeleaf core.
 - Additional refactoring of project structure: merged thymeleaf-tests into the main "thymeleaf" repository.
