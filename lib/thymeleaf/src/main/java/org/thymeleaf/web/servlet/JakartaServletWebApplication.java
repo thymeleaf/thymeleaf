@@ -113,7 +113,7 @@ public class JakartaServletWebApplication implements IServletWebApplication {
     private boolean servletContextMatches(final HttpServletRequest httpServletRequest) {
         // We should not be directly matching servletContext objects because a wrapper might have been applied
         final String servletContextPath = this.servletContext.getContextPath();
-        final String requestServletContextPath = httpServletRequest.getContextPath();
+        final String requestServletContextPath = httpServletRequest.getServletContext().getContextPath();
         return Objects.equals(servletContextPath, requestServletContextPath);
     }
 
