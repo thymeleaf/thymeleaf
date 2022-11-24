@@ -142,7 +142,7 @@
     <attoparser.version>2.0.6.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <spring-framework5.version>5.3.24</spring-framework5.version>
-    <spring-framework6.version>6.0.0</spring-framework6.version>
+    <spring-framework6.version>6.0.2</spring-framework6.version>
     <spring-security5.version>5.7.3</spring-security5.version>
     <spring-security6.version>6.0.0</spring-security6.version>
     <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>
