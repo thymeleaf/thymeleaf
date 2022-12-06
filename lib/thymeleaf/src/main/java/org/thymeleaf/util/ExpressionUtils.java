@@ -20,6 +20,7 @@
 
 package org.thymeleaf.util;
 
+import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -49,14 +50,22 @@ public final class ExpressionUtils {
 
     // NOTE thes lists are hard-wired into code, so any change to these sets should be synchronized with changes
     // in the corresponding code for quickly checking the fact that a type name might be in the blocking list.
-    private static final Set<String> BLOCKED_PACKAGE_NAME_PREFIXES =
+    private static final Set<String> BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES =
             new HashSet<>(Arrays.asList(
                     "java.", "javax.", "jakarta.", "jdk.",
                     "org.ietf.jgss.", "org.omg.", "org.w3c.dom.", "org.xml.sax.",
                     "com.sun.", "sun."));
-    private static final Set<String> ALLOWED_PACKAGE_NAME_PREFIXES =
+    private static final Set<String> ALLOWED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES =
             new HashSet<>(Arrays.asList(
                     "java.time."));
+    private static final Set<String> BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES =
+            new HashSet<>(Arrays.asList(
+                    "com.squareup.javapoet.",
+                    "net.bytebuddy.", "net.sf.cglib.",
+                    "javassist.", "javax0.geci.",
+                    "org.apache.bcel.", "org.aspectj.", "org.javassist.", "org.mockito.", "org.objectweb.asm.",
+                    "org.objenesis.", "org.springframework.aot.", "org.springframework.asm.",
+                    "org.springframework.cglib.", "org.springframework.javapoet.", "org.springframework.objenesis."));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
@@ -91,18 +100,32 @@ public final class ExpressionUtils {
                 && typeName.charAt(2) == 'v' && typeName.charAt(3) == 'a');
     }
 
-    static boolean isBlockedPackage(final String typeName) {
+    static boolean isPackageBlockedForAllPurposes(final String typeName) {
         final char c0 = typeName.charAt(0);
-        if (c0 != 'j' && c0 != 'o' && c0 != 'c' && c0 != 's'){ // All blocked packages start with: j, o, c, s
+        if (c0 != 'c' && c0 != 'j' && c0 != 'o' && c0 != 's'){ // All blocked packages start with: c, j, o, s
             return false;
         }
-        if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there. Only com.sun is blocked.
+        if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there.
             return typeName.startsWith("com.sun.");
         }
         if (isJavaPackage(typeName)) {
             return !typeName.startsWith("java.time.");
         }
-        return BLOCKED_PACKAGE_NAME_PREFIXES.stream().anyMatch(prefix -> typeName.startsWith(prefix));
+        return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(prefix -> typeName.startsWith(prefix));
+    }
+
+    static boolean isPackageBlockedForTypeReference(final String typeName) {
+        if (isPackageBlockedForAllPurposes(typeName)) {
+            return true;
+        }
+        final char c0 = typeName.charAt(0);
+        if (c0 != 'c' && c0 != 'n' && c0 != 'j' && c0 != 'o'){ // All blocked packages start with: c, n, j, o
+            return false;
+        }
+        if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there.
+            return typeName.startsWith("com.squareup.javapoet.");
+        }
+        return BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES.stream().anyMatch(prefix -> typeName.startsWith(prefix));
     }
 
 
@@ -111,12 +134,51 @@ public final class ExpressionUtils {
 
         Validate.notNull(typeName, "Type name cannot be null");
 
-        if (!isBlockedPackage(typeName)) {
+        if (!isPackageBlockedForTypeReference(typeName)) {
             return true;
         }
 
         // We know the package is blocked, but certain classes and interfaces in blocked packages are allowed
         return ALLOWED_JAVA_CLASS_NAMES.contains(typeName) || ALLOWED_JAVA_SUPERS_NAMES.contains(typeName);
+
+    }
+
+
+
+    static boolean isMemberAllowedForInstanceOfType(final Class<?> type, final String memberName) {
+
+        Validate.notNull(type, "Type cannot be null");
+
+        final String typeName = type.getName();
+
+        if (!isPackageBlockedForAllPurposes(typeName)) {
+            return true;
+        }
+
+        // We know the package is blocked, so whether we can actually call methods or see fields of it depends
+        // on other checks like whether the class (inside the blocked package) is allowed, or whether the method
+        // is declared in an allowed package or interface. Also, enums, annotations and proxies are always allowed.
+
+        // Enums and annotations in blocked packages are OK
+        if (type.isEnum() || type.isAnnotation()) {
+            return true;
+        }
+
+        // We will allow methods to be called on JDK-proxied classes. These proxied
+        // classes are typically created under "jdk.proxyX" packages so calling methods
+        // on them would be forbidden by default if we didn't allow this explicitly.
+        if (Proxy.isProxyClass(type)) {
+            return true;
+        }
+
+        if (ALLOWED_JAVA_CLASSES.contains(type)) {
+            return true;
+        }
+
+        // Otherwise, we will restrict calls to methods declared in one of the allowed interfaces or superclasses
+        return ALLOWED_JAVA_SUPERS.stream()
+                .filter(i -> i.isAssignableFrom(type))
+                .anyMatch(i -> Arrays.stream(i.getDeclaredMethods()).anyMatch(m -> memberName.equals(m.getName())));
 
     }
 
@@ -130,57 +192,27 @@ public final class ExpressionUtils {
             return true;
         }
 
-        // Calling Object#getClass() will always be allowed
-        if ("getClass".equals(memberName)) {
-            return true;
-        }
-
-        final boolean isClass = target instanceof Class<?>;
-        final Class<?> type = target.getClass();
-        final String typeName = type.getName();
-
-        if (!isBlockedPackage(typeName)) {
-            return true;
-        }
-
-        // We know the package is blocked, but whether we actually call that method call or not depends
-        // on whether the class (inside the blocked package) is allowed, or whether the method is declared in
-        // an allowed package or interface.
-
-        if (ALLOWED_JAVA_CLASSES.contains(type)) {
-            return true;
-        }
-
-        // Enums and annotations in blocked packages are OK
-        if (type.isEnum() || type.isAnnotation()) {
+        // Calling Object#getClass() or Object#toString() will always be allowed
+        if ("getClass".equals(memberName) || "toString".equals(memberName)) {
             return true;
         }
 
         // If the target itself is a class, that means we are calling a static method on it. And therefore we
         // will need to determine whether the class itself is blocked.
-        if (isClass) {
+        if (target instanceof Class<?>) {
             final String targetTypeName = ((Class<?>) target).getName();
-            if (!isBlockedPackage(targetTypeName)) {
-                return true;
-            }
-            if (ALLOWED_JAVA_CLASSES.contains(target)) {
-                return true;
-            }
             // If target is a blocked class, we will only allow calling "getName"
-            return "getName".equals(memberName);
+            return "getName".equals(memberName) || isTypeAllowed(targetTypeName);
         }
 
-        // Otherwise, we will restrict calls to methods declared in one of the allowed interfaces or superclasses
-        return ALLOWED_JAVA_SUPERS.stream()
-                .filter(i -> i.isAssignableFrom(type))
-                .anyMatch(i -> Arrays.stream(i.getDeclaredMethods()).anyMatch(m -> memberName.equals(m.getName())));
+        return isMemberAllowedForInstanceOfType(target.getClass(), memberName);
 
     }
 
 
 
     public static List<String> getBlockedClasses() {
-        return BLOCKED_PACKAGE_NAME_PREFIXES.stream()
+        return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream()
                 .sorted().map(p -> String.format("%s*", p)).collect(Collectors.toList());
     }
 

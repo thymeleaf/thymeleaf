@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+proxied = @org.thymeleaf.templateengine.features.TestProxyFactory@createTestProxy()
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${proxied.getValue()}">SHOULD OUTPUT EVEN IF PROXY</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>10</p>
