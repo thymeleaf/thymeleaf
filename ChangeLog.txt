@@ -2,6 +2,7 @@
 =====
 - Fixed issue with mapping servlet context to requests when reverse proxies or multiple context
   paths are being used.
+- Allow method calls on proxied instances while keeping instantiation of proxies still forbidden.
 
 
 
