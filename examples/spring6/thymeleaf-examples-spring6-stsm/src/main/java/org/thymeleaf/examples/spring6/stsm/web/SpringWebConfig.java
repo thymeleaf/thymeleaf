@@ -84,8 +84,8 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     }
 
     /*
-     * Add formatter for class {@link thymeleafexamples.stsm.business.entities.Variety}
-     * and {@link java.util.Date} in addition to the one registered by default
+     * Add formatter for class *.stsm.business.entities.Variety
+     * and java.util.Date in addition to the ones registered by default
      */
     @Override
     public void addFormatters(final FormatterRegistry registry) {
