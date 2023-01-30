@@ -36,6 +36,7 @@ import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypeLocator;
+import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -244,6 +245,15 @@ public final class ThymeleafEvaluationContext
 
             return canRead;
 
+        }
+
+        @Override
+        public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
+            if (this.propertyAccessor != null) {
+                return this.propertyAccessor.read(context, target, name);
+            } else {
+                return super.read(context, target, name);
+            }
         }
 
     }
