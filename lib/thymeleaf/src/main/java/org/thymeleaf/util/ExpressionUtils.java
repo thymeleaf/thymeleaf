@@ -95,6 +95,33 @@ public final class ExpressionUtils {
     }
 
 
+    static String normalizeExpression(final String expression) {
+        if (expression == null) {
+            return expression;
+        }
+        StringBuilder strBuilder = null;
+        final int expLen = expression.length();
+        char c;
+        for (int i = 0; i < expLen; i++) {
+            c = expression.charAt(i);
+            if (c != '\n' && (c < '\u0020' || (c >= '\u007F' && c <= '\u009F'))) {
+                if (strBuilder == null) {
+                    strBuilder = new StringBuilder(expLen);
+                    strBuilder.append(expression, 0, i);
+                }
+            } else if (strBuilder != null) {
+                strBuilder.append(c);
+            }
+        }
+        return strBuilder == null ? expression : strBuilder.toString();
+    }
+
+    static String cleanTypeName(final String typeName) {
+        // TODO
+        return typeName;
+    }
+
+
     static boolean isJavaPackage(final String typeName) {
         return (typeName.charAt(0) == 'j' && typeName.charAt(4) == '.' && typeName.charAt(1) == 'a'
                 && typeName.charAt(2) == 'v' && typeName.charAt(3) == 'a');

@@ -36,10 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ClassLoaderUtils;
 import org.thymeleaf.TemplateEngine;
 
-import static org.thymeleaf.util.ExpressionUtils.isMemberAllowedForInstanceOfType;
-import static org.thymeleaf.util.ExpressionUtils.isPackageBlockedForAllPurposes;
-import static org.thymeleaf.util.ExpressionUtils.isPackageBlockedForTypeReference;
-import static org.thymeleaf.util.ExpressionUtils.isTypeAllowed;
+import static org.thymeleaf.util.ExpressionUtils.*;
 
 
 public final class ExpressionUtilsTest {
@@ -136,6 +133,27 @@ public final class ExpressionUtilsTest {
         Assertions.assertTrue(isMemberAllowedForInstanceOfType(GregorianCalendar.class, "toString"));
         Assertions.assertTrue(isMemberAllowedForInstanceOfType(LinkedHashMap.class, "toString"));
     }
+
+
+    @Test
+    public void testNormalizeExpression() {
+        Assertions.assertNull(normalizeExpression(null));
+        Assertions.assertEquals("", normalizeExpression(""));
+        final String exp00 = "${something}";
+        Assertions.assertSame(exp00, normalizeExpression(exp00));
+        Assertions.assertEquals("${some thing}", normalizeExpression("${some thing}"));
+        Assertions.assertEquals("${some \nthing}", normalizeExpression("${some \nthing}"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("${some \0thing}"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("${some \tthing}"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("${some t\t\thing}"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some t\t\thing}"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some thing}"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some t\t\thing}\t"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some thing}\t"));
+        Assertions.assertEquals("${some thing}", normalizeExpression("${some t\t\thing}\t"));
+    }
+
+
 
 
     static TestProxied createTestProxy() {
