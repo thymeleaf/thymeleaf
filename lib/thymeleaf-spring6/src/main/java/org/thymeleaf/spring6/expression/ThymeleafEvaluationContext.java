@@ -185,15 +185,14 @@ public final class ThymeleafEvaluationContext
             if (this.typeLocator == null) {
                 throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
             }
-            final Class<?> type = this.typeLocator.findType(typeName);
-            if (type != null && !ExpressionUtils.isTypeAllowed(typeName)) {
+            if (!ExpressionUtils.isTypeAllowed(typeName)) {
                 throw new EvaluationException(
                         String.format(
                                 "Access is forbidden for type '%s' in Thymeleaf expressions. " +
                                 "Blocked classes are: %s. Allowed classes are: %s.",
                                 typeName, ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
-            return type;
+            return this.typeLocator.findType(typeName);
         }
 
     }

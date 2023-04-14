@@ -95,7 +95,7 @@ public final class ExpressionUtils {
     }
 
 
-    static String normalizeExpression(final String expression) {
+    static String normalize(final String expression) {
         if (expression == null) {
             return expression;
         }
@@ -114,11 +114,6 @@ public final class ExpressionUtils {
             }
         }
         return strBuilder == null ? expression : strBuilder.toString();
-    }
-
-    static String cleanTypeName(final String typeName) {
-        // TODO
-        return typeName;
     }
 
 
@@ -161,12 +156,14 @@ public final class ExpressionUtils {
 
         Validate.notNull(typeName, "Type name cannot be null");
 
-        if (!isPackageBlockedForTypeReference(typeName)) {
+        final String normalizedTypeName = normalize(typeName);
+
+        if (!isPackageBlockedForTypeReference(normalizedTypeName)) {
             return true;
         }
 
         // We know the package is blocked, but certain classes and interfaces in blocked packages are allowed
-        return ALLOWED_JAVA_CLASS_NAMES.contains(typeName) || ALLOWED_JAVA_SUPERS_NAMES.contains(typeName);
+        return ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) || ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName);
 
     }
 
@@ -219,8 +216,10 @@ public final class ExpressionUtils {
             return true;
         }
 
+        final String normalizedMemberName = normalize(memberName);
+
         // Calling Object#getClass() or Object#toString() will always be allowed
-        if ("getClass".equals(memberName) || "toString".equals(memberName)) {
+        if ("getClass".equals(normalizedMemberName) || "toString".equals(normalizedMemberName)) {
             return true;
         }
 
@@ -229,10 +228,10 @@ public final class ExpressionUtils {
         if (target instanceof Class<?>) {
             final String targetTypeName = ((Class<?>) target).getName();
             // If target is a blocked class, we will only allow calling "getName"
-            return "getName".equals(memberName) || isTypeAllowed(targetTypeName);
+            return "getName".equals(normalizedMemberName) || isTypeAllowed(targetTypeName);
         }
 
-        return isMemberAllowedForInstanceOfType(target.getClass(), memberName);
+        return isMemberAllowedForInstanceOfType(target.getClass(), normalizedMemberName);
 
     }
 

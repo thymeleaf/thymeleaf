@@ -364,15 +364,15 @@ public final class OGNLVariableExpressionEvaluator
 
         @Override
         public Class<?> classForName(final String className, final Map context) throws ClassNotFoundException {
-            final Class<?> classForName = this.classResolver.classForName(className, context);
-            if (classForName != null && !ExpressionUtils.isTypeAllowed(className)) {
+            if (!ExpressionUtils.isTypeAllowed(className)) {
                 throw new TemplateProcessingException(
                         String.format(
                                 "Access is forbidden for type '%s' in Thymeleaf expressions. " +
                                 "Blocked classes are: %s. Allowed classes are: %s.",
                                 className, ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+
             }
-            return classForName;
+            return this.classResolver.classForName(className, context);
         }
 
     }

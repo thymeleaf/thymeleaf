@@ -137,20 +137,20 @@ public final class ExpressionUtilsTest {
 
     @Test
     public void testNormalizeExpression() {
-        Assertions.assertNull(normalizeExpression(null));
-        Assertions.assertEquals("", normalizeExpression(""));
+        Assertions.assertNull(normalize(null));
+        Assertions.assertEquals("", normalize(""));
         final String exp00 = "${something}";
-        Assertions.assertSame(exp00, normalizeExpression(exp00));
-        Assertions.assertEquals("${some thing}", normalizeExpression("${some thing}"));
-        Assertions.assertEquals("${some \nthing}", normalizeExpression("${some \nthing}"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("${some \0thing}"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("${some \tthing}"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("${some t\t\thing}"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some t\t\thing}"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some thing}"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some t\t\thing}\t"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("\t${some thing}\t"));
-        Assertions.assertEquals("${some thing}", normalizeExpression("${some t\t\thing}\t"));
+        Assertions.assertSame(exp00, normalize(exp00));
+        Assertions.assertEquals("${some thing}", normalize("${some thing}"));
+        Assertions.assertEquals("${some \nthing}", normalize("${some \nthing}"));
+        Assertions.assertEquals("${some thing}", normalize("${some \0thing}"));
+        Assertions.assertEquals("${some thing}", normalize("${some \tthing}"));
+        Assertions.assertEquals("${some thing}", normalize("${some t\t\thing}"));
+        Assertions.assertEquals("${some thing}", normalize("\t${some t\t\thing}"));
+        Assertions.assertEquals("${some thing}", normalize("\t${some thing}"));
+        Assertions.assertEquals("${some thing}", normalize("\t${some t\t\thing}\t"));
+        Assertions.assertEquals("${some thing}", normalize("\t${some thing}\t"));
+        Assertions.assertEquals("${some thing}", normalize("${some t\t\thing}\t"));
     }
 
 
