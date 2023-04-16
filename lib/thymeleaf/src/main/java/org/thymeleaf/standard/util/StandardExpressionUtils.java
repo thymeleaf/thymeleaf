@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.util;
 
+import org.thymeleaf.util.ExpressionUtils;
+
 /**
  * 
  * @author Daniel Fern&aacute;ndez
@@ -50,7 +52,9 @@ public final class StandardExpressionUtils {
          * static methods ("@SomeClass@") as both are forbidden in certain contexts in restricted mode.
          */
 
-        final int explen = expression.length();
+        final String exp = ExpressionUtils.normalize(expression);
+
+        final int explen = exp.length();
         int n = explen;
         int ni = 0; // index for computing position in the NEW_ARRAY
         int pi = 0; // index for computing position in the PARAM_ARRAY
@@ -58,16 +62,16 @@ public final class StandardExpressionUtils {
         char c;
         while (n-- != 0) {
 
-            c = expression.charAt(n);
+            c = exp.charAt(n);
 
             // When checking for the "new" keyword, we need to identify that it is not a part of a larger
             // identifier, i.e. there is whitespace after it and no character that might be a part of an
             // identifier before it.
             if (ni < NEW_LEN
                     && c == NEW_ARRAY[ni]
-                    && (ni > 0 || ((n + 1 < explen) && Character.isWhitespace(expression.charAt(n + 1))))) {
+                    && (ni > 0 || ((n + 1 < explen) && Character.isWhitespace(exp.charAt(n + 1))))) {
                 ni++;
-                if (ni == NEW_LEN && (n == 0 || !isSafeIdentifierChar(expression.charAt(n - 1)))) {
+                if (ni == NEW_LEN && (n == 0 || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
                     return true; // we found an object instantiation
                 }
                 continue;
@@ -90,9 +94,9 @@ public final class StandardExpressionUtils {
             // identifier.
             if (pi < PARAM_LEN
                     && c == PARAM_ARRAY[pi]
-                    && (pi > 0 || ((n + 1 < explen) && !isSafeIdentifierChar(expression.charAt(n + 1))))) {
+                    && (pi > 0 || ((n + 1 < explen) && !isSafeIdentifierChar(exp.charAt(n + 1))))) {
                 pi++;
-                if (pi == PARAM_LEN && (n == 0 || !isSafeIdentifierChar(expression.charAt(n - 1)))) {
+                if (pi == PARAM_LEN && (n == 0 || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
                     return true; // we found a param access
                 }
                 continue;

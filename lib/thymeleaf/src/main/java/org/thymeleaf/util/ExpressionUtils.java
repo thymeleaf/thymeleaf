@@ -95,7 +95,7 @@ public final class ExpressionUtils {
     }
 
 
-    static String normalize(final String expression) {
+    public static String normalize(final String expression) {
         if (expression == null) {
             return expression;
         }
