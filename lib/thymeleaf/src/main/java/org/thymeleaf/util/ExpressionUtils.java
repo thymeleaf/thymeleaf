@@ -236,22 +236,6 @@ public final class ExpressionUtils {
     }
 
 
-
-    public static List<String> getBlockedClasses() {
-        return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream()
-                .sorted().map(p -> String.format("%s*", p)).collect(Collectors.toList());
-    }
-
-    public static List<String> getAllowedClasses() {
-        return Stream.concat(
-                    Stream.concat(
-                        ALLOWED_JAVA_CLASSES.stream().map(c -> c.getName()),
-                        ALLOWED_JAVA_SUPERS.stream().map(c -> c.getName())),
-                    Stream.of("java.time.*"))
-                .sorted().collect(Collectors.toList());
-    }
-
-
     private ExpressionUtils() {
         super();
     }

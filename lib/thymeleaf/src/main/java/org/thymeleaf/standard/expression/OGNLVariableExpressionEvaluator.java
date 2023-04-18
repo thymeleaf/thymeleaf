@@ -367,9 +367,7 @@ public final class OGNLVariableExpressionEvaluator
             if (!ExpressionUtils.isTypeAllowed(className)) {
                 throw new TemplateProcessingException(
                         String.format(
-                                "Access is forbidden for type '%s' in Thymeleaf expressions. " +
-                                "Blocked classes are: %s. Allowed classes are: %s.",
-                                className, ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                                "Access is forbidden for type '%s' in this expression context.", className));
 
             }
             return this.classResolver.classForName(className, context);
@@ -428,10 +426,8 @@ public final class OGNLVariableExpressionEvaluator
                 if (!ExpressionUtils.isMemberAllowed(target, member.getName())) {
                     throw new TemplateProcessingException(
                             String.format(
-                                    "Accessing member '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
-                                    "Blocked classes are: %s. Allowed classes are: %s.",
-                                    member.getName(), target.getClass(),
-                                    ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                                    "Accessing member '%s' is forbidden for type '%s' in this expression context.",
+                                    member.getName(), target.getClass()));
                 }
             }
             return true;

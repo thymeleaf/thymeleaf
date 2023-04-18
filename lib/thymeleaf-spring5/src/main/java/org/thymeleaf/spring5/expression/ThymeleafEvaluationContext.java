@@ -187,10 +187,7 @@ public final class ThymeleafEvaluationContext
             }
             if (!ExpressionUtils.isTypeAllowed(typeName)) {
                 throw new EvaluationException(
-                        String.format(
-                                "Access is forbidden for type '%s' in Thymeleaf expressions. " +
-                                "Blocked classes are: %s. Allowed classes are: %s.",
-                                typeName, ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                        String.format("Access is forbidden for type '%s' in this expression context.", typeName));
             }
             return this.typeLocator.findType(typeName);
         }
@@ -234,10 +231,8 @@ public final class ThymeleafEvaluationContext
                 if (!ExpressionUtils.isMemberAllowed(targetObject, methodEquiv)) {
                     throw new EvaluationException(
                             String.format(
-                                    "Accessing member '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
-                                    "Blocked classes are: %s. Allowed classes are: %s.",
-                                    name, targetObject.getClass(),
-                                    ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                                    "Accessing member '%s' is forbidden for type '%s' in this expression context.",
+                                    name, targetObject.getClass()));
                 }
             }
 
@@ -279,10 +274,8 @@ public final class ThymeleafEvaluationContext
                 if (!ExpressionUtils.isMemberAllowed(targetObject, name)) {
                     throw new EvaluationException(
                             String.format(
-                                    "Calling method '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
-                                    "Blocked classes are: %s. Allowed classes are: %s.",
-                                    name, targetObject.getClass(),
-                                    ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                                    "Calling method '%s' is forbidden for type '%s' in this expression context.",
+                                    name, targetObject.getClass()));
                 }
             }
 
