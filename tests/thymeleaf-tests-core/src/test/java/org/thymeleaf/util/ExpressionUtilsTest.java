@@ -45,46 +45,46 @@ public final class ExpressionUtilsTest {
 
     @Test
     public void typeBlockedForAllPurposesTest() {
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("org.thymeleaf.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("org.springframework.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("org.springframework.cglib.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("org.springframework.aot.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("org.springframework.javapoet.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("net.bytebuddy.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("es.whatever.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("de.whatever.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("net.whatever.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("org.whatever.X"));
-        Assertions.assertTrue(isPackageBlockedForAllPurposes("java.lang.X"));
-        Assertions.assertTrue(isPackageBlockedForAllPurposes("java.lang.Runtime"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("java.time.X"));
-        Assertions.assertTrue(isPackageBlockedForAllPurposes("javax.servlet.X"));
-        Assertions.assertTrue(isPackageBlockedForAllPurposes("jakarta.servlet.X"));
-        Assertions.assertFalse(isPackageBlockedForAllPurposes("com.whatever.X"));
-        Assertions.assertTrue(isPackageBlockedForAllPurposes("com.sun.X"));
-        Assertions.assertTrue(isPackageBlockedForAllPurposes("jdk.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("org.thymeleaf.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("org.springframework.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("org.springframework.cglib.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("org.springframework.aot.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("org.springframework.javapoet.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("net.bytebuddy.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("es.whatever.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("de.whatever.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("net.whatever.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("org.whatever.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("java.lang.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("java.lang.Runtime"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("java.time.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("javax.servlet.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("jakarta.servlet.X"));
+        Assertions.assertFalse(isTypeBlockedForAllPurposes("com.whatever.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("com.sun.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("jdk.X"));
     }
 
     @Test
     public void typeBlockedForTypeReferenceTest() {
-        Assertions.assertFalse(isPackageBlockedForTypeReference("org.thymeleaf.X"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("org.springframework.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("org.springframework.cglib.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("org.springframework.aot.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("org.springframework.javapoet.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("net.bytebuddy.X"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("es.whatever.X"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("de.whatever.X"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("net.whatever.X"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("org.whatever.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("java.lang.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("java.lang.Runtime"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("java.time.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("javax.servlet.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("jakarta.servlet.X"));
-        Assertions.assertFalse(isPackageBlockedForTypeReference("com.whatever.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("com.sun.X"));
-        Assertions.assertTrue(isPackageBlockedForTypeReference("jdk.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("org.thymeleaf.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("org.springframework.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.cglib.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.aot.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.javapoet.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("net.bytebuddy.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("es.whatever.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("de.whatever.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("net.whatever.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("org.whatever.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("java.lang.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("java.lang.Runtime"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("java.time.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("javax.servlet.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("jakarta.servlet.X"));
+        Assertions.assertFalse(isTypeBlockedForTypeReference("com.whatever.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("com.sun.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("jdk.X"));
     }
 
     @Test

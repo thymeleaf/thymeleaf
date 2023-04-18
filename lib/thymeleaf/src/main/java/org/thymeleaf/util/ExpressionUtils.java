@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 public final class ExpressionUtils {
 
 
-    // NOTE thes lists are hard-wired into code, so any change to these sets should be synchronized with changes
+    // NOTE these lists are hard-wired into code, so any change to these sets should be synchronized with changes
     // in the corresponding code for quickly checking the fact that a type name might be in the blocking list.
     private static final Set<String> BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES =
             new HashSet<>(Arrays.asList(
@@ -65,7 +65,10 @@ public final class ExpressionUtils {
                     "javassist.", "javax0.geci.",
                     "org.apache.bcel.", "org.aspectj.", "org.javassist.", "org.mockito.", "org.objectweb.asm.",
                     "org.objenesis.", "org.springframework.aot.", "org.springframework.asm.",
-                    "org.springframework.cglib.", "org.springframework.javapoet.", "org.springframework.objenesis."));
+                    "org.springframework.cglib.", "org.springframework.javapoet.", "org.springframework.objenesis.",
+                    "org.springframework.web.", "org.springframework.webflow.", "org.springframework.context.",
+                    "org.springframework.beans.", "org.springframework.aspects.", "org.springframework.aop.",
+                    "org.springframework.expression."));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
@@ -88,10 +91,33 @@ public final class ExpressionUtils {
                     Collection.class, Iterable.class, List.class, Map.class, Map.Entry.class, Set.class,
                     Calendar.class, Stream.class));
 
+    private static final Set<String> BLOCKED_MEMBER_CALL_JAVA_SUPERS_NAMES =
+            new HashSet<>(Arrays.asList(
+                    // org.thymeleaf
+                    "org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator",
+                    "org.thymeleaf.standard.expression.IStandardExpressionParser",
+                    "org.thymeleaf.standard.expression.IStandardConversionService",
+                    "org.thymeleaf.spring5.context.IThymeleafRequestContext",
+                    "org.thymeleaf.spring5.expression.IThymeleafEvaluationContext",
+                    "org.thymeleaf.spring6.context.IThymeleafRequestContext",
+                    "org.thymeleaf.spring6.expression.IThymeleafEvaluationContext",
+                    // org.springframework
+                    "org.springframework.web.servlet.support.RequestContext",
+                    "org.springframework.web.reactive.result.view.RequestContext"));
+    private static final Set<Class<?>> BLOCKED_MEMBER_CALL_JAVA_SUPERS;
+
 
     static {
         ALLOWED_JAVA_CLASS_NAMES = ALLOWED_JAVA_CLASSES.stream().map(c -> c.getName()).collect(Collectors.toSet());
         ALLOWED_JAVA_SUPERS_NAMES = ALLOWED_JAVA_SUPERS.stream().map(c -> c.getName()).collect(Collectors.toSet());
+        BLOCKED_MEMBER_CALL_JAVA_SUPERS = BLOCKED_MEMBER_CALL_JAVA_SUPERS_NAMES.stream().
+                map(className -> {
+                    try {
+                        return Optional.of(Class.forName(className));
+                    } catch (final ClassNotFoundException e) {
+                        return Optional.ofNullable((Class<?>)null);
+                    }
+                }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
 
 
@@ -122,7 +148,7 @@ public final class ExpressionUtils {
                 && typeName.charAt(2) == 'v' && typeName.charAt(3) == 'a');
     }
 
-    static boolean isPackageBlockedForAllPurposes(final String typeName) {
+    static boolean isTypeBlockedForAllPurposes(final String typeName) {
         final char c0 = typeName.charAt(0);
         if (c0 != 'c' && c0 != 'j' && c0 != 'o' && c0 != 's'){ // All blocked packages start with: c, j, o, s
             return false;
@@ -136,8 +162,8 @@ public final class ExpressionUtils {
         return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(prefix -> typeName.startsWith(prefix));
     }
 
-    static boolean isPackageBlockedForTypeReference(final String typeName) {
-        if (isPackageBlockedForAllPurposes(typeName)) {
+    static boolean isTypeBlockedForTypeReference(final String typeName) {
+        if (isTypeBlockedForAllPurposes(typeName)) {
             return true;
         }
         final char c0 = typeName.charAt(0);
@@ -158,7 +184,7 @@ public final class ExpressionUtils {
 
         final String normalizedTypeName = normalize(typeName);
 
-        if (!isPackageBlockedForTypeReference(normalizedTypeName)) {
+        if (!isTypeBlockedForTypeReference(normalizedTypeName)) {
             return true;
         }
 
@@ -169,13 +195,18 @@ public final class ExpressionUtils {
 
 
 
+    static boolean isTypeBlockedForMemberCalls(final Class<?> type) {
+        return BLOCKED_MEMBER_CALL_JAVA_SUPERS.stream().anyMatch(i -> i.isAssignableFrom(type));
+    }
+
+
     static boolean isMemberAllowedForInstanceOfType(final Class<?> type, final String memberName) {
 
         Validate.notNull(type, "Type cannot be null");
 
         final String typeName = type.getName();
 
-        if (!isPackageBlockedForAllPurposes(typeName)) {
+        if (!isTypeBlockedForAllPurposes(typeName) && !isTypeBlockedForMemberCalls(type)) {
             return true;
         }
 
