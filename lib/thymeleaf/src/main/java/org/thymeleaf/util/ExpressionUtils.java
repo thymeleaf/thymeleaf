@@ -24,6 +24,8 @@ import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -82,7 +84,9 @@ public final class ExpressionUtils {
                     // java.util
                     ArrayList.class, LinkedList.class, HashMap.class, LinkedHashMap.class, HashSet.class,
                     LinkedHashSet.class, Iterator.class, Enumeration.class, Locale.class, Properties.class,
-                    Date.class, Calendar.class, Optional.class));
+                    Date.class, Calendar.class, Optional.class,
+                    // java.sql
+                    java.sql.Date.class, Time.class, Timestamp.class));
 
     private static final Set<String> ALLOWED_JAVA_SUPERS_NAMES;
     private static final Set<Class<?>> ALLOWED_JAVA_SUPERS =
