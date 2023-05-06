@@ -210,6 +210,12 @@ public final class OGNLVariableExpressionEvaluator
             final StandardExpressionExecutionContext expContext,
             final boolean applyOGNLShortcuts) throws OgnlException {
 
+        // If restrictions apply, we want to avoid applying shortcuts so that we delegate to OGNL validation
+        // of method calls and references to allowed classes.
+        final boolean doApplyOGNLShortcuts =
+                applyOGNLShortcuts &&
+                        !expContext.getRestrictVariableAccess() && !expContext.getRestrictInstantiationAndStatic();
+
         if (expContext.getRestrictInstantiationAndStatic()
                 && StandardExpressionUtils.containsOGNLInstantiationOrStaticOrParam(exp)) {
             throw new TemplateProcessingException(
@@ -224,7 +230,7 @@ public final class OGNLVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedOGNLExpression) {
                 return (ComputedOGNLExpression) cachedExpression;
             }
-            cachedExpression = parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+            cachedExpression = parseComputedOGNLExpression(configuration, exp, doApplyOGNLShortcuts);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -240,7 +246,7 @@ public final class OGNLVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedOGNLExpression) {
                 return (ComputedOGNLExpression) cachedExpression;
             }
-            cachedExpression = parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+            cachedExpression = parseComputedOGNLExpression(configuration, exp, doApplyOGNLShortcuts);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -248,7 +254,7 @@ public final class OGNLVariableExpressionEvaluator
 
         }
 
-        return parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+        return parseComputedOGNLExpression(configuration, exp, doApplyOGNLShortcuts);
 
     }
 
