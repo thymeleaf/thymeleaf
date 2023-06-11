@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,7 +87,8 @@ public final class ExpressionUtils {
                     // java.util
                     ArrayList.class, LinkedList.class, HashMap.class, LinkedHashMap.class, HashSet.class,
                     LinkedHashSet.class, Iterator.class, Enumeration.class, Locale.class, Properties.class,
-                    Date.class, Calendar.class, Optional.class,
+                    Date.class, Calendar.class, Optional.class, OptionalDouble.class, OptionalInt.class,
+                    OptionalLong.class,
                     // java.sql
                     java.sql.Date.class, Time.class, Timestamp.class));
 

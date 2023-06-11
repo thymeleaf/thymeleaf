@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+opt1 = @java.util.OptionalInt@of(34)
+opt2 = @java.util.OptionalDouble@of(34.3)
+opt3 = @java.util.OptionalLong@of(34234L)
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${opt1.orElse(11)}">...</p>
+<p th:text="${opt2.orElse(11.04)}">...</p>
+<p th:text="${opt3.orElse(1111L)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>34</p>
+<p>34.3</p>
+<p>34234</p>
