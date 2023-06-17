@@ -42,6 +42,7 @@ import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProce
 import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
+import org.thymeleaf.standard.expression.IExpressionClassAccessEvaluator;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -102,5 +103,7 @@ public interface IEngineConfiguration {
     public TemplateManager getTemplateManager();
 
     public IModelFactory getModelFactory(final TemplateMode templateMode);
+    
+    public IExpressionClassAccessEvaluator getExpressionClassAccessEvaluator();
 
 }

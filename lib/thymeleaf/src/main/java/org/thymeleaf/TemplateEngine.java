@@ -48,6 +48,8 @@ import org.thymeleaf.linkbuilder.StandardLinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.expression.IExpressionClassAccessEvaluator;
+import org.thymeleaf.standard.expression.StandardExpressionClassAccessEvaluator;
 import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -255,6 +257,7 @@ public class TemplateEngine implements ITemplateEngine {
     private ICacheManager cacheManager = null;
     private IEngineContextFactory engineContextFactory = null;
     private IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver = null;
+    private IExpressionClassAccessEvaluator expressionClassAccessEvaluator = null;
 
 
     private IEngineConfiguration configuration = null;
@@ -281,6 +284,7 @@ public class TemplateEngine implements ITemplateEngine {
         setLinkBuilder(new StandardLinkBuilder());
         setDecoupledTemplateLogicResolver(new StandardDecoupledTemplateLogicResolver());
         setDialect(new StandardDialect());
+        setExpressionClassAccessEvaluator(new StandardExpressionClassAccessEvaluator());
     }
 
 
@@ -342,7 +346,8 @@ public class TemplateEngine implements ITemplateEngine {
                             new EngineConfiguration(
                                     this.templateResolvers, this.messageResolvers, this.linkBuilders,
                                     this.dialectConfigurations, this.cacheManager, this.engineContextFactory,
-                                    this.decoupledTemplateLogicResolver);
+                                    this.decoupledTemplateLogicResolver, this.expressionClassAccessEvaluator
+                            );
                     ((EngineConfiguration)this.configuration).initialize();
 
                     this.initialized = true;
@@ -483,6 +488,25 @@ public class TemplateEngine implements ITemplateEngine {
         checkNotInitialized();
         this.dialectConfigurations.clear();
         this.dialectConfigurations.add(new DialectConfiguration(dialect));
+    }
+    
+    /**
+     * <p>
+     *   Sets the ExpressionClassAccessEvaluator for this template engine.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     * 
+     * @param expressionClassAccessEvaluator the new unique {@link IExpressionClassAccessEvaluator} to be used.
+     */
+    public void setExpressionClassAccessEvaluator(final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
+        Validate.notNull(expressionClassAccessEvaluator, "ExpressionClassAccessEvaluator cannot be null");
+        checkNotInitialized();
+        this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
     }
 
     /**

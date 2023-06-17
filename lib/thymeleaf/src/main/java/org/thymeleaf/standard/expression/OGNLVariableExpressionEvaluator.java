@@ -23,7 +23,9 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ognl.AbstractMemberAccess;
@@ -72,13 +74,10 @@ public final class OGNLVariableExpressionEvaluator
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
-    private static MemberAccess MEMBER_ACCESS = new ThymeleafACLMemberAccess();
-    private static ThymeleafACLClassResolver CLASS_RESOLVER = new ThymeleafACLClassResolver();
+    private static final Map<Integer, MemberAccess> MEMBER_ACCESS_MAP = new HashMap<>();
+    private static final Map<Integer, ThymeleafACLClassResolver> CLASS_RESOLVER = new HashMap<>();
 
     private final boolean applyOGNLShortcuts;
-
-
-
 
     public OGNLVariableExpressionEvaluator(final boolean applyOGNLShortcuts) {
 
@@ -91,7 +90,26 @@ public final class OGNLVariableExpressionEvaluator
          */
         final OGNLContextPropertyAccessor accessor = new OGNLContextPropertyAccessor();
         OgnlRuntime.setPropertyAccessor(IContext.class, accessor);
+        
+       
+        
 
+    }
+    
+    private static MemberAccess getMemberAccess(final IExpressionClassAccessEvaluator expressionClassAccessEvaluator){
+        return MEMBER_ACCESS_MAP
+                .computeIfAbsent(
+                        Objects.hashCode(expressionClassAccessEvaluator), 
+                        (key) -> new ThymeleafACLMemberAccess(expressionClassAccessEvaluator)
+                );
+    }
+    
+    private static ThymeleafACLClassResolver getClassResolver(final IExpressionClassAccessEvaluator expressionClassAccessEvaluator){
+        return CLASS_RESOLVER
+                .computeIfAbsent(
+                        Objects.hashCode(expressionClassAccessEvaluator), 
+                        (key) -> new ThymeleafACLClassResolver(expressionClassAccessEvaluator)
+                );
     }
 
 
@@ -333,10 +351,12 @@ public final class OGNLVariableExpressionEvaluator
         if (parsedExpression instanceof OGNLShortcutExpression) {
             return ((OGNLShortcutExpression) parsedExpression).evaluate(configuration, context, root);
         }
+        
+        final IExpressionClassAccessEvaluator expressionClassAccessEvaluator = configuration.getExpressionClassAccessEvaluator();
 
         // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
         // creating the OgnlContext empty and then setting the context Map variables one by one
-        final OgnlContext ognlContext = new OgnlContext(MEMBER_ACCESS, CLASS_RESOLVER, null, context);
+        final OgnlContext ognlContext = new OgnlContext(getMemberAccess(expressionClassAccessEvaluator), getClassResolver(expressionClassAccessEvaluator), null, context);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
@@ -362,15 +382,18 @@ public final class OGNLVariableExpressionEvaluator
     static final class ThymeleafACLClassResolver implements ClassResolver {
 
         private final ClassResolver classResolver;
+        
+        private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
-        public ThymeleafACLClassResolver() {
+        public ThymeleafACLClassResolver(IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
             super();
             this.classResolver = new ThymeleafDefaultClassResolver();
+            this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
         }
 
         @Override
         public Class<?> classForName(final String className, final Map context) throws ClassNotFoundException {
-            if (!ExpressionUtils.isTypeAllowed(className)) {
+            if (!expressionClassAccessEvaluator.isTypeAllowed(className)) {
                 throw new TemplateProcessingException(
                         String.format(
                                 "Access is forbidden for type '%s' in this expression context.", className));
@@ -417,9 +440,12 @@ public final class OGNLVariableExpressionEvaluator
 
 
     static final class ThymeleafACLMemberAccess extends AbstractMemberAccess {
+        
+        private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
-        ThymeleafACLMemberAccess() {
+        ThymeleafACLMemberAccess(IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
             super();
+            this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
         }
 
         @Override
@@ -429,7 +455,7 @@ public final class OGNLVariableExpressionEvaluator
                 return false;
             }
             if (member instanceof Method) {
-                if (!ExpressionUtils.isMemberAllowed(target, member.getName())) {
+                if (!expressionClassAccessEvaluator.isMemberAllowed(target, member.getName())) {
                     throw new TemplateProcessingException(
                             String.format(
                                     "Accessing member '%s' is forbidden for type '%s' in this expression context.",
