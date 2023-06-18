@@ -48,6 +48,7 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring6.naming.SpringContextVariableNames;
+import org.thymeleaf.standard.expression.StandardExpressionClassAccessEvaluator;
 import org.thymeleaf.testing.templateengine.context.web.ITestWebExchangeBuilder;
 import org.thymeleaf.testing.templateengine.context.web.JakartaServletTestWebExchangeBuilder;
 import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
@@ -161,7 +162,7 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
          * THYMELEAF EVALUATION CONTEXT
          */
         final ThymeleafEvaluationContext evaluationContext =
-                new ThymeleafEvaluationContext(appCtx, conversionService);
+                new ThymeleafEvaluationContext(appCtx, conversionService, new StandardExpressionClassAccessEvaluator());
 
         variables.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 

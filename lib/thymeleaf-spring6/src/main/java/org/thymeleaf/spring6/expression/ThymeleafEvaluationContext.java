@@ -21,7 +21,10 @@ package org.thymeleaf.spring6.expression;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -43,6 +46,7 @@ import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.springframework.expression.spel.support.StandardTypeLocator;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring6.view.ThymeleafView;
+import org.thymeleaf.standard.expression.IExpressionClassAccessEvaluator;
 import org.thymeleaf.util.ExpressionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -78,13 +82,12 @@ public final class ThymeleafEvaluationContext
 
     public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleaf::EvaluationContext";
 
-
-    private static final ReflectivePropertyAccessor REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE =
-            new ThymeleafEvaluationContextACLPropertyAccessor();
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
-    private static final TypeLocator TYPE_LOCATOR = new ThymeleafEvaluationContextACLTypeLocator();
-    private static final List<MethodResolver> METHOD_RESOLVERS =
-            Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver());
+    
+    private static final Map<Integer, ReflectivePropertyAccessor> REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE_MAP = new HashMap<>();
+    private static final Map<Integer, TypeLocator> TYPE_LOCATOR_MAP = new HashMap<>();
+    private static final Map<Integer, List<MethodResolver>> METHOD_RESOLVERS_MAP = new HashMap<>();
+            
 
 
     private final ApplicationContext applicationContext;
@@ -92,14 +95,15 @@ public final class ThymeleafEvaluationContext
     private IExpressionObjects expressionObjects = null;
     private boolean variableAccessRestricted = false;
 
+    private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
 
-
-    public ThymeleafEvaluationContext(final ApplicationContext applicationContext, final ConversionService conversionService) {
+    public ThymeleafEvaluationContext(final ApplicationContext applicationContext, final ConversionService conversionService, final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
 
         super();
 
         Validate.notNull(applicationContext, "Application Context cannot be null");
+        Validate.notNull(expressionClassAccessEvaluator, "Expression Class Access Evaluator cannot be null");
         // ConversionService CAN be null
 
         this.applicationContext = applicationContext;
@@ -107,19 +111,36 @@ public final class ThymeleafEvaluationContext
         if (conversionService != null) {
             this.setTypeConverter(new StandardTypeConverter(conversionService));
         }
+        
+        this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
+        
+        final ReflectivePropertyAccessor reflectivePropertyAccessorInstance = REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE_MAP.computeIfAbsent(
+                Objects.hashCode(expressionClassAccessEvaluator), 
+                (key) -> new ThymeleafEvaluationContextACLPropertyAccessor(expressionClassAccessEvaluator)
+        );
+        
+        final TypeLocator typeLocator = TYPE_LOCATOR_MAP.computeIfAbsent(
+                Objects.hashCode(expressionClassAccessEvaluator), 
+                (key) -> new ThymeleafEvaluationContextACLTypeLocator(expressionClassAccessEvaluator)
+        );
+        
+        final List<MethodResolver> methodResolvers = METHOD_RESOLVERS_MAP.computeIfAbsent(
+                Objects.hashCode(expressionClassAccessEvaluator), 
+                (key) -> Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver(expressionClassAccessEvaluator))
+        );
 
         final List<PropertyAccessor> propertyAccessors = new ArrayList<>(5);
         propertyAccessors.add(SPELContextPropertyAccessor.INSTANCE);
         propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
-        propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
+        propertyAccessors.add(reflectivePropertyAccessorInstance);
         this.setPropertyAccessors(propertyAccessors);
 
         // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
-        this.setTypeLocator(TYPE_LOCATOR);
+        this.setTypeLocator(typeLocator);
 
         // We need to establish a custom method resolver in order to forbid calling methods on any of the blocked classes
-        this.setMethodResolvers(METHOD_RESOLVERS);
-
+        this.setMethodResolvers(methodResolvers);
+        
     }
 
 
@@ -158,18 +179,18 @@ public final class ThymeleafEvaluationContext
     public void setExpressionObjects(final IExpressionObjects expressionObjects) {
         this.expressionObjects = expressionObjects;
     }
-
-
-
+    
     static final class ThymeleafEvaluationContextACLTypeLocator implements TypeLocator {
 
         private final TypeLocator typeLocator;
+        
+        private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
-        ThymeleafEvaluationContextACLTypeLocator() {
-            this(new StandardTypeLocator());
+        ThymeleafEvaluationContextACLTypeLocator(final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
+            this(new StandardTypeLocator(), expressionClassAccessEvaluator);
         }
 
-        ThymeleafEvaluationContextACLTypeLocator(final TypeLocator typeLocator) {
+        ThymeleafEvaluationContextACLTypeLocator(final TypeLocator typeLocator, final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
             super();
             // typeLocator CAN be null
             this.typeLocator = typeLocator;
@@ -178,6 +199,8 @@ public final class ThymeleafEvaluationContext
                 // the filter forbidding all "java.lang.*" classes to be bypassed.
                 ((StandardTypeLocator)this.typeLocator).removeImport("java.lang");
             }
+            
+            this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
         }
 
         @Override
@@ -185,7 +208,7 @@ public final class ThymeleafEvaluationContext
             if (this.typeLocator == null) {
                 throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
             }
-            if (!ExpressionUtils.isTypeAllowed(typeName)) {
+            if (!expressionClassAccessEvaluator.isTypeAllowed(typeName)) {
                 throw new EvaluationException(
                         String.format("Access is forbidden for type '%s' in this expression context.", typeName));
             }
@@ -199,15 +222,18 @@ public final class ThymeleafEvaluationContext
     static final class ThymeleafEvaluationContextACLPropertyAccessor extends ReflectivePropertyAccessor {
 
         private final ReflectivePropertyAccessor propertyAccessor;
+        
+        private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
-        ThymeleafEvaluationContextACLPropertyAccessor() {
-            this(null);
+        ThymeleafEvaluationContextACLPropertyAccessor(final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
+            this(null, expressionClassAccessEvaluator);
         }
 
-        ThymeleafEvaluationContextACLPropertyAccessor(final ReflectivePropertyAccessor propertyAccessor) {
+        ThymeleafEvaluationContextACLPropertyAccessor(final ReflectivePropertyAccessor propertyAccessor, final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
             super(false); // allowWrite = false
             // propertyAccessor CAN be null
             this.propertyAccessor = propertyAccessor;
+            this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
         }
 
 
@@ -228,7 +254,7 @@ public final class ThymeleafEvaluationContext
                             "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) :
                             "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 
-                if (!ExpressionUtils.isMemberAllowed(targetObject, methodEquiv)) {
+                if (!expressionClassAccessEvaluator.isMemberAllowed(targetObject, methodEquiv)) {
                     throw new EvaluationException(
                             String.format(
                                     "Accessing member '%s' is forbidden for type '%s' in this expression context.",
@@ -247,15 +273,18 @@ public final class ThymeleafEvaluationContext
     static final class ThymeleafEvaluationContextACLMethodResolver extends ReflectiveMethodResolver {
 
         private final ReflectiveMethodResolver methodResolver;
+        
+        private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
-        ThymeleafEvaluationContextACLMethodResolver() {
-            this(null);
+        ThymeleafEvaluationContextACLMethodResolver(final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
+            this(null, expressionClassAccessEvaluator);
         }
 
-        ThymeleafEvaluationContextACLMethodResolver(final ReflectiveMethodResolver methodResolver) {
+        ThymeleafEvaluationContextACLMethodResolver(final ReflectiveMethodResolver methodResolver, final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
             super();
             // methodResolver CAN be null
             this.methodResolver = methodResolver;
+            this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
         }
 
         @Override
@@ -271,7 +300,7 @@ public final class ThymeleafEvaluationContext
             }
 
             if (methodExecutor != null) {
-                if (!ExpressionUtils.isMemberAllowed(targetObject, name)) {
+                if (!expressionClassAccessEvaluator.isMemberAllowed(targetObject, name)) {
                     throw new EvaluationException(
                             String.format(
                                 "Calling method '%s' is forbidden for type '%s' in this expression context.",

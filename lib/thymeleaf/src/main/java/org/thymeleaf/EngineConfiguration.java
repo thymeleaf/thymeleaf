@@ -49,6 +49,7 @@ import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProce
 import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
+import org.thymeleaf.standard.expression.IExpressionClassAccessEvaluator;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -77,6 +78,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     private final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver;
     private TemplateManager templateManager;
     private final ConcurrentHashMap<TemplateMode,IModelFactory> modelFactories;
+    private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
 
 
     /*
@@ -89,7 +91,9 @@ public class EngineConfiguration implements IEngineConfiguration {
             final Set<DialectConfiguration> dialectConfigurations,
             final ICacheManager cacheManager,
             final IEngineContextFactory engineContextFactory,
-            final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver) {
+            final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver,
+            final IExpressionClassAccessEvaluator expressionClassAccessEvaluator
+    ) {
 
         super();
 
@@ -101,6 +105,7 @@ public class EngineConfiguration implements IEngineConfiguration {
         // Cache Manager CAN be null
         Validate.notNull(engineContextFactory, "Engine Context Factory cannot be null");
         Validate.notNull(decoupledTemplateLogicResolver, "Decoupled Template Logic Resolver cannot be null");
+        Validate.notNull(expressionClassAccessEvaluator, "Expression Class Acess Evaluator cannot be null");
 
         final List<ITemplateResolver> templateResolversList = new ArrayList<ITemplateResolver>(templateResolvers);
         Collections.sort(templateResolversList, TemplateResolverComparator.INSTANCE);
@@ -125,6 +130,8 @@ public class EngineConfiguration implements IEngineConfiguration {
         // NOTE we are NOT initializing the templateManager here, but in #initialize()
 
         this.modelFactories = new ConcurrentHashMap<TemplateMode, IModelFactory>(6,1.0f, 1);
+        
+        this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
 
     }
 
@@ -277,6 +284,10 @@ public class EngineConfiguration implements IEngineConfiguration {
         final IModelFactory modelFactory = new StandardModelFactory(this, templateMode);
         this.modelFactories.putIfAbsent(templateMode, modelFactory);
         return this.modelFactories.get(templateMode);
+    }
+    
+    public IExpressionClassAccessEvaluator getExpressionClassAccessEvaluator() {
+        return this.expressionClassAccessEvaluator;
     }
 
 

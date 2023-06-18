@@ -82,7 +82,7 @@ public class SPELVariableExpressionEvaluator
     private static final SpelExpressionParser PARSER_WITHOUT_COMPILED_SPEL = new SpelExpressionParser();
     private static final SpelExpressionParser PARSER_WITH_COMPILED_SPEL;
 
-
+    
     /*
      *  INITIALIZATION OF THE Spring EL parser.
      *  Two parsers will be always initialized: one with expression compilation enabled (if the Spring version allows)
@@ -211,7 +211,7 @@ public class SPELVariableExpressionEvaluator
                 // thread-safe). That's why we need to create a new EvaluationContext for each request / template
                 // execution, even if it is quite expensive to create because of requiring the initialization of
                 // several ConcurrentHashMaps.
-                evaluationContext = new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
+                evaluationContext = new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext(), configuration.getExpressionClassAccessEvaluator());
 
                 if (context instanceof IEngineContext) {
                     ((IEngineContext)context).setVariable(
@@ -220,7 +220,7 @@ public class SPELVariableExpressionEvaluator
 
             } else if (!(evaluationContext instanceof IThymeleafEvaluationContext)) {
 
-                evaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
+                evaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext, configuration.getExpressionClassAccessEvaluator());
 
                 if (context instanceof IEngineContext) {
                     ((IEngineContext)context).setVariable(

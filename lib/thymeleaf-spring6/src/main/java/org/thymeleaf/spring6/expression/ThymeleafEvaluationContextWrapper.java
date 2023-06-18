@@ -38,10 +38,13 @@ import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
+import org.thymeleaf.context.ExpressionContext;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLMethodResolver;
 import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLPropertyAccessor;
 import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLTypeLocator;
+import org.thymeleaf.standard.expression.IExpressionClassAccessEvaluator;
+import org.thymeleaf.standard.expression.StandardExpressionClassAccessEvaluator;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -68,10 +71,11 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
 
     private final EvaluationContext delegate;
+    private final IExpressionClassAccessEvaluator expressionClassAccessEvaluator;
     private final List<PropertyAccessor> propertyAccessors; // can be initialized to null if we can delegate
     private final TypeLocator typeLocator;                  // can be initialized to null if we can delegate
     private final List<MethodResolver> methodResolvers;     // can be initialized to null if we can delegate
-
+    
     private IExpressionObjects expressionObjects = null;
     private boolean requestParametersRestricted = false;
     private Map<String,Object> additionalVariables = null;
@@ -79,13 +83,14 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
 
 
-    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
+    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate, final IExpressionClassAccessEvaluator expressionClassAccessEvaluator) {
 
         super();
 
         Validate.notNull(delegate, "Evaluation context delegate cannot be null");
 
         this.delegate = delegate;
+        this.expressionClassAccessEvaluator = expressionClassAccessEvaluator;
 
         if (this.delegate instanceof ThymeleafEvaluationContext) {
 
@@ -101,18 +106,18 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
                             Stream.of(SPELContextPropertyAccessor.INSTANCE, MAP_ACCESSOR_INSTANCE),
                             this.delegate.getPropertyAccessors().stream()
                                     .map(pa -> (pa instanceof ReflectivePropertyAccessor) ?
-                                            new ThymeleafEvaluationContextACLPropertyAccessor((ReflectivePropertyAccessor) pa) : pa))
+                                            new ThymeleafEvaluationContextACLPropertyAccessor((ReflectivePropertyAccessor) pa, expressionClassAccessEvaluator) : pa))
                         .collect(Collectors.toList());
 
             // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
             this.typeLocator =
-                    new ThymeleafEvaluationContextACLTypeLocator(this.delegate.getTypeLocator());
+                    new ThymeleafEvaluationContextACLTypeLocator(this.delegate.getTypeLocator(), expressionClassAccessEvaluator);
 
             // We need to wrap any reflective method resolvers in order to forbid calling methods on any of the blocked classes
             this.methodResolvers =
                     this.delegate.getMethodResolvers().stream()
                         .map(mr -> (mr instanceof ReflectiveMethodResolver) ?
-                                new ThymeleafEvaluationContextACLMethodResolver((ReflectiveMethodResolver) mr) : mr)
+                                new ThymeleafEvaluationContextACLMethodResolver((ReflectiveMethodResolver) mr, expressionClassAccessEvaluator) : mr)
                         .collect(Collectors.toList());
 
         }

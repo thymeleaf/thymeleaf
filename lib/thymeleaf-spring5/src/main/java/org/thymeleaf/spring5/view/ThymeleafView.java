@@ -247,7 +247,8 @@ public class ThymeleafView
         // stays in the context to for compatibility with other dialects)
         mergedModel.put(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT, thymeleafRequestContext);
 
-
+        final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
+        
         // Expose Thymeleaf's own evaluation context as a model variable
         //
         // Note Spring's EvaluationContexts are NOT THREAD-SAFE (in exchange for SpelExpressions being thread-safe).
@@ -256,11 +257,10 @@ public class ThymeleafView
         final ConversionService conversionService =
                 (ConversionService) request.getAttribute(ConversionService.class.getName()); // might be null!
         final ThymeleafEvaluationContext evaluationContext =
-                new ThymeleafEvaluationContext(applicationContext, conversionService);
+                new ThymeleafEvaluationContext(applicationContext, conversionService, configuration.getExpressionClassAccessEvaluator());
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
 
-        final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
         final WebExpressionContext context =
                 new WebExpressionContext(configuration, webExchange, getLocale(), mergedModel);
 
