@@ -97,7 +97,7 @@ public final class ExpressionUtils {
     private static final Set<Class<?>> ALLOWED_JAVA_SUPERS =
             new HashSet<>(Arrays.asList(
                     // java.util
-                    Collection.class, Iterable.class, List.class, Map.class, Map.Entry.class, Set.class,
+                    Collection.class, Iterable.class, Iterator.class, List.class, Map.class, Map.Entry.class, Set.class,
                     Calendar.class, Stream.class));
 
     private static final Set<String> BLOCKED_MEMBER_CALL_JAVA_SUPERS_NAMES =

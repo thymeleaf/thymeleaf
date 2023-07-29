@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+obj = #{"one": "value"}
+obj2 = new java.util.LinkedHashMap(obj)
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${obj2.entrySet().iterator().next().value}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>value</p>
