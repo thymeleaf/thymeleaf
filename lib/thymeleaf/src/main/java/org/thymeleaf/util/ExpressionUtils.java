@@ -73,7 +73,7 @@ public final class ExpressionUtils {
                     "org.springframework.cglib.", "org.springframework.javapoet.", "org.springframework.objenesis.",
                     "org.springframework.web.", "org.springframework.webflow.", "org.springframework.context.",
                     "org.springframework.beans.", "org.springframework.aspects.", "org.springframework.aop.",
-                    "org.springframework.expression."));
+                    "org.springframework.expression.", "org.springframework.util."));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
