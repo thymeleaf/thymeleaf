@@ -1,3 +1,15 @@
+3.1.2
+=====
+- Allow java.sql.* types in expressions.
+- Allow OptionalInt, OptionalLong or OptionalDouble in expressions.
+- Allow java.util.UUID in expressions.
+- Allow direct use of java.util.Iterator.next() in expressions.
+- Forbid static access to org.springframework.util.* in expressions.
+- Fix support for <script type="module"> in parser.
+- Upgrade AttoParser to 2.0.7.
+
+
+
 3.1.1
 =====
 - Fixed issue with mapping servlet context to requests when reverse proxies or multiple context
