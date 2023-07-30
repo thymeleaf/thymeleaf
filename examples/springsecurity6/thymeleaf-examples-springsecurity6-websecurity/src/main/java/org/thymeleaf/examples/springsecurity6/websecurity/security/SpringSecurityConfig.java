@@ -26,6 +26,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -39,22 +40,24 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
-                .formLogin()
+            .formLogin(formLogin -> formLogin
                     .loginPage("/login.html")
-                    .failureUrl("/login-error.html")
-            .and()
-                .logout()
-                    .logoutSuccessUrl("/index.html")
-            .and()
-                .authorizeHttpRequests()
-                    .requestMatchers("/", "/index.html","/login.html","/css/**","/favicon.ico").permitAll()
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/user/**").hasRole("USER")
-                    .requestMatchers("/shared/**").hasAnyRole("USER","ADMIN")
-                    .anyRequest().authenticated()
-            .and()
-                .exceptionHandling()
-                    .accessDeniedPage("/403.html");
+                    .failureUrl("/login-error.html"))
+            .logout(logout -> logout
+                    .logoutSuccessUrl("/index.html"))
+            .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers(
+                            new AntPathRequestMatcher("/"),
+                            new AntPathRequestMatcher("/index.html"),
+                            new AntPathRequestMatcher("/login.html"),
+                            new AntPathRequestMatcher("/css/**"),
+                            new AntPathRequestMatcher("/favicon.ico")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                    .requestMatchers(new AntPathRequestMatcher("/user/**")).hasRole("USER")
+                    .requestMatchers(new AntPathRequestMatcher("/shared/**")).hasAnyRole("USER","ADMIN")
+                    .anyRequest().authenticated())
+            .exceptionHandling(handling -> handling
+                    .accessDeniedPage("/403.html"));
         return http.build();
     }
 

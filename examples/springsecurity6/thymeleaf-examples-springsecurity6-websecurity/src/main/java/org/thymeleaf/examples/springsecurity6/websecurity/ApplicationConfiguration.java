@@ -19,24 +19,21 @@
  */
 package org.thymeleaf.examples.springsecurity6.websecurity;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 
-@Order(2) // Filters declared at the Dispatcher initializer should be registered first
-public class SpringSecurityWebApplicationInitializer extends AbstractSecurityWebApplicationInitializer {
+@Configuration
+@ComponentScan
+public class ApplicationConfiguration {
 
-    public SpringSecurityWebApplicationInitializer() {
+    /*
+     * This class only exists to enable component scan at this package level and let all Spring configuration
+     * happen automatically
+     */
+
+    public ApplicationConfiguration() {
         super();
     }
-
-
-    @Override
-    protected boolean enableHttpSessionEventPublisher() {
-        return true;
-    }
-
-    // Nothing else to implement. We will just use the defaults.
-    // The extended initializer class will take care of registering the Spring Security filter infrastructure.
 
 }

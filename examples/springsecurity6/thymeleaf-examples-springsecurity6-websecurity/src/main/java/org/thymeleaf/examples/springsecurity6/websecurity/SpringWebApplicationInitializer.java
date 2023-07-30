@@ -22,10 +22,9 @@ package org.thymeleaf.examples.springsecurity6.websecurity;
 import jakarta.servlet.Filter;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNullApi;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-import org.thymeleaf.examples.springsecurity6.websecurity.security.SpringSecurityConfig;
-import org.thymeleaf.examples.springsecurity6.websecurity.web.SpringWebConfig;
 
 
 @Order(1) // Filters declared at the Dispatcher initializer should be registered first
@@ -41,12 +40,12 @@ public class SpringWebApplicationInitializer extends AbstractAnnotationConfigDis
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return null;
+        return new Class<?>[] { ApplicationConfiguration.class };
     }
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] { SpringWebConfig.class, SpringSecurityConfig.class };
+        return null;
     }
 
     @Override
