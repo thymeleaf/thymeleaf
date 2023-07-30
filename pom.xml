@@ -139,7 +139,7 @@
     <apache-taglibs-standard.version>1.2.5</apache-taglibs-standard.version>
     <glassfish-jakarta-servlet-jsp-jstl.version>3.0.0</glassfish-jakarta-servlet-jsp-jstl.version>
     <ognl.version>3.3.4</ognl.version>
-    <attoparser.version>2.0.6.RELEASE</attoparser.version>
+    <attoparser.version>2.0.7.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <spring-framework5.version>5.3.24</spring-framework5.version>
     <spring-framework6.version>6.0.2</spring-framework6.version>

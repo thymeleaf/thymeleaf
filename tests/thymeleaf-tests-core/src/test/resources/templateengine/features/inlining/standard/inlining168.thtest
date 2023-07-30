@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<script type="module" th:inline="javascript">
+    if ("STRING".length <= 10) {
+        console.log("happening");
+    } else {
+        console.log("not happening");
+    }
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="module">
+    if ("STRING".length <= 10) {
+        console.log("happening");
+    } else {
+        console.log("not happening");
+    }
+</script>
