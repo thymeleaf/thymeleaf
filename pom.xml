@@ -29,7 +29,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-parent</artifactId>
   <packaging>pom</packaging>
-  <version>3.1.2.RELEASE</version>
+  <version>3.1.3-SNAPSHOT</version>
   <name>thymeleaf parent</name>
   <description>Modern server-side Java template engine for both web and standalone environments</description>
   <url>http://www.thymeleaf.org</url>
