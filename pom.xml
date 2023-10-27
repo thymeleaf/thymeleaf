@@ -141,22 +141,22 @@
     <ognl.version>3.3.4</ognl.version>
     <attoparser.version>2.0.7.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
-    <spring-framework5.version>5.3.29</spring-framework5.version>
-    <spring-framework6.version>6.0.11</spring-framework6.version>
-    <spring-security5.version>5.8.5</spring-security5.version>
-    <spring-security6.version>6.1.2</spring-security6.version>
+    <spring-framework5.version>5.3.30</spring-framework5.version>
+    <spring-framework6.version>6.0.13</spring-framework6.version>
+    <spring-security5.version>5.8.8</spring-security5.version>
+    <spring-security6.version>6.1.5</spring-security6.version>
     <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>
     <spring-webflow3.version>3.0.0</spring-webflow3.version>
-    <jackson.version>2.15.2</jackson.version>
-    <reactor.version>2022.0.9</reactor.version>
+    <jackson.version>2.15.3</jackson.version>
+    <reactor.version>2022.0.12</reactor.version>
     <commons-lang3.version>3.13.0</commons-lang3.version>
     <commons-io.version>2.13.0</commons-io.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
     <hibernate-validator-jakarta.version>8.0.1.Final</hibernate-validator-jakarta.version>
     <hibernate-validator-javax.version>6.2.5.Final</hibernate-validator-javax.version>
     <mockito.version>5.4.0</mockito.version>
-    <slf4j.version>2.0.7</slf4j.version>
-    <log4j.version>2.20.0</log4j.version>
+    <slf4j.version>2.0.9</slf4j.version>
+    <log4j.version>2.21.1</log4j.version>
     <junit.version>5.10.0</junit.version>
     <!-- ======================     -->
     <!-- MAVEN PLUGIN versions      -->
