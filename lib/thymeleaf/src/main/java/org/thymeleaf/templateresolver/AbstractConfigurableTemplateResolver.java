@@ -971,26 +971,22 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         final boolean shouldApplySuffix =
                 hasSuffix && (forceSuffix || !ContentTypeUtils.hasRecognizedFileExtension(unaliasedName));
 
-        if (!hasPrefix && !shouldApplySuffix){
+        if (hasPrefix && !shouldApplySuffix){
             return unaliasedName;
         }
 
-        if (!hasPrefix) { // shouldApplySuffix
+        if (hasPrefix && shouldApplySuffix) { 
             return unaliasedName + suffix;
         }
 
-        if (!shouldApplySuffix) { // hasPrefix
+        if (!hasPrefix && !shouldApplySuffix) { 
             return prefix + unaliasedName;
         }
 
-        // hasPrefix && shouldApplySuffix
+        // !hasPrefix && shouldApplySuffix
         return prefix + unaliasedName + suffix;
 
     }
-
-
-
-    
 
     @Override
     protected TemplateMode computeTemplateMode(
