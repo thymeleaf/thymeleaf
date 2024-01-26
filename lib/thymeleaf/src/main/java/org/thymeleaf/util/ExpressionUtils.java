@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public final class ExpressionUtils {
                     ArrayList.class, LinkedList.class, HashMap.class, LinkedHashMap.class, HashSet.class,
                     LinkedHashSet.class, Iterator.class, Enumeration.class, Locale.class, Properties.class,
                     Date.class, Calendar.class, Optional.class, OptionalDouble.class, OptionalInt.class,
-                    OptionalLong.class, UUID.class,
+                    OptionalLong.class, UUID.class, Currency.class,
                     // java.sql
                     java.sql.Date.class, Time.class, Timestamp.class));
 
