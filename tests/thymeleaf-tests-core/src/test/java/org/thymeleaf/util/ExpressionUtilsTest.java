@@ -110,6 +110,7 @@ public final class ExpressionUtilsTest {
         Assertions.assertTrue(isTypeAllowed("java.util.stream.Stream"));
         Assertions.assertTrue(isTypeAllowed("java.util.Calendar"));
         Assertions.assertTrue(isTypeAllowed("java.util.Map"));
+        Assertions.assertTrue(isTypeAllowed("java.util.concurrent.atomic.AtomicInteger"));
     }
 
     @Test

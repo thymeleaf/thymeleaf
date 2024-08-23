@@ -48,6 +48,22 @@ import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicMarkableReference;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicStampedReference;
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.concurrent.atomic.DoubleAdder;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,6 +106,12 @@ public final class ExpressionUtils {
                     LinkedHashSet.class, Iterator.class, Enumeration.class, Locale.class, Properties.class,
                     Date.class, Calendar.class, Optional.class, OptionalDouble.class, OptionalInt.class,
                     OptionalLong.class, UUID.class,
+                    // java.util.concurrent.atomic
+                    AtomicBoolean.class, AtomicInteger.class, AtomicIntegerArray.class, AtomicIntegerFieldUpdater.class,
+                    AtomicLong.class, AtomicLongArray.class, AtomicLongFieldUpdater.class,
+                    AtomicMarkableReference.class, AtomicReference.class, AtomicReferenceArray.class,
+                    AtomicReferenceFieldUpdater.class, AtomicStampedReference.class, DoubleAccumulator.class,
+                    DoubleAdder.class, LongAccumulator.class, LongAdder.class,
                     // java.sql
                     java.sql.Date.class, Time.class, Timestamp.class));
 
