@@ -832,6 +832,59 @@ public final class StringUtils {
     }
 
 
+    /**
+     * Pads the given string on the right with the specified character.
+     *
+     * @param str the input string (may be null)
+     * @param count the number of pad characters to add
+     * @param padChar the character to use for padding
+     * @return the padded string, or null if the input was null
+     */
+    public static String padEnd(final String str, final int count, final char padChar) {
+        if (str == null) {
+            return null;
+        }
+
+        if(count <= 0) {
+            return str;
+        }
+
+        StringBuilder result = new StringBuilder();
+        result.append(str);
+        for (int i = 0; i < count; i++) {
+            result.append(padChar);
+        }
+
+        return result.toString();
+    }
+
+
+    /**
+     * Pads the given string on the left with the specified character.
+     *
+     * @param str the input string (may be null)
+     * @param count the number of pad characters to add
+     * @param padChar the character to use for padding
+     * @return the padded string, or null if the input was null
+     */
+    public static String padStart(final String str, final int count, final char padChar) {
+        if (str == null) {
+            return null;
+        }
+
+        if(count <= 0) {
+            return str;
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            result.append(padChar);
+        }
+        result.append(str);
+
+        return result.toString();
+    }
+
 
     private StringUtils() {
         super();

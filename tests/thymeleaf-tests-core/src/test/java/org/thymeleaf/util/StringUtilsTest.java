@@ -283,5 +283,24 @@ public class StringUtilsTest {
         Assertions.assertEquals("a23b(%&__c", pack("   A23   B   (\n%\t& __\nC\n  "));
     }
 
+    @Test
+    public void testPadEnd() {
+        Assertions.assertEquals(null, StringUtils.padEnd(null, 5, ' '));
+        Assertions.assertEquals("abc", StringUtils.padEnd("abc", 0, ' '));
+        Assertions.assertEquals("abc", StringUtils.padEnd("abc", -1, ' '));
+
+        Assertions.assertEquals("abc  ", StringUtils.padEnd("abc", 2, ' '));
+        Assertions.assertEquals("abc--", StringUtils.padEnd("abc", 2, '-'));
+    }
+
+    @Test
+    public void testPadStart() {
+        Assertions.assertEquals(null, StringUtils.padStart(null, 5, ' '));
+        Assertions.assertEquals("abc", StringUtils.padEnd("abc", 0, ' '));
+        Assertions.assertEquals("abc", StringUtils.padEnd("abc", -1, ' '));
+
+        Assertions.assertEquals("  abc", StringUtils.padStart("abc", 2, ' '));
+        Assertions.assertEquals("--abc", StringUtils.padStart("abc", 2, '-'));
+    }
 }
 //CHECKSTYLE:ON
