@@ -42,7 +42,7 @@ git push
 ## 4. Create and deploy the release into the staging repositories
 
 ```shell
-mvn clean compile deploy
+mvn -P releases clean compile deploy
 ```
 
 ## 5. Create tag and set to new development version
