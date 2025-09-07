@@ -178,7 +178,7 @@
     <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
     <maven-versions-plugin.version>2.18.0</maven-versions-plugin.version>
     <maven-cargo-plugin.version>1.10.15</maven-cargo-plugin.version>
-    <maven-central-publishing-plugin.version>0.7.0</maven-central-publishing-plugin.version>
+    <maven-central-publishing-plugin.version>0.9.0</maven-central-publishing-plugin.version>
   </properties>
 
 
@@ -550,20 +550,6 @@
           </configuration>
         </plugin>
 
-        <!-- IMPORTANT: central-publishing-maven-plugin works like this:        -->
-        <!--   * If there are no explicit executions configured for it, it will -->
-        <!--     add an execution of its "publish" goal to the "deploy" phase,  -->
-        <!--     and also search for the presence of maven-deploy-plugin and    -->
-        <!--     nexus-staging-maven-plugin and REMOVE their executions, so     -->
-        <!--     that only central-publishing-maven-plugin executes during      -->
-        <!--     the "deploy" phase.                                            -->
-        <!--   * As of version 0.7.0, the "skipPublishing" flag applies to the  -->
-        <!--     entire bundle, so there is no way to determine which specific  -->
-        <!--     artifacts should be deployed and which should not (as can be   -->
-        <!--     done with maven-deploy-plugin's "maven.deploy.skip" property). -->
-        <!--     This means artifacts need to be excluded by means of the       -->
-        <!--     "excludedArtifacts" property, which does not allow the         -->
-        <!--     specification of groupIDs or wildcards (only artifactIDs).     -->
         <plugin>
           <groupId>org.sonatype.central</groupId>
           <artifactId>central-publishing-maven-plugin</artifactId>
@@ -571,54 +557,7 @@
           <extensions>true</extensions>
           <configuration>
             <publishingServerId>central</publishingServerId>
-            <!--                                                              -->
-            <!-- If "skipPublishing" worked per-artifact, we could use it.    -->
-            <!-- <skipPublishing>${artifact.deploy.disabled}</skipPublishing> -->
-            <!--                                                              -->
-            <!-- The entire "excludeArtifacts" configuration below could be   -->
-            <!-- removed if the behavior of "skipPublishing" changes in a     -->
-            <!-- future version of the plugin.                                -->
-            <excludeArtifacts>
-              <artifact>thymeleaf-dist</artifact>
-              <artifact>thymeleaf-examples</artifact>
-              <artifact>thymeleaf-examples-core</artifact>
-              <artifact>thymeleaf-examples-gtvg-jakarta</artifact>
-              <artifact>thymeleaf-examples-gtvg-javax</artifact>
-              <artifact>thymeleaf-examples-spring5</artifact>
-              <artifact>thymeleaf-examples-spring5-extrathyme</artifact>
-              <artifact>thymeleaf-examples-spring5-sayhello</artifact>
-              <artifact>thymeleaf-examples-spring5-springmail</artifact>
-              <artifact>thymeleaf-examples-spring5-stsm</artifact>
-              <artifact>thymeleaf-examples-spring5-thvsjsp</artifact>
-              <artifact>thymeleaf-examples-spring6</artifact>
-              <artifact>thymeleaf-examples-spring6-extrathyme</artifact>
-              <artifact>thymeleaf-examples-spring6-sayhello</artifact>
-              <artifact>thymeleaf-examples-spring6-springmail</artifact>
-              <artifact>thymeleaf-examples-spring6-stsm</artifact>
-              <artifact>thymeleaf-examples-spring6-thvsjsp</artifact>
-              <artifact>thymeleaf-examples-springboot2</artifact>
-              <artifact>thymeleaf-examples-springboot2-biglist-mvc</artifact>
-              <artifact>thymeleaf-examples-springboot2-biglist-webflux</artifact>
-              <artifact>thymeleaf-examples-springboot2-sse-webflux</artifact>
-              <artifact>thymeleaf-examples-springboot2-stsm-mvc</artifact>
-              <artifact>thymeleaf-examples-springboot2-stsm-webflux</artifact>
-              <artifact>thymeleaf-examples-springboot3</artifact>
-              <artifact>thymeleaf-examples-springboot3-biglist-mvc</artifact>
-              <artifact>thymeleaf-examples-springboot3-biglist-webflux</artifact>
-              <artifact>thymeleaf-examples-springboot3-sse-webflux</artifact>
-              <artifact>thymeleaf-examples-springboot3-stsm-mvc</artifact>
-              <artifact>thymeleaf-examples-springboot3-stsm-webflux</artifact>
-              <artifact>thymeleaf-examples-springsecurity5</artifact>
-              <artifact>thymeleaf-examples-springsecurity5-websecurity</artifact>
-              <artifact>thymeleaf-examples-springsecurity6</artifact>
-              <artifact>thymeleaf-examples-springsecurity6-websecurity</artifact>
-              <artifact>thymeleaf-tests</artifact>
-              <artifact>thymeleaf-tests-core</artifact>
-              <artifact>thymeleaf-tests-spring5</artifact>
-              <artifact>thymeleaf-tests-spring6</artifact>
-              <artifact>thymeleaf-tests-springsecurity5</artifact>
-              <artifact>thymeleaf-tests-springsecurity6</artifact>
-            </excludeArtifacts>
+            <skipPublishing>${artifact.deploy.disabled}</skipPublishing>
           </configuration>
         </plugin>
 
