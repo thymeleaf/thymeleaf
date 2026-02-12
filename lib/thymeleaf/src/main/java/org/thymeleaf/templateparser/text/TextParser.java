@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateparser.text;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
@@ -232,6 +234,8 @@ final class TextParser {
 
         } catch (final TextParseException e) {
             throw e;
+        } catch (final TemplateProcessingException e) {
+            throw new TextParseException(e, e.getLine(), e.getCol());
         } catch (final Exception e) {
             throw new TextParseException(e);
         } finally {
