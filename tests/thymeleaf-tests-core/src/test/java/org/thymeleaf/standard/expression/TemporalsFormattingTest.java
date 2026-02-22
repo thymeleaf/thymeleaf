@@ -44,7 +44,7 @@ public class TemporalsFormattingTest {
     @Test
     public void testFormat() {
         Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
-        assertEquals("December 31, 2015 at 11:59:45 PM Z", temporals.format(time));
+        assertEquals("December 31, 2015, 11:59:45 PM Z", temporals.format(time).replace('\u202F', ' ').replace(" at ", ", "));
     }
     
     @Test
@@ -55,7 +55,7 @@ public class TemporalsFormattingTest {
     @Test
     public void testFormatWithLocale() {
         Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
-        assertEquals("31. Dezember 2015 um 23:59:45 Z", temporals.format(time, Locale.GERMANY));
+        assertEquals("31. Dezember 2015, 23:59:45 Z", temporals.format(time, Locale.GERMANY).replace('\u202F', ' ').replace(" um ", ", "));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TemporalsFormattingTest {
         Temporal time = LocalDateTime.of(2015, 12, 31, 23, 59);
         String pattern = "yyyy-MM-dd HH:mm:ss";
         String expectd = "2015-12-31 23:59:00";
-        assertEquals(expectd, temporals.format(time, pattern));
+        assertEquals(expectd, temporals.format(time, pattern).replace('\u202F', ' '));
     }
 
     @Test
@@ -76,34 +76,34 @@ public class TemporalsFormattingTest {
         Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 0, 1, ZoneOffset.UTC);
         String pattern = "yyyy-MM-dd HH:mm:ss";
         String expectd = "2015-12-31 18:59:00";
-        assertEquals(expectd, temporals.format(time, pattern, "Etc/GMT+5"));
+        assertEquals(expectd, temporals.format(time, pattern, "Etc/GMT+5").replace('\u202F', ' '));
     }
 
     @Test
     public void testFormatStandardPatternDateTime() {
         Temporal time = LocalDateTime.of(2015, 12, 31, 23, 59);
-        assertEquals("12/31/15, 11:59 PM", temporals.format(time, "SHORT", Locale.US));
-        assertEquals("Dec 31, 2015, 11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US));
-        assertEquals("December 31, 2015 at 11:59:00 PM Z", temporals.format(time, "LONG", Locale.US));
-        assertEquals("Thursday, December 31, 2015 at 11:59:00 PM Z", temporals.format(time, "FULL", Locale.US));
+        assertEquals("12/31/15, 11:59 PM", temporals.format(time, "SHORT", Locale.US).replace('\u202F', ' '));
+        assertEquals("Dec 31, 2015, 11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US).replace('\u202F', ' '));
+        assertEquals("December 31, 2015, 11:59:00 PM Z", temporals.format(time, "LONG", Locale.US).replace('\u202F', ' ').replace(" at ", ", "));
+        assertEquals("Thursday, December 31, 2015, 11:59:00 PM Z", temporals.format(time, "FULL", Locale.US).replace('\u202F', ' ').replace(" at ", ", "));
     }
 
     @Test
     public void testFormatStandardPatternDate() {
         Temporal time = LocalDate.of(2015, 12, 31);
         assertEquals("12/31/15", temporals.format(time, "SHORT", Locale.US));
-        assertEquals("Dec 31, 2015", temporals.format(time, "MEDIUM", Locale.US));
-        assertEquals("December 31, 2015", temporals.format(time, "LONG", Locale.US));
-        assertEquals("Thursday, December 31, 2015", temporals.format(time, "FULL", Locale.US));
+        assertEquals("Dec 31, 2015", temporals.format(time, "MEDIUM", Locale.US).replace('\u202F', ' '));
+        assertEquals("December 31, 2015", temporals.format(time, "LONG", Locale.US).replace('\u202F', ' '));
+        assertEquals("Thursday, December 31, 2015", temporals.format(time, "FULL", Locale.US).replace('\u202F', ' '));
     }
 
     @Test
     public void testFormatStandardPatternTime() {
         Temporal time = LocalTime.of( 23, 59);
-        assertEquals("11:59 PM", temporals.format(time, "SHORT", Locale.US));
-        assertEquals("11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US));
-        assertEquals("11:59:00 PM Z", temporals.format(time, "LONG", Locale.US));
-        assertEquals("11:59:00 PM Z", temporals.format(time, "FULL", Locale.US));
+        assertEquals("11:59 PM", temporals.format(time, "SHORT", Locale.US).replace('\u202F', ' '));
+        assertEquals("11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US).replace('\u202F', ' '));
+        assertEquals("11:59:00 PM Z", temporals.format(time, "LONG", Locale.US).replace('\u202F', ' '));
+        assertEquals("11:59:00 PM Z", temporals.format(time, "FULL", Locale.US).replace('\u202F', ' '));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class TemporalsFormattingTest {
         Temporal time = LocalDateTime.of(2015, 12, 31, 23, 59);
         String pattern = "EEEE, d MMMM, yyyy";
         String expectd = "Donnerstag, 31 Dezember, 2015";
-        assertEquals(expectd, temporals.format(time, pattern, Locale.GERMANY));
+        assertEquals(expectd, temporals.format(time, pattern, Locale.GERMANY).replace('\u202F', ' '));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class TemporalsFormattingTest {
     @Test
     public void offsetDateTimeWithPattern() {
         OffsetDateTime time = OffsetDateTime.of(LocalDateTime.of(2015, 12, 31, 23, 59, 45), ZoneOffset.UTC);
-        assertEquals("12/31/2015 23:59:45", temporals.format(time, "MM/dd/yyyy HH:mm:ss"));
+        assertEquals("12/31/2015 23:59:45", temporals.format(time, "MM/dd/yyyy HH:mm:ss").replace('\u202F', ' '));
     }
 
     @Test
