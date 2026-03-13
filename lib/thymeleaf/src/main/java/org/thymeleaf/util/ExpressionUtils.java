@@ -200,8 +200,8 @@ public final class ExpressionUtils {
         if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there.
             return typeName.startsWith("com.sun.");
         }
-        if (isJavaPackage(typeName)) {
-            return !typeName.startsWith("java.time.");
+        if (isJavaPackage(typeName) && ALLOWED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith)) {
+            return false;
         }
         return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith);
     }
