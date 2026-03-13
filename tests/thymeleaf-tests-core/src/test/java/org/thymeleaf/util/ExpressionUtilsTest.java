@@ -89,50 +89,50 @@ public final class ExpressionUtilsTest {
 
     @Test
     public void typeAllowedTest() {
-        Assertions.assertTrue(isTypeAllowed("org.thymeleaf.X"));
-        Assertions.assertTrue(isTypeAllowed("org.springframework.X"));
-        Assertions.assertFalse(isTypeAllowed("org.springframework.cglib.X"));
-        Assertions.assertFalse(isTypeAllowed("org.springframework.aot.X"));
-        Assertions.assertFalse(isTypeAllowed("org.springframework.javapoet.X"));
-        Assertions.assertFalse(isTypeAllowed("net.bytebuddy.X"));
-        Assertions.assertTrue(isTypeAllowed("es.whatever.X"));
-        Assertions.assertTrue(isTypeAllowed("de.whatever.X"));
-        Assertions.assertFalse(isTypeAllowed("java.lang.X"));
-        Assertions.assertTrue(isTypeAllowed("java.time.X"));
-        Assertions.assertFalse(isTypeAllowed("javax.servlet.X"));
-        Assertions.assertFalse(isTypeAllowed("jakarta.servlet.X"));
-        Assertions.assertTrue(isTypeAllowed("com.whatever.X"));
-        Assertions.assertFalse(isTypeAllowed("com.sun.X"));
-        Assertions.assertFalse(isTypeAllowed("jdk.X"));
-        Assertions.assertFalse(isTypeAllowed("java.lang.Runtime"));
-        Assertions.assertTrue(isTypeAllowed("java.lang.Integer"));
-        Assertions.assertTrue(isTypeAllowed("java.util.Collection"));
-        Assertions.assertTrue(isTypeAllowed("java.util.stream.Stream"));
-        Assertions.assertTrue(isTypeAllowed("java.util.Calendar"));
-        Assertions.assertTrue(isTypeAllowed("java.util.Map"));
-        Assertions.assertTrue(isTypeAllowed("java.util.concurrent.atomic.AtomicInteger"));
+        Assertions.assertTrue(!isTypeForbidden("org.thymeleaf.X"));
+        Assertions.assertTrue(!isTypeForbidden("org.springframework.X"));
+        Assertions.assertFalse(!isTypeForbidden("org.springframework.cglib.X"));
+        Assertions.assertFalse(!isTypeForbidden("org.springframework.aot.X"));
+        Assertions.assertFalse(!isTypeForbidden("org.springframework.javapoet.X"));
+        Assertions.assertFalse(!isTypeForbidden("net.bytebuddy.X"));
+        Assertions.assertTrue(!isTypeForbidden("es.whatever.X"));
+        Assertions.assertTrue(!isTypeForbidden("de.whatever.X"));
+        Assertions.assertFalse(!isTypeForbidden("java.lang.X"));
+        Assertions.assertTrue(!isTypeForbidden("java.time.X"));
+        Assertions.assertFalse(!isTypeForbidden("javax.servlet.X"));
+        Assertions.assertFalse(!isTypeForbidden("jakarta.servlet.X"));
+        Assertions.assertTrue(!isTypeForbidden("com.whatever.X"));
+        Assertions.assertFalse(!isTypeForbidden("com.sun.X"));
+        Assertions.assertFalse(!isTypeForbidden("jdk.X"));
+        Assertions.assertFalse(!isTypeForbidden("java.lang.Runtime"));
+        Assertions.assertTrue(!isTypeForbidden("java.lang.Integer"));
+        Assertions.assertTrue(!isTypeForbidden("java.util.Collection"));
+        Assertions.assertTrue(!isTypeForbidden("java.util.stream.Stream"));
+        Assertions.assertTrue(!isTypeForbidden("java.util.Calendar"));
+        Assertions.assertTrue(!isTypeForbidden("java.util.Map"));
+        Assertions.assertTrue(!isTypeForbidden("java.util.concurrent.atomic.AtomicInteger"));
     }
 
     @Test
     public void memberAllowedForTypeTest() {
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(TemplateEngine.class, "someMethod"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(createTestProxy().getClass(), "someMethod"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Integer.class, "someMethod"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Temporal.class, "someMethod"));
-        Assertions.assertFalse(isMemberAllowedForInstanceOfType(javax.servlet.ServletContext.class, "someMethod"));
-        Assertions.assertFalse(isMemberAllowedForInstanceOfType(jakarta.servlet.ServletContext.class, "someMethod"));
-        Assertions.assertFalse(isMemberAllowedForInstanceOfType(Runtime.class, "someMethod"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Collection.class, "iterator"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Stream.class, "collect"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Calendar.class, "getInstance"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Map.class, "get"));
-        Assertions.assertFalse(isMemberAllowedForInstanceOfType(Collection.class, "toString"));
-        Assertions.assertFalse(isMemberAllowedForInstanceOfType(Stream.class, "toString"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(Calendar.class, "toString"));
-        Assertions.assertFalse(isMemberAllowedForInstanceOfType(Map.class, "toString"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(ArrayList.class, "toString"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(GregorianCalendar.class, "toString"));
-        Assertions.assertTrue(isMemberAllowedForInstanceOfType(LinkedHashMap.class, "toString"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(TemplateEngine.class, "someMethod"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(createTestProxy().getClass(), "someMethod"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Integer.class, "someMethod"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Temporal.class, "someMethod"));
+        Assertions.assertFalse(!isMemberForbiddenForInstanceOfType(javax.servlet.ServletContext.class, "someMethod"));
+        Assertions.assertFalse(!isMemberForbiddenForInstanceOfType(jakarta.servlet.ServletContext.class, "someMethod"));
+        Assertions.assertFalse(!isMemberForbiddenForInstanceOfType(Runtime.class, "someMethod"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Collection.class, "iterator"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Stream.class, "collect"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Calendar.class, "getInstance"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Map.class, "get"));
+        Assertions.assertFalse(!isMemberForbiddenForInstanceOfType(Collection.class, "toString"));
+        Assertions.assertFalse(!isMemberForbiddenForInstanceOfType(Stream.class, "toString"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(Calendar.class, "toString"));
+        Assertions.assertFalse(!isMemberForbiddenForInstanceOfType(Map.class, "toString"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(ArrayList.class, "toString"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(GregorianCalendar.class, "toString"));
+        Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(LinkedHashMap.class, "toString"));
     }
 
 

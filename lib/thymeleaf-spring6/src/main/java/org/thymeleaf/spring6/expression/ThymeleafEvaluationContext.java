@@ -185,7 +185,7 @@ public final class ThymeleafEvaluationContext
             if (this.typeLocator == null) {
                 throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
             }
-            if (!ExpressionUtils.isTypeAllowed(typeName)) {
+            if (ExpressionUtils.isTypeForbidden(typeName)) {
                 throw new EvaluationException(
                         String.format("Access is forbidden for type '%s' in this expression context.", typeName));
             }
@@ -228,7 +228,7 @@ public final class ThymeleafEvaluationContext
                             "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) :
                             "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 
-                if (!ExpressionUtils.isMemberAllowed(targetObject, methodEquiv)) {
+                if (ExpressionUtils.isMemberForbidden(targetObject, methodEquiv)) {
                     throw new EvaluationException(
                             String.format(
                                     "Accessing member '%s' is forbidden for type '%s' in this expression context.",
@@ -271,7 +271,7 @@ public final class ThymeleafEvaluationContext
             }
 
             if (methodExecutor != null) {
-                if (!ExpressionUtils.isMemberAllowed(targetObject, name)) {
+                if (ExpressionUtils.isMemberForbidden(targetObject, name)) {
                     throw new EvaluationException(
                             String.format(
                                 "Calling method '%s' is forbidden for type '%s' in this expression context.",

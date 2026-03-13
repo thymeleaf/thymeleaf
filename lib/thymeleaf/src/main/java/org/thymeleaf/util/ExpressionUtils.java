@@ -152,14 +152,14 @@ public final class ExpressionUtils {
 
 
     static {
-        ALLOWED_JAVA_CLASS_NAMES = ALLOWED_JAVA_CLASSES.stream().map(c -> c.getName()).collect(Collectors.toSet());
-        ALLOWED_JAVA_SUPERS_NAMES = ALLOWED_JAVA_SUPERS.stream().map(c -> c.getName()).collect(Collectors.toSet());
+        ALLOWED_JAVA_CLASS_NAMES = ALLOWED_JAVA_CLASSES.stream().map(Class::getName).collect(Collectors.toSet());
+        ALLOWED_JAVA_SUPERS_NAMES = ALLOWED_JAVA_SUPERS.stream().map(Class::getName).collect(Collectors.toSet());
         BLOCKED_MEMBER_CALL_JAVA_SUPERS = BLOCKED_MEMBER_CALL_JAVA_SUPERS_NAMES.stream().
                 map(className -> {
                     try {
                         return Optional.of(Class.forName(className));
                     } catch (final ClassNotFoundException e) {
-                        return Optional.ofNullable((Class<?>)null);
+                        return Optional.<Class<?>>empty();
                     }
                 }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
     }
@@ -203,7 +203,7 @@ public final class ExpressionUtils {
         if (isJavaPackage(typeName)) {
             return !typeName.startsWith("java.time.");
         }
-        return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(prefix -> typeName.startsWith(prefix));
+        return BLOCKED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith);
     }
 
     static boolean isTypeBlockedForTypeReference(final String typeName) {
@@ -217,23 +217,23 @@ public final class ExpressionUtils {
         if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there.
             return typeName.startsWith("com.squareup.javapoet.");
         }
-        return BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES.stream().anyMatch(prefix -> typeName.startsWith(prefix));
+        return BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith);
     }
 
 
 
-    public static boolean isTypeAllowed(final String typeName) {
+    public static boolean isTypeForbidden(final String typeName) {
 
         Validate.notNull(typeName, "Type name cannot be null");
 
         final String normalizedTypeName = normalize(typeName);
 
         if (!isTypeBlockedForTypeReference(normalizedTypeName)) {
-            return true;
+            return false;
         }
 
         // We know the package is blocked, but certain classes and interfaces in blocked packages are allowed
-        return ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) || ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName);
+        return !ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) && !ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName);
 
     }
 
@@ -244,14 +244,14 @@ public final class ExpressionUtils {
     }
 
 
-    static boolean isMemberAllowedForInstanceOfType(final Class<?> type, final String memberName) {
+    static boolean isMemberForbiddenForInstanceOfType(final Class<?> type, final String memberName) {
 
         Validate.notNull(type, "Type cannot be null");
 
         final String typeName = type.getName();
 
         if (!isTypeBlockedForAllPurposes(typeName) && !isTypeBlockedForMemberCalls(type)) {
-            return true;
+            return false;
         }
 
         // We know the package is blocked, so whether we can actually call methods or see fields of it depends
@@ -260,53 +260,53 @@ public final class ExpressionUtils {
 
         // Enums and annotations in blocked packages are OK
         if (type.isEnum() || type.isAnnotation()) {
-            return true;
+            return false;
         }
 
         // We will allow methods to be called on JDK-proxied classes. These proxied
         // classes are typically created under "jdk.proxyX" packages so calling methods
         // on them would be forbidden by default if we didn't allow this explicitly.
         if (Proxy.isProxyClass(type)) {
-            return true;
+            return false;
         }
 
         if (ALLOWED_JAVA_CLASSES.contains(type)) {
-            return true;
+            return false;
         }
 
         // Otherwise, we will restrict calls to methods declared in one of the allowed interfaces or superclasses
         return ALLOWED_JAVA_SUPERS.stream()
                 .filter(i -> i.isAssignableFrom(type))
-                .anyMatch(i -> Arrays.stream(i.getDeclaredMethods()).anyMatch(m -> memberName.equals(m.getName())));
+                .noneMatch(i -> Arrays.stream(i.getDeclaredMethods()).anyMatch(m -> memberName.equals(m.getName())));
 
     }
 
 
 
-    public static boolean isMemberAllowed(final Object target, final String memberName) {
+    public static boolean isMemberForbidden(final Object target, final String memberName) {
 
         Validate.notNull(memberName, "Member name cannot be null");
 
         if (target == null) {
-            return true;
+            return false;
         }
 
         final String normalizedMemberName = normalize(memberName);
 
         // Calling Object#getClass() or Object#toString() will always be allowed
         if ("getClass".equals(normalizedMemberName) || "toString".equals(normalizedMemberName)) {
-            return true;
+            return false;
         }
 
         // If the target itself is a class, that means we are calling a static method on it. And therefore we
         // will need to determine whether the class itself is blocked and whether the method being called is allowed.
         if (target instanceof Class<?>) {
             final String targetTypeName = ((Class<?>) target).getName();
-            return ALLOWED_CLASS_METHODS.contains(normalizedMemberName) ||
-                   (!BLOCKED_CLASS_METHODS.contains(normalizedMemberName) && isTypeAllowed(targetTypeName));
+            return !ALLOWED_CLASS_METHODS.contains(normalizedMemberName) &&
+                    (BLOCKED_CLASS_METHODS.contains(normalizedMemberName) || isTypeForbidden(targetTypeName));
         }
 
-        return isMemberAllowedForInstanceOfType(target.getClass(), normalizedMemberName);
+        return isMemberForbiddenForInstanceOfType(target.getClass(), normalizedMemberName);
 
     }
 

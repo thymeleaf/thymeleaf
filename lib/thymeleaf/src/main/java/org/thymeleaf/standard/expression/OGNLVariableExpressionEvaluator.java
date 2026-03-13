@@ -370,7 +370,7 @@ public final class OGNLVariableExpressionEvaluator
 
         @Override
         public Class<?> classForName(final String className, final Map context) throws ClassNotFoundException {
-            if (!ExpressionUtils.isTypeAllowed(className)) {
+            if (ExpressionUtils.isTypeForbidden(className)) {
                 throw new TemplateProcessingException(
                         String.format(
                                 "Access is forbidden for type '%s' in this expression context.", className));
@@ -429,7 +429,7 @@ public final class OGNLVariableExpressionEvaluator
                 return false;
             }
             if (member instanceof Method) {
-                if (!ExpressionUtils.isMemberAllowed(target, member.getName())) {
+                if (ExpressionUtils.isMemberForbidden(target, member.getName())) {
                     throw new TemplateProcessingException(
                             String.format(
                                     "Accessing member '%s' is forbidden for type '%s' in this expression context.",
