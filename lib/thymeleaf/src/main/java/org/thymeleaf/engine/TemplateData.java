@@ -72,8 +72,8 @@ public final class TemplateData {
      *   Builds a new {@code TemplateData} object.
      * </p>
      * <p>
-     *   This constructor should be considered internal, as there should be no reason why
-     *   instances of this class should be created from outside the Template Engine itself.
+     *   This constructor should be considered internal, though offered as
+     *   public to be used in testing scenarios.
      * </p>
      *
      * @param template the template
@@ -81,7 +81,7 @@ public final class TemplateData {
      * @param templateResource the template resource
      * @param templateMode the template mode
      */
-    TemplateData(
+    public TemplateData(
             final String template,
             final Set<String> templateSelectors,
             final ITemplateResource templateResource,
