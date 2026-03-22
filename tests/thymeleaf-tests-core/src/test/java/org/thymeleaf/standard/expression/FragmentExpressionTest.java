@@ -62,6 +62,9 @@ public class FragmentExpressionTest {
         checkFragmentSelection("C:\\Program Files\\apps\\templates\\WEB-INF\\temp.html :: 'fragment number one'", "'C:\\Program Files\\apps\\templates\\WEB-INF\\temp.html'","'fragment number one'", null);
         checkFragmentSelection("/home/user/apps/templates/WEB-INF/temp.html :: 'fragment number one'", "'/home/user/apps/templates/WEB-INF/temp.html'","'fragment number one'", null);
         checkFragmentSelection("home/user :: 'fragment number one'", "'home/user'","'fragment number one'", null);
+        checkFragmentSelection("/some/template :: frag('test(value')", "'/some/template'", "frag", "'_arg0'='test(value'");
+        checkFragmentSelection("/some/template :: frag('test)value')", "'/some/template'", "frag", "'_arg0'='test)value'");
+        checkFragmentSelection("/some/template :: frag('(testvalue)')", "'/some/template'", "frag", "'_arg0'='(testvalue)'");
     }
 
 
