@@ -145,7 +145,7 @@ public final class ExpressionUtils {
 
     private static final Set<String> ALLOWED_CLASS_METHODS =
             new HashSet<>(Arrays.asList(
-                    "getName", "isAssignableFrom", "isInstance",
+                    "getName", "getSimpleName", "isAssignableFrom", "isInstance",
                     "isInterface", "isPrimitive", "isRecord", "isAnnotation", "isArray", "isEnum"));
     private static final Set<String> BLOCKED_CLASS_METHODS =
             Arrays.stream(Class.class.getDeclaredMethods()).map(Method::getName).collect(Collectors.toSet());
