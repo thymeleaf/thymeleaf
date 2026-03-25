@@ -7,6 +7,7 @@ application.c = 'Hello'
 # ------------------------------------------------------------
 %INPUT
 <p data-th-text="${application[&quot;a&quot;].class.name}">...</p>
+<p data-th-text="${application[&quot;a&quot;].class.simpleName}">...</p>
 <p data-th-text="${application[&quot;a&quot;]}">...</p>
 <p data-th-text="${application[&quot;b&quot;].class.name}">...</p>
 <p data-th-text="${application[&quot;b&quot;]}">...</p>
@@ -14,6 +15,7 @@ application.c = 'Hello'
 # ------------------------------------------------------------
 %OUTPUT
 <p>java.lang.String</p>
+<p>String</p>
 <p>Some text</p>
 <p>java.lang.Integer</p>
 <p>123</p>
