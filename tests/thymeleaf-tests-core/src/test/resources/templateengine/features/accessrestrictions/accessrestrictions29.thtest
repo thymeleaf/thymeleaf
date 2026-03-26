@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+obj1 = {"one", "two", "three"}
+obj2 = {}
+# ------------------------------------------------------------
+%INPUT
+<p th:if="${obj1.isEmpty()}">First is empty</p>
+<p th:if="${obj2.isEmpty()}">Second is empty</p>
+# ------------------------------------------------------------
+%OUTPUT
+
+<p>Second is empty</p>
