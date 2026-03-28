@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+someVarWithOptional=@java.util.Optional@of("a")
+someVarWithoutOptional=@java.util.Optional@empty()
+# ------------------------------------------------------------
+%INPUT
+<script type="module" th:inline="javascript">
+    var a = [[${someVarWithOptional}]];
+    var b = [[${someVarWithoutOptional}]];
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="module">
+    var a = "a";
+    var b = null;
+</script>
