@@ -20,9 +20,13 @@
 package org.thymeleaf.spring5.expression;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
@@ -88,14 +92,21 @@ public final class ThymeleafEvaluationContext
 
 
     private final ApplicationContext applicationContext;
+    private final Set<Class<?>> allowedClassOverridesForViews;
 
     private IExpressionObjects expressionObjects = null;
     private boolean variableAccessRestricted = false;
 
 
 
-
     public ThymeleafEvaluationContext(final ApplicationContext applicationContext, final ConversionService conversionService) {
+        this(applicationContext, conversionService, null);
+    }
+
+
+    public ThymeleafEvaluationContext(final ApplicationContext applicationContext,
+                                      final ConversionService conversionService,
+                                      final Collection<Class<?>> allowedClassOverridesForViews) {
 
         super();
 
@@ -103,6 +114,10 @@ public final class ThymeleafEvaluationContext
         // ConversionService CAN be null
 
         this.applicationContext = applicationContext;
+        this.allowedClassOverridesForViews =
+                (allowedClassOverridesForViews != null && !allowedClassOverridesForViews.isEmpty()) ?
+                        Collections.unmodifiableSet(new HashSet<>(allowedClassOverridesForViews)) : Collections.emptySet();
+
         this.setBeanResolver(new BeanFactoryResolver(applicationContext));
         if (conversionService != null) {
             this.setTypeConverter(new StandardTypeConverter(conversionService));
@@ -111,14 +126,21 @@ public final class ThymeleafEvaluationContext
         final List<PropertyAccessor> propertyAccessors = new ArrayList<>(5);
         propertyAccessors.add(SPELContextPropertyAccessor.INSTANCE);
         propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
-        propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
+
+        // Depending on whether custom class overrides are allowed, we will establish a custom type locator in order to
+        // forbid access to certain dangerous classes in expressions, as well as matching method resolver and property
+        // accessor instances.
+        if (!this.allowedClassOverridesForViews.isEmpty()) {
+            propertyAccessors.add(new ThymeleafEvaluationContextACLPropertyAccessor(this.allowedClassOverridesForViews));
+            this.setTypeLocator(new ThymeleafEvaluationContextACLTypeLocator(this.allowedClassOverridesForViews));
+            this.setMethodResolvers(Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver(this.allowedClassOverridesForViews)));
+        } else {
+            propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
+            this.setTypeLocator(TYPE_LOCATOR);
+            this.setMethodResolvers(METHOD_RESOLVERS);
+        }
+
         this.setPropertyAccessors(propertyAccessors);
-
-        // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
-        this.setTypeLocator(TYPE_LOCATOR);
-
-        // We need to establish a custom method resolver in order to forbid calling methods on any of the blocked classes
-        this.setMethodResolvers(METHOD_RESOLVERS);
 
     }
 
@@ -126,6 +148,23 @@ public final class ThymeleafEvaluationContext
     public ApplicationContext getApplicationContext() {
         return this.applicationContext;
     }
+
+
+    /**
+     * <p>
+     *   Returns the classes that will be allowed to be used in SpEL expressions in views,
+     *   explicitly overriding the standard set of forbidden classes.
+     * </p>
+     *
+     * @return the classes that will be allowed to be used in expressions in views even if forbidden by default.
+     *
+     * @since 3.1.4
+     */
+    public Collection<Class<?>> getAllowedClassOverridesForViews() {
+        return this.allowedClassOverridesForViews;
+    }
+
+
 
 
     @Override
@@ -164,12 +203,21 @@ public final class ThymeleafEvaluationContext
     static final class ThymeleafEvaluationContextACLTypeLocator implements TypeLocator {
 
         private final TypeLocator typeLocator;
+        private final Set<String> allowedClassOverridesForViews;
 
         ThymeleafEvaluationContextACLTypeLocator() {
-            this(new StandardTypeLocator());
+            this(new StandardTypeLocator(), null);
+        }
+
+        ThymeleafEvaluationContextACLTypeLocator(final Set<Class<?>> allowedClassOverridesForViews) {
+            this(new StandardTypeLocator(), allowedClassOverridesForViews);
         }
 
         ThymeleafEvaluationContextACLTypeLocator(final TypeLocator typeLocator) {
+            this(typeLocator, null);
+        }
+
+        ThymeleafEvaluationContextACLTypeLocator(final TypeLocator typeLocator, final Set<Class<?>> allowedClassOverridesForViews) {
             super();
             // typeLocator CAN be null
             this.typeLocator = typeLocator;
@@ -178,6 +226,9 @@ public final class ThymeleafEvaluationContext
                 // the filter forbidding all "java.lang.*" classes to be bypassed.
                 ((StandardTypeLocator)this.typeLocator).removeImport("java.lang");
             }
+            this.allowedClassOverridesForViews =
+                    (allowedClassOverridesForViews == null || allowedClassOverridesForViews.isEmpty())?
+                            null : allowedClassOverridesForViews.stream().map(Class::getName).collect(Collectors.toSet());
         }
 
         @Override
@@ -185,11 +236,21 @@ public final class ThymeleafEvaluationContext
             if (this.typeLocator == null) {
                 throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
             }
-            if (ExpressionUtils.isTypeForbidden(typeName)) {
+            if (isTypeForbidden(typeName)) {
                 throw new EvaluationException(
                         String.format("Access is forbidden for type '%s' in this expression context.", typeName));
             }
             return this.typeLocator.findType(typeName);
+        }
+
+        private boolean isTypeForbidden(final String typeName) {
+            if (!ExpressionUtils.isTypeForbidden(typeName)) {
+                return false;
+            }
+            if (this.allowedClassOverridesForViews == null) {
+                return true;
+            }
+            return !this.allowedClassOverridesForViews.contains(typeName);
         }
 
     }
@@ -199,15 +260,28 @@ public final class ThymeleafEvaluationContext
     static final class ThymeleafEvaluationContextACLPropertyAccessor extends ReflectivePropertyAccessor {
 
         private final ReflectivePropertyAccessor propertyAccessor;
+        private final Set<Class<?>> allowedClassOverridesForViews;
 
         ThymeleafEvaluationContextACLPropertyAccessor() {
-            this(null);
+            this(null, null);
+        }
+
+        ThymeleafEvaluationContextACLPropertyAccessor(final Set<Class<?>> allowedClassOverridesForViews) {
+            this(null, allowedClassOverridesForViews);
         }
 
         ThymeleafEvaluationContextACLPropertyAccessor(final ReflectivePropertyAccessor propertyAccessor) {
+            this(propertyAccessor, null);
+        }
+
+        ThymeleafEvaluationContextACLPropertyAccessor(final ReflectivePropertyAccessor propertyAccessor,
+                                                      final Set<Class<?>> allowedClassOverridesForViews) {
             super(false); // allowWrite = false
             // propertyAccessor CAN be null
             this.propertyAccessor = propertyAccessor;
+            this.allowedClassOverridesForViews =
+                    allowedClassOverridesForViews == null || allowedClassOverridesForViews.isEmpty() ?
+                            null : allowedClassOverridesForViews;
         }
 
 
@@ -228,7 +302,7 @@ public final class ThymeleafEvaluationContext
                             "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) :
                             "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 
-                if (ExpressionUtils.isMemberForbidden(targetObject, methodEquiv)) {
+                if (isMemberForbidden(targetObject, methodEquiv)) {
                     throw new EvaluationException(
                             String.format(
                                     "Accessing member '%s' is forbidden for type '%s' in this expression context.",
@@ -240,6 +314,21 @@ public final class ThymeleafEvaluationContext
 
         }
 
+        private boolean isMemberForbidden(final Object target, final String memberName) {
+            if (target == null || !ExpressionUtils.isMemberForbidden(target, memberName)) {
+                return false;
+            }
+            if (this.allowedClassOverridesForViews == null) {
+                return true;
+            }
+            for (final Class<?> clazz : this.allowedClassOverridesForViews) {
+                if (clazz.isInstance(target) || (target instanceof Class<?> && clazz.equals(target))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     }
 
 
@@ -247,15 +336,28 @@ public final class ThymeleafEvaluationContext
     static final class ThymeleafEvaluationContextACLMethodResolver extends ReflectiveMethodResolver {
 
         private final ReflectiveMethodResolver methodResolver;
+        private final Set<Class<?>> allowedClassOverridesForViews;
 
         ThymeleafEvaluationContextACLMethodResolver() {
-            this(null);
+            this(null, null);
+        }
+
+        ThymeleafEvaluationContextACLMethodResolver(final Set<Class<?>> allowedClassOverridesForViews) {
+            this(null, allowedClassOverridesForViews);
         }
 
         ThymeleafEvaluationContextACLMethodResolver(final ReflectiveMethodResolver methodResolver) {
+            this(methodResolver, null);
+        }
+
+        ThymeleafEvaluationContextACLMethodResolver(final ReflectiveMethodResolver methodResolver,
+                                                    final Set<Class<?>> allowedClassOverridesForViews) {
             super();
             // methodResolver CAN be null
             this.methodResolver = methodResolver;
+            this.allowedClassOverridesForViews =
+                    allowedClassOverridesForViews == null || allowedClassOverridesForViews.isEmpty() ?
+                            null : allowedClassOverridesForViews;
         }
 
         @Override
@@ -271,16 +373,31 @@ public final class ThymeleafEvaluationContext
             }
 
             if (methodExecutor != null) {
-                if (ExpressionUtils.isMemberForbidden(targetObject, name)) {
+                if (isMemberForbidden(targetObject, name)) {
                     throw new EvaluationException(
                             String.format(
-                                    "Calling method '%s' is forbidden for type '%s' in this expression context.",
-                                    name, targetObject.getClass()));
+                                "Calling method '%s' is forbidden for type '%s' in this expression context.",
+                                name, targetObject.getClass()));
                 }
             }
 
             return methodExecutor;
 
+        }
+
+        private boolean isMemberForbidden(final Object target, final String memberName) {
+            if (target == null || !ExpressionUtils.isMemberForbidden(target, memberName)) {
+                return false;
+            }
+            if (this.allowedClassOverridesForViews == null) {
+                return true;
+            }
+            for (final Class<?> clazz : this.allowedClassOverridesForViews) {
+                if (clazz.isInstance(target) || (target instanceof Class<?> && clazz.equals(target))) {
+                    return false;
+                }
+            }
+            return true;
         }
 
     }

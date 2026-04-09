@@ -21,6 +21,7 @@ package org.thymeleaf.spring6.view.reactive;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -424,8 +425,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final ConversionService conversionService =
                 applicationContext.containsBean(WEBFLUX_CONVERSION_SERVICE_NAME)?
                         (ConversionService)applicationContext.getBean(WEBFLUX_CONVERSION_SERVICE_NAME): null;
+        final Collection<Class<?>> allowedClassOverridesForViews = viewTemplateEngine.getAllowedClassOverridesForViews();
         final ThymeleafEvaluationContext evaluationContext =
-                new ThymeleafEvaluationContext(applicationContext, conversionService);
+                new ThymeleafEvaluationContext(applicationContext, conversionService, allowedClassOverridesForViews);
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
 

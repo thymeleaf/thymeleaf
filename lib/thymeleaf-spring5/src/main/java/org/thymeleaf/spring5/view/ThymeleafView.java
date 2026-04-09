@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -255,8 +256,9 @@ public class ThymeleafView
         // quite expensive to create because of requiring the initialization of several ConcurrentHashMaps.
         final ConversionService conversionService =
                 (ConversionService) request.getAttribute(ConversionService.class.getName()); // might be null!
+        final Collection<Class<?>> allowedClassOverridesForViews = viewTemplateEngine.getAllowedClassOverridesForViews();
         final ThymeleafEvaluationContext evaluationContext =
-                new ThymeleafEvaluationContext(applicationContext, conversionService);
+                new ThymeleafEvaluationContext(applicationContext, conversionService, allowedClassOverridesForViews);
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
 

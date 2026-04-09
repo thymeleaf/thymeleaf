@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring6;
 
+import java.util.Collection;
 import org.springframework.context.MessageSource;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.spring6.dialect.SpringStandardDialect;
@@ -58,6 +59,32 @@ public interface ISpringTemplateEngine extends ITemplateEngine {
      * @param templateEngineMessageSource the message source to be used by the message resolver.
      */
     public void setTemplateEngineMessageSource(final MessageSource templateEngineMessageSource);
+
+
+    /**
+     * <p>
+     *   Returns the classes that will be allowed to be used in SpEL expressions in views,
+     *   explicitly overriding the standard set of forbidden classes.
+     * </p>
+     *
+     * @return the classes that will be allowed to be used in expressions in views even if forbidden by default.
+     *
+     * @since 3.1.4
+     */
+    public Collection<Class<?>> getAllowedClassOverridesForViews();
+
+
+    /**
+     * <p>
+     *   Sets the collection of classes that will be explicitly allowed to be used in SpEL expressions
+     *   in views, overriding the standard set of forbidden classes.
+     * </p>
+     *
+     * @param allowedClassOverridesForViews a collection of {@code Class<?>} instances representing
+     *                                      the classes to be allowed in expressions within views.
+     * @since 3.1.4
+     */
+    public void setAllowedClassOverridesForViews(final Collection<Class<?>> allowedClassOverridesForViews);
 
 
 }

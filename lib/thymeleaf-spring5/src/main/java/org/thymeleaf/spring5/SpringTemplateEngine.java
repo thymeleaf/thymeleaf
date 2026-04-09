@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.spring5;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.context.MessageSource;
@@ -60,6 +63,7 @@ public class SpringTemplateEngine
 
     private MessageSource messageSource = null;
     private MessageSource templateEngineMessageSource = null;
+    private Collection<Class<?>> allowedClassOverridesForViews = Collections.emptyList();
 
 
 
@@ -112,6 +116,23 @@ public class SpringTemplateEngine
     }
 
 
+
+
+    @Override
+    public Collection<Class<?>> getAllowedClassOverridesForViews() {
+        return this.allowedClassOverridesForViews;
+    }
+
+
+    @Override
+    public void setAllowedClassOverridesForViews(final Collection<Class<?>> allowedClassOverridesForViews) {
+        if (allowedClassOverridesForViews == null) {
+            this.allowedClassOverridesForViews = Collections.emptyList();
+        } else {
+            this.allowedClassOverridesForViews =
+                    Collections.unmodifiableList(new ArrayList<>(allowedClassOverridesForViews));
+        }
+    }
 
 
     /**
