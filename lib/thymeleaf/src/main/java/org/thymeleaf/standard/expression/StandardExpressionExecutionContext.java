@@ -54,19 +54,19 @@ public final class StandardExpressionExecutionContext {
             new StandardExpressionExecutionContext(false, false, false, true);
 
     private final boolean restrictVariableAccess;
-    private final boolean restrictInstantiationAndStatic;
+    private final boolean restrictExternalAccess;
     private final boolean forbidUnsafeExpressionResults;
     private final boolean performTypeConversion;
 
     
     private StandardExpressionExecutionContext(
             final boolean restrictVariableAccess,
-            final boolean restrictInstantiationAndStatic,
+            final boolean restrictExternalAccess,
             final boolean forbidUnsafeExpressionResults,
             final boolean performTypeConversion) {
         super();
         this.restrictVariableAccess = restrictVariableAccess;
-        this.restrictInstantiationAndStatic = restrictInstantiationAndStatic;
+        this.restrictExternalAccess = restrictExternalAccess;
         this.forbidUnsafeExpressionResults = forbidUnsafeExpressionResults;
         this.performTypeConversion = performTypeConversion;
     }
@@ -82,8 +82,8 @@ public final class StandardExpressionExecutionContext {
      * @return Whether this restriction should be applied or not.
      * @since 3.0.12
      */
-    public boolean getRestrictInstantiationAndStatic() {
-        return this.restrictInstantiationAndStatic;
+    public boolean getRestrictExternalAccess() {
+        return this.restrictExternalAccess;
     }
 
     public boolean getForbidUnsafeExpressionResults() {
@@ -108,7 +108,7 @@ public final class StandardExpressionExecutionContext {
             return RESTRICTED_FORBID_UNSAFE_EXP_RESULTS;
         }
         return new StandardExpressionExecutionContext(
-                getRestrictVariableAccess(), getRestrictInstantiationAndStatic(), getForbidUnsafeExpressionResults(), false);
+                getRestrictVariableAccess(), getRestrictExternalAccess(), getForbidUnsafeExpressionResults(), false);
     }
 
     public StandardExpressionExecutionContext withTypeConversion() {
@@ -125,7 +125,7 @@ public final class StandardExpressionExecutionContext {
             return RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION;
         }
         return new StandardExpressionExecutionContext(
-                getRestrictVariableAccess(), getRestrictInstantiationAndStatic(), getForbidUnsafeExpressionResults(), true);
+                getRestrictVariableAccess(), getRestrictExternalAccess(), getForbidUnsafeExpressionResults(), true);
     }
 
 

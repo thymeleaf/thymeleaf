@@ -37,7 +37,7 @@ public final class SpringStandardExpressionUtils {
     private static final int PARAM_LEN = PARAM_ARRAY.length;
 
 
-    public static boolean containsSpELInstantiationOrStaticOrParam(final String expression) {
+    public static boolean containsExternalAccess(final String expression) {
 
         /*
          * Checks whether the expression contains instantiation of objects ("new SomeClass") or makes use of
@@ -99,6 +99,12 @@ public final class SpringStandardExpressionUtils {
             pi = 0;
 
             if (c == '(' && ((n - 1 >= 0) && isPreviousStaticMarker(exp, n))) {
+                return true;
+            }
+
+            if (c == '@' &&
+                    ((n + 1 < explen) && isSafeIdentifierChar(exp.charAt(n + 1))) &&
+                    (n == 0  || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
                 return true;
             }
 

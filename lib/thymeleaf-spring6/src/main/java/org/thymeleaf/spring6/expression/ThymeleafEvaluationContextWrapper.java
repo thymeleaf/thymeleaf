@@ -29,6 +29,7 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ConstructorResolver;
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.EvaluationException;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.OperatorOverloader;
 import org.springframework.expression.PropertyAccessor;
@@ -73,7 +74,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     private final List<MethodResolver> methodResolvers;     // can be initialized to null if we can delegate
 
     private IExpressionObjects expressionObjects = null;
-    private boolean requestParametersRestricted = false;
+    private boolean variableAccessRestricted = false;
     private Map<String,Object> additionalVariables = null;
 
 
@@ -165,6 +166,13 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
     public Object lookupVariable(final String name) {
 
+        if (this.variableAccessRestricted) {
+            if (ThymeleafEvaluationContext.RESTRICTED_VARIABLE_NAMES.contains(name)) {
+                throw new EvaluationException(
+                        String.format("Access to variable '%s' is forbidden in this context.", name));
+            }
+        }
+
         if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {
             final Object result = this.expressionObjects.getObject(name);
             if (result != null) {
@@ -186,11 +194,11 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
 
     public boolean isVariableAccessRestricted() {
-        return this.requestParametersRestricted;
+        return this.variableAccessRestricted;
     }
 
     public void setVariableAccessRestricted(final boolean restricted) {
-        this.requestParametersRestricted = restricted;
+        this.variableAccessRestricted = restricted;
     }
 
     public IExpressionObjects getExpressionObjects() {

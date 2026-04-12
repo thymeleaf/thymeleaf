@@ -88,12 +88,15 @@ public final class ExpressionUtils {
                     "com.squareup.javapoet.",
                     "net.bytebuddy.", "net.sf.cglib.",
                     "javassist.", "javax0.geci.",
+                    "com.zaxxer.hikari.", "com.fasterxml.jackson.", "tools.jackson.",
+                    "org.apache.tomcat.jdbc.", "org.apache.commons.dbcp2.",
+                    "org.apache.commons.lang.reflect.", "org.apache.commons.lang3.reflect.",
                     "org.apache.bcel.", "org.aspectj.", "org.javassist.", "org.mockito.", "org.objectweb.asm.",
                     "org.objenesis.", "org.springframework.aot.", "org.springframework.asm.",
-                    "org.springframework.cglib.", "org.springframework.javapoet.", "org.springframework.objenesis.",
-                    "org.springframework.web.", "org.springframework.webflow.", "org.springframework.context.",
-                    "org.springframework.beans.", "org.springframework.aspects.", "org.springframework.aop.",
-                    "org.springframework.expression.", "org.springframework.util."));
+                    "org.springframework.core.", "org.springframework.cglib.", "org.springframework.javapoet.",
+                    "org.springframework.objenesis.", "org.springframework.web.", "org.springframework.webflow.",
+                    "org.springframework.context.", "org.springframework.beans.", "org.springframework.aspects.",
+                    "org.springframework.aop.", "org.springframework.expression.", "org.springframework.util."));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
@@ -174,10 +177,14 @@ public final class ExpressionUtils {
         char c;
         for (int i = 0; i < expLen; i++) {
             c = expression.charAt(i);
-            if (c != '\n' && (c < '\u0020' || (c >= '\u007F' && c <= '\u009F'))) {
+            if (c != '\n' && (c < '\u0020' || (c >= '\u007F' && c <= '\u009F') || Character.isWhitespace(c))) {
                 if (strBuilder == null) {
                     strBuilder = new StringBuilder(expLen);
                     strBuilder.append(expression, 0, i);
+                }
+                if (Character.isWhitespace(c)) {
+                    // For whitespaces (non-linefeed), we are simplifying to a regular whitespace char
+                    strBuilder.append(' ');
                 }
             } else if (strBuilder != null) {
                 strBuilder.append(c);
@@ -213,9 +220,6 @@ public final class ExpressionUtils {
         final char c0 = typeName.charAt(0);
         if (c0 != 'c' && c0 != 'n' && c0 != 'j' && c0 != 'o'){ // All blocked packages start with: c, n, j, o
             return false;
-        }
-        if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there.
-            return typeName.startsWith("com.squareup.javapoet.");
         }
         return BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith);
     }

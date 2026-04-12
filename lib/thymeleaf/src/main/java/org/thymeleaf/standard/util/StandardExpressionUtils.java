@@ -45,7 +45,7 @@ public final class StandardExpressionUtils {
     /*
      * @since 3.0.12
      */
-    public static boolean containsOGNLInstantiationOrStaticOrParam(final String expression) {
+    public static boolean containsExternalAccess(final String expression) {
 
         /*
          * Checks whether the expression contains instantiation of objects ("new SomeClass") or makes use of

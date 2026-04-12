@@ -157,7 +157,7 @@ final class OGNLShortcutExpression {
             throws OgnlException {
 
         if (OGNLContextPropertyAccessor.REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(propertyName) &&
-                context != null && context.containsKey(OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS)) {
+                context != null && context.containsKey(OGNLContextPropertyAccessor.RESTRICT_EXPRESSION_OBJECTS)) {
             throw new OgnlException(
                     "Access to variable \"" + propertyName + "\" is forbidden in this context. Note some restrictions apply to " +
                     "variable access. For example, accessing request parameters is forbidden in preprocessing and " +

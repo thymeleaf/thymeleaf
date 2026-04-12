@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.SpelNode;
+import org.springframework.expression.spel.ast.VariableReference;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -139,14 +141,31 @@ public class SPELVariableExpressionEvaluator
             logger.trace("[THYMELEAF][{}] SpringEL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression.getExpression());
         }
 
+
+        final String spelExpression = expression.getExpression();
+        final boolean useSelectionAsRoot = expression.getUseSelectionAsRoot();
+
+        if (spelExpression == null) {
+            throw new TemplateProcessingException("Expression content is null, which is not allowed");
+        }
+
+        final IEngineConfiguration configuration = context.getConfiguration();
+
+
+        /*
+         * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
+         */
+        final ComputedSpelExpression exp =
+                obtainComputedSpelExpression(configuration, expression, spelExpression, expContext);
+
+
+        if (expContext.getRestrictVariableAccess()) {
+            checkRestrictedVariables(exp.expression.getAST());
+        }
+
+
         try {
 
-            final String spelExpression = expression.getExpression();
-            final boolean useSelectionAsRoot = expression.getUseSelectionAsRoot();
-
-            if (spelExpression == null) {
-                throw new TemplateProcessingException("Expression content is null, which is not allowed");
-            }
 
             /*
              * TRY TO DELEGATE EVALUATION TO SPRING IF EXPRESSION IS ON A BOUND OBJECT
@@ -171,15 +190,6 @@ public class SPELVariableExpressionEvaluator
                 }
 
             }
-
-            final IEngineConfiguration configuration = context.getConfiguration();
-
-
-            /*
-             * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
-             */
-            final ComputedSpelExpression exp =
-                    obtainComputedSpelExpression(configuration, expression, spelExpression, expContext);
 
 
             /*
@@ -304,8 +314,8 @@ public class SPELVariableExpressionEvaluator
             final IStandardVariableExpression expression, final String spelExpression,
             final StandardExpressionExecutionContext expContext) {
 
-        if (expContext.getRestrictInstantiationAndStatic()
-                && SpringStandardExpressionUtils.containsSpELInstantiationOrStaticOrParam(spelExpression)) {
+        if (expContext.getRestrictExternalAccess()
+                && SpringStandardExpressionUtils.containsExternalAccess(spelExpression)) {
             throw new TemplateProcessingException(
                 "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
         }
@@ -407,6 +417,23 @@ public class SPELVariableExpressionEvaluator
     }
 
 
+
+
+    private static void checkRestrictedVariables(final SpelNode node) {
+        if (node instanceof VariableReference) {
+            final String name = node.toStringAST();
+            if (name != null && name.length() > 1 && name.charAt(0) == '#') {
+                final String varName = name.substring(1);
+                if (ThymeleafEvaluationContext.RESTRICTED_VARIABLE_NAMES.contains(varName)) {
+                    throw new TemplateProcessingException(
+                            "Access to variable '" + name + "' is forbidden in this context");
+                }
+            }
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            checkRestrictedVariables(node.getChild(i));
+        }
+    }
 
 
     @Override

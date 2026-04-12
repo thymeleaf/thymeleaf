@@ -19,12 +19,16 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 
 /**
@@ -36,7 +40,20 @@ import org.thymeleaf.expression.IExpressionObjects;
  */
 final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
+    private static final Set<String> RESTRICTED_EXPRESSION_OBJECT_NAMES =
+            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+                    StandardExpressionObjectFactory.CONTEXT_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.VARIABLES_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.ROOT_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.THIS_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.EXECUTION_INFO_OBJECT_NAME)));
+
     private final IExpressionObjects expressionObjects;
+
+
+    static boolean isRestricted(final String name) {
+        return RESTRICTED_EXPRESSION_OBJECT_NAMES.contains(name);
+    }
 
 
     OGNLExpressionObjectsWrapper(final IExpressionObjects expressionObjects) {
@@ -57,8 +74,13 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
     @Override
     public Object get(final Object key) {
-
         if (this.expressionObjects.containsObject(key.toString())) {
+            if (restrictExpressionObjects()) {
+                if (RESTRICTED_EXPRESSION_OBJECT_NAMES.contains(key)) {
+                    throw new TemplateProcessingException(
+                            String.format("Access to variable '%s' is forbidden in this context.", key));
+                }
+            }
             return this.expressionObjects.getObject(key.toString());
         }
         return super.get(key);
@@ -69,6 +91,12 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
     public boolean containsKey(final Object key) {
         return this.expressionObjects.containsObject(key.toString()) || super.containsKey(key);
     }
+
+
+    private boolean restrictExpressionObjects() {
+        return super.containsKey(OGNLContextPropertyAccessor.RESTRICT_EXPRESSION_OBJECTS);
+    }
+
 
     @Override
     public Object put(final String key, final Object value) {

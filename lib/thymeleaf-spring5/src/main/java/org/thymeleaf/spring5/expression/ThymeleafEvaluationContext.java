@@ -20,6 +20,7 @@
 package org.thymeleaf.spring5.expression;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.springframework.expression.spel.support.StandardTypeLocator;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring5.view.ThymeleafView;
+import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.ExpressionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -82,6 +84,13 @@ public final class ThymeleafEvaluationContext
 
     public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleaf::EvaluationContext";
 
+    static final Set<String> RESTRICTED_VARIABLE_NAMES =
+            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+                    StandardExpressionObjectFactory.CONTEXT_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.VARIABLES_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.ROOT_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.THIS_EXPRESSION_OBJECT_NAME,
+                    StandardExpressionObjectFactory.EXECUTION_INFO_OBJECT_NAME)));
 
     private static final ReflectivePropertyAccessor REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE =
             new ThymeleafEvaluationContextACLPropertyAccessor();
@@ -169,6 +178,12 @@ public final class ThymeleafEvaluationContext
 
     @Override
     public Object lookupVariable(final String name) {
+        if (this.variableAccessRestricted) {
+            if (RESTRICTED_VARIABLE_NAMES.contains(name)) {
+                throw new EvaluationException(
+                        String.format("Access to variable '%s' is forbidden in this context.", name));
+            }
+        }
         if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {
             final Object result = this.expressionObjects.getObject(name);
             if (result != null) {
