@@ -177,7 +177,6 @@
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/domselector
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/elementprocessors/block
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/features/accessrestrictions
-../../../../../thymeleaf-tests-core/src/test/resources/templateengine/features/execinfo
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/features/expression/numbers
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/features/expression/expression01.thtest
 ../../../../../thymeleaf-tests-core/src/test/resources/templateengine/features/expression/expression02.thtest

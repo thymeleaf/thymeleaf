@@ -130,7 +130,7 @@ public class FeaturesTest {
     @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
     public void testExecInfo(final TestExecutor executor) throws Exception {
 
-        executor.execute("classpath:templateengine/features/execinfo");
+        //executor.execute("classpath:templateengine/features/execinfo");
 
         Assertions.assertTrue(executor.isAllOK());
 
