@@ -44,7 +44,7 @@ public final class SpringStandardExpressionUtils {
          * static methods ("T(SomeClass)") as both are forbidden in certain contexts in restricted mode.
          */
 
-        final String exp = ExpressionUtils.normalize(expression);
+        final String exp = ExpressionUtils.normalize(expression, true);
 
         final int explen = exp.length();
         int n = explen;
@@ -120,7 +120,7 @@ public final class SpringStandardExpressionUtils {
         int n = idx;
         while (n-- != 0) {
             c = expression.charAt(n);
-            if (c == 'T') {
+            if (c == 't') {
                 if (n == 0) {
                     return true;
                 }
@@ -135,7 +135,7 @@ public final class SpringStandardExpressionUtils {
 
 
     private static boolean isSafeIdentifierChar(final char c) {
-        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
+        return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
     }
 
 

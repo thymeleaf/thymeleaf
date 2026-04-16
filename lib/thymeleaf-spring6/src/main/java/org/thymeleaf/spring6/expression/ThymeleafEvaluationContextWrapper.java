@@ -39,6 +39,7 @@ import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLMethodResolver;
 import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext.ThymeleafEvaluationContextACLPropertyAccessor;
@@ -72,6 +73,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     private final List<PropertyAccessor> propertyAccessors; // can be initialized to null if we can delegate
     private final TypeLocator typeLocator;                  // can be initialized to null if we can delegate
     private final List<MethodResolver> methodResolvers;     // can be initialized to null if we can delegate
+    private final SimpleEvaluationContext restrictedModeContext;
 
     private IExpressionObjects expressionObjects = null;
     private boolean variableAccessRestricted = false;
@@ -93,6 +95,14 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
             this.propertyAccessors = null; // No need to initialize our own property accessors
             this.typeLocator = null;       // No need to initialize our own type locator
             this.methodResolvers = null;   // No need to initialize our own method resolvers
+
+            // Build the restricted mode context from the delegate's already ACL-wrapped resolvers/accessors.
+            // In restricted mode this wrapper uses it instead of the delegate, so it naturally provides no
+            // constructor resolution, no type references and no bean references.
+            this.restrictedModeContext = SimpleEvaluationContext
+                    .forPropertyAccessors(this.delegate.getPropertyAccessors().toArray(new PropertyAccessor[0]))
+                    .withMethodResolvers(this.delegate.getMethodResolvers().toArray(new MethodResolver[0]))
+                    .build();
 
         } else {
 
@@ -116,6 +126,12 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
                                 new ThymeleafEvaluationContextACLMethodResolver((ReflectiveMethodResolver) mr) : mr)
                         .collect(Collectors.toList());
 
+            // Build the restricted mode context from the ACL-wrapped resolvers/accessors we just prepared.
+            this.restrictedModeContext = SimpleEvaluationContext
+                    .forPropertyAccessors(this.propertyAccessors.toArray(new PropertyAccessor[0]))
+                    .withMethodResolvers(this.methodResolvers.toArray(new MethodResolver[0]))
+                    .build();
+
         }
 
     }
@@ -126,18 +142,30 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
     public List<ConstructorResolver> getConstructorResolvers() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getConstructorResolvers();
+        }
         return this.delegate.getConstructorResolvers();
     }
 
     public List<MethodResolver> getMethodResolvers() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getMethodResolvers();
+        }
         return this.methodResolvers == null ? this.delegate.getMethodResolvers() : this.methodResolvers;
     }
 
     public List<PropertyAccessor> getPropertyAccessors() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getPropertyAccessors();
+        }
         return this.propertyAccessors == null ? this.delegate.getPropertyAccessors() : this.propertyAccessors;
     }
 
     public TypeLocator getTypeLocator() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getTypeLocator();
+        }
         return this.typeLocator == null ? this.delegate.getTypeLocator() : this.typeLocator;
     }
 
@@ -154,6 +182,9 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
     public BeanResolver getBeanResolver() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getBeanResolver();
+        }
         return this.delegate.getBeanResolver();
     }
 

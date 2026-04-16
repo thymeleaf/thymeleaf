@@ -36,6 +36,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.ClassUtils;
 import org.springframework.expression.AccessException;
+import org.springframework.expression.BeanResolver;
+import org.springframework.expression.ConstructorResolver;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.MethodExecutor;
@@ -44,6 +46,7 @@ import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.springframework.expression.spel.support.StandardTypeLocator;
@@ -103,6 +106,7 @@ public final class ThymeleafEvaluationContext
 
     private final ApplicationContext applicationContext;
     private final Set<Class<?>> allowedClassOverridesForViews;
+    private final SimpleEvaluationContext restrictedModeContext;
 
     private IExpressionObjects expressionObjects = null;
     private boolean variableAccessRestricted = false;
@@ -140,17 +144,27 @@ public final class ThymeleafEvaluationContext
         // Depending on whether custom class overrides are allowed, we will establish a custom type locator in order to
         // forbid access to certain dangerous classes in expressions, as well as matching method resolver and property
         // accessor instances.
+        final List<MethodResolver> aclMethodResolvers;
         if (!this.allowedClassOverridesForViews.isEmpty()) {
             propertyAccessors.add(new ThymeleafEvaluationContextACLPropertyAccessor(this.allowedClassOverridesForViews));
             this.setTypeLocator(new ThymeleafEvaluationContextACLTypeLocator(this.allowedClassOverridesForViews));
-            this.setMethodResolvers(Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver(this.allowedClassOverridesForViews)));
+            aclMethodResolvers = Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver(this.allowedClassOverridesForViews));
         } else {
             propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
             this.setTypeLocator(TYPE_LOCATOR);
-            this.setMethodResolvers(METHOD_RESOLVERS);
+            aclMethodResolvers = METHOD_RESOLVERS;
         }
-
+        this.setMethodResolvers(aclMethodResolvers);
         this.setPropertyAccessors(propertyAccessors);
+
+        // Build the SimpleEvaluationContext used in restricted mode. It holds the same Thymeleaf property
+        // accessors and ACL method resolvers as normal mode, but naturally provides no constructor resolution,
+        // no type references (T(...)) and no bean references (@bean), all of which are already blocked by the
+        // expression-level checks but are now also blocked at the evaluation-context level.
+        this.restrictedModeContext = SimpleEvaluationContext
+                .forPropertyAccessors(propertyAccessors.toArray(new PropertyAccessor[0]))
+                .withMethodResolvers(aclMethodResolvers.toArray(new MethodResolver[0]))
+                .build();
 
     }
 
@@ -214,6 +228,46 @@ public final class ThymeleafEvaluationContext
         this.expressionObjects = expressionObjects;
     }
 
+
+    @Override
+    public List<ConstructorResolver> getConstructorResolvers() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getConstructorResolvers();
+        }
+        return super.getConstructorResolvers();
+    }
+
+    @Override
+    public List<MethodResolver> getMethodResolvers() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getMethodResolvers();
+        }
+        return super.getMethodResolvers();
+    }
+
+    @Override
+    public List<PropertyAccessor> getPropertyAccessors() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getPropertyAccessors();
+        }
+        return super.getPropertyAccessors();
+    }
+
+    @Override
+    public TypeLocator getTypeLocator() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getTypeLocator();
+        }
+        return super.getTypeLocator();
+    }
+
+    @Override
+    public BeanResolver getBeanResolver() {
+        if (this.variableAccessRestricted) {
+            return this.restrictedModeContext.getBeanResolver();
+        }
+        return super.getBeanResolver();
+    }
 
 
     static final class ThymeleafEvaluationContextACLTypeLocator implements TypeLocator {

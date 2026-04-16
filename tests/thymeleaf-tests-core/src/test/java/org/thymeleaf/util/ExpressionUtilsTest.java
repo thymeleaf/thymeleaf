@@ -62,13 +62,18 @@ public final class ExpressionUtilsTest {
         Assertions.assertTrue(isTypeBlockedForAllPurposes("jakarta.servlet.X"));
         Assertions.assertFalse(isTypeBlockedForAllPurposes("com.whatever.X"));
         Assertions.assertTrue(isTypeBlockedForAllPurposes("com.sun.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("sun.X"));
         Assertions.assertTrue(isTypeBlockedForAllPurposes("jdk.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("org.ietf.jgss.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("org.omg.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("org.w3c.dom.X"));
+        Assertions.assertTrue(isTypeBlockedForAllPurposes("org.xml.sax.X"));
     }
 
     @Test
     public void typeBlockedForTypeReferenceTest() {
         Assertions.assertFalse(isTypeBlockedForTypeReference("org.thymeleaf.X"));
-        Assertions.assertFalse(isTypeBlockedForTypeReference("org.springframework.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.X"));
         Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.cglib.X"));
         Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.aot.X"));
         Assertions.assertTrue(isTypeBlockedForTypeReference("org.springframework.javapoet.X"));
@@ -84,13 +89,50 @@ public final class ExpressionUtilsTest {
         Assertions.assertTrue(isTypeBlockedForTypeReference("jakarta.servlet.X"));
         Assertions.assertFalse(isTypeBlockedForTypeReference("com.whatever.X"));
         Assertions.assertTrue(isTypeBlockedForTypeReference("com.sun.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("sun.X"));
         Assertions.assertTrue(isTypeBlockedForTypeReference("jdk.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.ietf.jgss.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.omg.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.w3c.dom.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.xml.sax.X"));
+
+        Assertions.assertTrue(isTypeBlockedForTypeReference("com.squareup.javapoet.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("com.zaxxer.hikari.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("com.fasterxml.jackson.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("tools.jackson.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("groovy.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("io.netty.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("javassist.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("javax0.geci.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("kotlin.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("net.sf.cglib.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.apache.tomcat.jdbc.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.apache.commons.dbcp2.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.apache.commons.lang.reflect.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.apache.commons.lang3.reflect.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.apache.bcel.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.apache.logging.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.aspectj.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.codehaus.groovy.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.eclipse.jetty.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.glassfish.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.javassist.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.jboss.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.jetbrains.kotlin.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.jruby.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.junit.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.mockito.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.mortbay.jetty.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.objectweb.asm.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.objenesis.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("org.python.X"));
+        Assertions.assertTrue(isTypeBlockedForTypeReference("scala.X"));
     }
 
     @Test
     public void typeAllowedTest() {
         Assertions.assertTrue(!isTypeForbidden("org.thymeleaf.X"));
-        Assertions.assertTrue(!isTypeForbidden("org.springframework.X"));
+        Assertions.assertFalse(!isTypeForbidden("org.springframework.X"));
         Assertions.assertFalse(!isTypeForbidden("org.springframework.cglib.X"));
         Assertions.assertFalse(!isTypeForbidden("org.springframework.aot.X"));
         Assertions.assertFalse(!isTypeForbidden("org.springframework.javapoet.X"));
@@ -111,6 +153,9 @@ public final class ExpressionUtilsTest {
         Assertions.assertTrue(!isTypeForbidden("java.util.Calendar"));
         Assertions.assertTrue(!isTypeForbidden("java.util.Map"));
         Assertions.assertTrue(!isTypeForbidden("java.util.concurrent.atomic.AtomicInteger"));
+        Assertions.assertTrue(!isTypeForbidden("java.math.BigDecimal"));
+        Assertions.assertTrue(!isTypeForbidden("java.sql.Timestamp"));
+        Assertions.assertTrue(!isTypeForbidden("java.util.Optional"));
     }
 
     @Test
@@ -133,6 +178,7 @@ public final class ExpressionUtilsTest {
         Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(ArrayList.class, "toString"));
         Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(GregorianCalendar.class, "toString"));
         Assertions.assertTrue(!isMemberForbiddenForInstanceOfType(LinkedHashMap.class, "toString"));
+        Assertions.assertTrue(isMemberForbiddenForInstanceOfType(ClassLoader.class, "loadClass"));
     }
 
 

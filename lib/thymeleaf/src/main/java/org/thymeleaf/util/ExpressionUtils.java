@@ -87,17 +87,16 @@ public final class ExpressionUtils {
     private static final Set<String> BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES =
             new HashSet<>(Arrays.asList(
                     "com.squareup.javapoet.",
-                    "net.bytebuddy.", "net.sf.cglib.",
-                    "javassist.", "javax0.geci.",
                     "com.zaxxer.hikari.", "com.fasterxml.jackson.", "tools.jackson.",
+                    "groovy.", "io.netty.", "javassist.", "javax0.geci.", "kotlin.",
+                    "net.bytebuddy.", "net.sf.cglib.",
                     "org.apache.tomcat.jdbc.", "org.apache.commons.dbcp2.",
                     "org.apache.commons.lang.reflect.", "org.apache.commons.lang3.reflect.",
-                    "org.apache.bcel.", "org.aspectj.", "org.javassist.", "org.mockito.", "org.objectweb.asm.",
-                    "org.objenesis.", "org.springframework.aot.", "org.springframework.asm.",
-                    "org.springframework.core.", "org.springframework.cglib.", "org.springframework.javapoet.",
-                    "org.springframework.objenesis.", "org.springframework.web.", "org.springframework.webflow.",
-                    "org.springframework.context.", "org.springframework.beans.", "org.springframework.aspects.",
-                    "org.springframework.aop.", "org.springframework.expression.", "org.springframework.util."));
+                    "org.apache.bcel.", "org.apache.logging.", "org.aspectj.",
+                    "org.codehaus.groovy.", "org.eclipse.jetty.", "org.glassfish.",
+                    "org.javassist.", "org.jboss.", "org.jetbrains.kotlin.", "org.jruby.", "org.junit.",
+                    "org.mockito.", "org.mortbay.jetty.", "org.objectweb.asm.", "org.objenesis.",
+                    "org.python.", "org.springframework.", "scala."));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
@@ -125,6 +124,8 @@ public final class ExpressionUtils {
     private static final Set<String> ALLOWED_JAVA_SUPERS_NAMES;
     private static final Set<Class<?>> ALLOWED_JAVA_SUPERS =
             new HashSet<>(Arrays.asList(
+                    // java.lang
+                    CharSequence.class,
                     // java.util
                     Collection.class, Iterable.class, Iterator.class, List.class, Map.class, Map.Entry.class, Set.class,
                     Calendar.class, TimeZone.class, Stream.class));
@@ -169,19 +170,20 @@ public final class ExpressionUtils {
     }
 
 
-    public static String normalize(final String expression) {
+    public static String normalize(final String expression, boolean normalizeCase) {
         if (expression == null) {
-            return expression;
+            return null;
         }
+        final String exp = (normalizeCase ? expression.toLowerCase() : expression);
         StringBuilder strBuilder = null;
-        final int expLen = expression.length();
+        final int expLen = exp.length();
         char c;
         for (int i = 0; i < expLen; i++) {
-            c = expression.charAt(i);
+            c = exp.charAt(i);
             if (c != '\n' && (c < '\u0020' || (c >= '\u007F' && c <= '\u009F') || Character.isWhitespace(c))) {
                 if (strBuilder == null) {
                     strBuilder = new StringBuilder(expLen);
-                    strBuilder.append(expression, 0, i);
+                    strBuilder.append(exp, 0, i);
                 }
                 if (Character.isWhitespace(c)) {
                     // For whitespaces (non-linefeed), we are simplifying to a regular whitespace char
@@ -191,7 +193,7 @@ public final class ExpressionUtils {
                 strBuilder.append(c);
             }
         }
-        return strBuilder == null ? expression : strBuilder.toString();
+        return strBuilder == null ? exp : strBuilder.toString();
     }
 
 
@@ -201,13 +203,6 @@ public final class ExpressionUtils {
     }
 
     static boolean isTypeBlockedForAllPurposes(final String typeName) {
-        final char c0 = typeName.charAt(0);
-        if (c0 != 'c' && c0 != 'j' && c0 != 'o' && c0 != 's'){ // All blocked packages start with: c, j, o, s
-            return false;
-        }
-        if (c0 == 'c') { // Shortcut for the lot of allowed "com." packages out there.
-            return typeName.startsWith("com.sun.");
-        }
         if (isJavaPackage(typeName) && ALLOWED_ALL_PURPOSES_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith)) {
             return false;
         }
@@ -218,10 +213,6 @@ public final class ExpressionUtils {
         if (isTypeBlockedForAllPurposes(typeName)) {
             return true;
         }
-        final char c0 = typeName.charAt(0);
-        if (c0 != 'c' && c0 != 'n' && c0 != 'j' && c0 != 'o'){ // All blocked packages start with: c, n, j, o
-            return false;
-        }
         return BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES.stream().anyMatch(typeName::startsWith);
     }
 
@@ -231,7 +222,7 @@ public final class ExpressionUtils {
 
         Validate.notNull(typeName, "Type name cannot be null");
 
-        final String normalizedTypeName = normalize(typeName);
+        final String normalizedTypeName = normalize(typeName, false);
 
         if (!isTypeBlockedForTypeReference(normalizedTypeName)) {
             return false;
@@ -296,7 +287,7 @@ public final class ExpressionUtils {
             return false;
         }
 
-        final String normalizedMemberName = normalize(memberName);
+        final String normalizedMemberName = normalize(memberName, false);
 
         // Calling Object#getClass() or Object#toString() will always be allowed
         if ("getClass".equals(normalizedMemberName) || "toString".equals(normalizedMemberName)) {
