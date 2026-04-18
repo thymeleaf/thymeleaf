@@ -41,12 +41,22 @@ import org.thymeleaf.spring6.messageresolver.SpringMessageResolver;
  *   as a dialect (instead of an instance of {@link org.thymeleaf.standard.StandardDialect}.
  * </p>
  * <p>
- *   It also configures a {@link SpringMessageResolver} as message resolver, and
- *   implements the {@link MessageSourceAware} interface in order to let Spring
- *   automatically setting the {@link MessageSource} used at the application
- *   (bean needs to have id {@code "messageSource"}). If this Spring standard setting
- *   needs to be overridden, the {@link #setTemplateEngineMessageSource(MessageSource)} can
- *   be used.
+ *   It also configures a {@link SpringMessageResolver} as message resolver (backed by
+ *   Spring's own {@link MessageSource} infrastructure), and implements the
+ *   {@link MessageSourceAware} interface in order to let Spring automatically set the
+ *   {@link MessageSource} used at the application (bean needs to have id
+ *   {@code "messageSource"}). If this Spring standard setting needs to be overridden,
+ *   the {@link #setTemplateEngineMessageSource(MessageSource)} method can be used.
+ * </p>
+ * <p>
+ *   <b>Message resolver vs. message source &mdash; precedence rule:</b> if a custom message
+ *   resolver is explicitly configured on this engine by calling
+ *   {@link #setMessageResolver(IMessageResolver)}, {@link #setMessageResolvers(Set)}, or
+ *   {@link #addMessageResolver(IMessageResolver)}, then the automatic setup of
+ *   {@link SpringMessageResolver} is skipped entirely, and any value set via
+ *   {@link #setMessageSource(MessageSource)} or
+ *   {@link #setTemplateEngineMessageSource(MessageSource)} is ignored. Explicitly
+ *   configured message resolvers always take precedence over message sources.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -64,6 +74,7 @@ public class SpringTemplateEngine
     private MessageSource messageSource = null;
     private MessageSource templateEngineMessageSource = null;
     private Collection<Class<?>> allowedClassOverridesForViews = Collections.emptyList();
+    private boolean messageResolverSetByUser = false;
 
 
 
@@ -91,6 +102,12 @@ public class SpringTemplateEngine
      *   This property <b>should not be set manually</b> in most scenarios (see
      *   {@link #setTemplateEngineMessageSource(MessageSource)} instead).
      * </p>
+     * <p>
+     *   Note that this setting is only used when no explicit message resolver has been configured
+     *   via {@link #setMessageResolver(IMessageResolver)}, {@link #setMessageResolvers(Set)}, or
+     *   {@link #addMessageResolver(IMessageResolver)}. If an explicit resolver is set, this
+     *   message source is ignored (see class-level Javadoc for the full precedence rule).
+     * </p>
      *
      * @param messageSource the message source to be used by the message resolver
      */
@@ -106,6 +123,12 @@ public class SpringTemplateEngine
      *   Convenience method for setting the message source that will
      *   be used by this template engine, overriding the one automatically set by
      *   Spring at the {@link #setMessageSource(MessageSource)} method.
+     * </p>
+     * <p>
+     *   Note that this setting is only used when no explicit message resolver has been configured
+     *   via {@link #setMessageResolver(IMessageResolver)}, {@link #setMessageResolvers(Set)}, or
+     *   {@link #addMessageResolver(IMessageResolver)}. If an explicit resolver is set, this
+     *   message source is ignored (see class-level Javadoc for the full precedence rule).
      * </p>
      *
      * @param templateEngineMessageSource the message source to be used by the message resolver
@@ -298,22 +321,94 @@ public class SpringTemplateEngine
 
 
 
+    /**
+     * <p>
+     *   Sets a single message resolver, suppressing the automatic configuration of
+     *   {@link SpringMessageResolver} or {@link StandardMessageResolver} that would
+     *   otherwise happen during engine initialization.
+     * </p>
+     * <p>
+     *   Calling this method means any value set via {@link #setMessageSource(MessageSource)} or
+     *   {@link #setTemplateEngineMessageSource(MessageSource)} will be ignored. See the
+     *   class-level Javadoc for the full precedence rule.
+     * </p>
+     *
+     * @param messageResolver the message resolver to be set.
+     */
+    @Override
+    public void setMessageResolver(final IMessageResolver messageResolver) {
+        this.messageResolverSetByUser = true;
+        super.setMessageResolver(messageResolver);
+    }
+
+
+    /**
+     * <p>
+     *   Sets the full set of message resolvers, suppressing the automatic configuration of
+     *   {@link SpringMessageResolver} or {@link StandardMessageResolver} that would
+     *   otherwise happen during engine initialization.
+     * </p>
+     * <p>
+     *   Calling this method means any value set via {@link #setMessageSource(MessageSource)} or
+     *   {@link #setTemplateEngineMessageSource(MessageSource)} will be ignored. See the
+     *   class-level Javadoc for the full precedence rule.
+     * </p>
+     *
+     * @param messageResolvers the set of message resolvers to be set.
+     */
+    @Override
+    public void setMessageResolvers(final Set<IMessageResolver> messageResolvers) {
+        this.messageResolverSetByUser = true;
+        super.setMessageResolvers(messageResolvers);
+    }
+
+
+    /**
+     * <p>
+     *   Adds a message resolver to the existing set, suppressing the automatic configuration of
+     *   {@link SpringMessageResolver} or {@link StandardMessageResolver} that would
+     *   otherwise happen during engine initialization.
+     * </p>
+     * <p>
+     *   Calling this method means any value set via {@link #setMessageSource(MessageSource)} or
+     *   {@link #setTemplateEngineMessageSource(MessageSource)} will be ignored. See the
+     *   class-level Javadoc for the full precedence rule.
+     * </p>
+     *
+     * @param messageResolver the message resolver to be added.
+     */
+    @Override
+    public void addMessageResolver(final IMessageResolver messageResolver) {
+        this.messageResolverSetByUser = true;
+        super.addMessageResolver(messageResolver);
+    }
+
+
+
+
     @Override
     protected final void initializeSpecific() {
 
-        final MessageSource messageSource =
-                this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource;
+        // Only apply the automatic message resolver if the user has not explicitly configured one.
+        // This allows users to override the default SpringMessageResolver/StandardMessageResolver by
+        // calling setMessageResolver(), setMessageResolvers() or addMessageResolver() on this engine.
+        if (!this.messageResolverSetByUser) {
 
-        final IMessageResolver messageResolver;
-        if (messageSource != null) {
-            final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
-            springMessageResolver.setMessageSource(messageSource);
-            messageResolver = springMessageResolver;
-        } else {
-            messageResolver = new StandardMessageResolver();
+            final MessageSource messageSource =
+                    this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource;
+
+            final IMessageResolver messageResolver;
+            if (messageSource != null) {
+                final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
+                springMessageResolver.setMessageSource(messageSource);
+                messageResolver = springMessageResolver;
+            } else {
+                messageResolver = new StandardMessageResolver();
+            }
+
+            super.setMessageResolver(messageResolver);
+
         }
-
-        super.setMessageResolver(messageResolver);
 
         // Lastly, give the opportunity to subclasses to apply their own configurations
         initializeSpringSpecific();
