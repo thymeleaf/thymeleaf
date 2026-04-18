@@ -98,12 +98,16 @@ public final class SpringValueTagProcessor
         // a 'th:field' - in such case, we will let th:field do its job
         if (!tag.hasAttribute(this.fieldAttributeDefinition.getAttributeName())) {
 
-            // We will need to know the 'name' and 'type' attribute values in order to (potentially) modify the 'value'
+            // We will need to know the 'name' and 'type' attribute values in order to (potentially) modify the 'value'.
+            // If no 'type' attribute exists on this element (e.g. <option>, <button>), the element name is used as
+            // the type value, consistently with how other processors (e.g. SpringOptionFieldTagProcessor) behave.
             final String nameValue = tag.getAttributeValue(this.nameAttributeDefinition.getAttributeName());
             final String typeValue = tag.getAttributeValue(this.typeAttributeDefinition.getAttributeName());
 
             newAttributeValue =
-                    RequestDataValueProcessorUtils.processFormFieldValue(context, nameValue, newAttributeValue, typeValue);
+                    RequestDataValueProcessorUtils.processFormFieldValue(
+                            context, nameValue, newAttributeValue,
+                            (typeValue != null ? typeValue : tag.getElementCompleteName()));
 
         }
 

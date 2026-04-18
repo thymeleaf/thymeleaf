@@ -113,8 +113,10 @@ public final class SpringInputGeneralFieldTagProcessor
         StandardProcessorUtils.setAttribute(structureHandler, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
         StandardProcessorUtils.setAttribute(structureHandler, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
 
+        // When no 'type' attribute is present on the <input> element, HTML defaults to "text", so we use that
+        // as the fallback to avoid passing null as the type to RequestDataValueProcessor#processFieldValue.
         StandardProcessorUtils.setAttribute(
-                structureHandler, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, type));
+                structureHandler, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, (type != null ? type : "text")));
 
     }
 
