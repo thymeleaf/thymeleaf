@@ -1,12 +1,12 @@
-%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE HTML
 %TEMPLATE_MODE[somefrag] CSS
 %TEMPLATE_MODE[somefrag2] HTML
 %NAME execinfotest22
 # ------------------------------------------------------------
 %INPUT
-[# th:text="${#execInfo.processedTemplateMode}"]the template name will be used[/]
-...[# th:insert="somefrag"]to be replaced by the fragment[/]...
-[# th:text="${#execInfo.processedTemplateMode}"]the template name will be used[/]
+<p th:text="${#execInfo.processedTemplateMode}">the template name will be used</p>
+...<p th:insert="somefrag">to be replaced by the fragment</p>...
+<p th:text="${#execInfo.processedTemplateMode}">the template name will be used</p>
 # ------------------------------------------------------------
 %INPUT[somefrag]
 [# th:text="${#execInfo.processedTemplateMode}"]the fragment name will be used[/]
@@ -17,8 +17,8 @@
 <span th:text="${#execInfo.processedTemplateMode}">the fragment name will be used</span>
 # ------------------------------------------------------------
 %OUTPUT
-TEXT
-...TEXT
-(<span>TEXT</span>)
-TEXT...
-TEXT
+<p>HTML</p>
+...<p>HTML
+(<span>HTML</span>)
+HTML</p>...
+<p>HTML</p>

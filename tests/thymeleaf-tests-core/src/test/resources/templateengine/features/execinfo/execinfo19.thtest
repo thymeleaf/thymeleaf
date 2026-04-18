@@ -1,10 +1,10 @@
-%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE HTML
 %TEMPLATE_MODE[somefrag] CSS
 %TEMPLATE_MODE[somefrag2] HTML
 %NAME execinfotest19
 # ------------------------------------------------------------
 %INPUT
-...[# th:insert="somefrag"]to be replaced by the fragment[/]...
+...<p th:insert="somefrag">to be replaced by the fragment</p>...
 # ------------------------------------------------------------
 %INPUT[somefrag]
 [# th:insert="somefrag2"]to be replaced by the secondfragment[/]
@@ -13,4 +13,4 @@
 <span th:each="template : ${#execInfo.templateStack}">[[${template.templateMode}]]</span>
 # ------------------------------------------------------------
 %OUTPUT
-...<span>TEXT</span><span>CSS</span><span>HTML</span>...
+...<p><span>HTML</span><span>CSS</span><span>HTML</span></p>...

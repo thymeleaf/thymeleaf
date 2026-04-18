@@ -1,22 +1,22 @@
-%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE HTML
 %NAME execinfotest21
 # ------------------------------------------------------------
 %INPUT
-[# th:text="${#execInfo.processedTemplateName}"]the template name will be used[/]
-...[# th:replace="somefrag"]to be replaced by the fragment[/]...
-[# th:text="${#execInfo.processedTemplateName}"]the template name will be used[/]
+<p th:text="${#execInfo.processedTemplateName}">the template name will be used</p>
+...<p th:replace="somefrag">to be replaced by the fragment</p>...
+<p th:text="${#execInfo.processedTemplateName}">the template name will be used</p>
 # ------------------------------------------------------------
 %INPUT[somefrag]
-[# th:text="${#execInfo.processedTemplateName}"]the fragment name will be used[/]
-([# th:replace="somefrag2"]to be replaced by the secondfragment[/])
-[# th:text="${#execInfo.processedTemplateName}"]the fragment name will be used[/]
+<p th:text="${#execInfo.processedTemplateName}">the fragment name will be used</p>
+(<p th:replace="somefrag2">to be replaced by the secondfragment</p>)
+<p th:text="${#execInfo.processedTemplateName}">the fragment name will be used</p>
 # ------------------------------------------------------------
 %INPUT[somefrag2]
-[# th:text="${#execInfo.processedTemplateName}"]the fragment name will be used[/]
+<p th:text="${#execInfo.processedTemplateName}">the fragment name will be used</p>
 # ------------------------------------------------------------
 %OUTPUT
-execinfotest21-001
-...execinfotest21-001
-(execinfotest21-001)
-execinfotest21-001...
-execinfotest21-001
+<p>execinfotest21-001</p>
+...<p>execinfotest21-001</p>
+(<p>execinfotest21-001</p>)
+<p>execinfotest21-001</p>...
+<p>execinfotest21-001</p>

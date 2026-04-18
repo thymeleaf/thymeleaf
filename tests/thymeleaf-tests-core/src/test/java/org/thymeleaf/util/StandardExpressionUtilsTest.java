@@ -48,7 +48,9 @@ public final class StandardExpressionUtilsTest {
         Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("abc (new)w ewnew"));
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("abc +new )w ewnew"));
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("new "));
-        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("new "));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("NEW "));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("nEw "));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("NeW "));
         Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("newnew"));
         Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("ewnew"));
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("new ewnew"));
@@ -84,6 +86,8 @@ public final class StandardExpressionUtilsTest {
 
 
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("param.a"));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("PARAM.a"));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("pArAm.a"));
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess(" param.a"));
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess(" param['a']"));
         Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("_param['a']"));

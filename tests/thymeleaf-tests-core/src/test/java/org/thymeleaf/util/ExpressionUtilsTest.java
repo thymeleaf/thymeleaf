@@ -182,6 +182,35 @@ public final class ExpressionUtilsTest {
     }
 
 
+    @Test
+    public void testNormalizeExpression() {
+        Assertions.assertNull(normalize(null, false));
+        Assertions.assertEquals("", normalize("", false));
+        final String exp00 = "${something}";
+        Assertions.assertSame(exp00, normalize(exp00, false));
+        Assertions.assertEquals("${some thing}", normalize("${some thing}", false));
+        Assertions.assertEquals("${some thing}", normalize("${some \0thing}", false));
+        Assertions.assertEquals("${some \nthing}", normalize("${some \nthing}", false));
+        Assertions.assertEquals("${some thing}", normalize("${some \0thing}", false));
+        Assertions.assertEquals("${some  thing}", normalize("${some \tthing}", false));
+        Assertions.assertEquals("${some t  hing}", normalize("${some t\t\thing}", false));
+        Assertions.assertEquals(" ${some t  hing}", normalize("\t${some t\t\thing}", false));
+        Assertions.assertEquals(" ${some thing}", normalize("\t${some thing}", false));
+        Assertions.assertEquals(" ${some t  hing} ", normalize("\t${some t\t\thing}\t", false));
+        Assertions.assertEquals(" ${some thing} ", normalize("\t${some thing}\t", false));
+        Assertions.assertEquals("${some t  hing} ", normalize("${some t\t\thing}\t", false));
+        Assertions.assertEquals("${some thing}", normalize("\0${some t\0\0hing}", false));
+        Assertions.assertEquals("${some thing}", normalize("\0${some thing}", false));
+        Assertions.assertEquals("${some thing}", normalize("\0${some t\0\0hing}\0", false));
+        Assertions.assertEquals("${some thing}", normalize("\0${some thing}\0", false));
+        Assertions.assertEquals("${some thing}", normalize("${some t\0\0hing}\0", false));
+        Assertions.assertEquals("${some thing}", normalize("${Some T\0\0hing}\0", true));
+        Assertions.assertEquals("${Some Thing}", normalize("${Some T\0\0hing}\0", false));
+    }
+
+
+
+
     static TestProxied createTestProxy() {
         return (TestProxied) Proxy.newProxyInstance(
                 ClassLoaderUtils.getDefaultClassLoader(),

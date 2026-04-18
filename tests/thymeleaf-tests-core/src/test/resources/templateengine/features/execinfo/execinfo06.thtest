@@ -1,10 +1,10 @@
-%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE HTML
 %NAME execinfotest06
 # ------------------------------------------------------------
 %INPUT
-[# th:text="${#execInfo.templateName}"]the test name will be used...[/]
-[# th:if="${#execInfo.now != null}"]there is a now[/]
+<p th:text="${#execInfo.templateName}">the test name will be used...</p>
+<p th:if="${#execInfo.now != null}">there is a now</p>
 # ------------------------------------------------------------
 %OUTPUT
-execinfotest06-001
-there is a now
+<p>execinfotest06-001</p>
+<p>there is a now</p>

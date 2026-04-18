@@ -1,0 +1,8 @@
+%TEMPLATE_MODE TEXT
+%INPUT
+[(${#  ctx})]
+[(${#	ctx})]
+[(${#
+ctx})]
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

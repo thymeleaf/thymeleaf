@@ -48,10 +48,14 @@ public final class SpringStandardExpressionUtilsTest {
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess("abc (new)w ewnew"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("abc +new )w ewnew"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new "));
-        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new "));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("NEW "));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("nEw "));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("NeW "));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess("newnew"));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess("ewnew"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new ewnew"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new\newnew"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new\tewnew"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new w ewnew"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new w ewnew"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("(new )w ewnew"));
@@ -69,6 +73,10 @@ public final class SpringStandardExpressionUtilsTest {
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("T(a.b.Some newClass)new"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("T(a.b.Some newClass)new "));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess("newT(a.b.Some newClass)new"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new\nT(a.b.Some newClass)new"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("NEW\nT(a.b.Some newClass)new"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("new\tT(a.b.Some newClass)new"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("NEW\tT(a.b.Some newClass)new"));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess("aT(a.b.Some newClass)a"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("a T(a.b.Some newClass) a"));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess(" aT(a.b.Some newClass)a "));
@@ -88,10 +96,17 @@ public final class SpringStandardExpressionUtilsTest {
 
 
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("param.a"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("PARAM.a"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("pArAm.a"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess(" param.a"));
         Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess(" param['a']"));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess("_param['a']"));
         Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess(" param_a"));
+
+
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess("@a"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess(" a @a"));
+        Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess(" a+@a"));
 
     }
 

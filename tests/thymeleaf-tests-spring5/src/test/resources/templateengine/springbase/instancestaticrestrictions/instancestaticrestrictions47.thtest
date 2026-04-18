@@ -1,11 +1,10 @@
 %TEMPLATE_MODE HTML
-%NAME execinfotest08
+# ------------------------------------------------------------
+%CONTEXT
+x = 5
 # ------------------------------------------------------------
 %INPUT
-...<p th:replace="somefrag">to be replaced by the fragment</p>...
-# ------------------------------------------------------------
-%INPUT[somefrag]
-<p th:text="${#execInfo.templateName}">...</p>
+<p th:utext="${x > 3 ? 'yes' : 'no'}">ALLOWED</p>
 # ------------------------------------------------------------
 %OUTPUT
-...<p>somefrag</p>...
+<p>yes</p>

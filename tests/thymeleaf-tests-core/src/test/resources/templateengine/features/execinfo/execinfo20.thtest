@@ -1,11 +1,11 @@
-%TEMPLATE_MODE TEXT
+%TEMPLATE_MODE HTML
 %NAME execinfotest20
 # ------------------------------------------------------------
 %INPUT
-...[# th:replace="somefrag"]to be replaced by the fragment[/]...
+...<p th:replace="somefrag">to be replaced by the fragment</p>...
 # ------------------------------------------------------------
 %INPUT[somefrag]
-[# th:text="${#execInfo.processedTemplateName}"]the test name will be used[/]
+<p th:text="${#execInfo.processedTemplateName}">the test name will be used</p>
 # ------------------------------------------------------------
 %OUTPUT
-...execinfotest20-001...
+...<p>execinfotest20-001</p>...
