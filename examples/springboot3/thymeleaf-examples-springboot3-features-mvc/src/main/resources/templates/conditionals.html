@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="#{title.app}">Thymeleaf SB3 Features</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    nav { background: #2c6e49; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 1.5rem; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    h1 { color: #2c6e49; }
+    h2 { color: #1b4332; border-bottom: 2px solid #b7e4c7; padding-bottom: .3rem; margin-top: 2rem; }
+    table.checks { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    table.checks th, table.checks td { padding: .45rem .7rem; text-align: left; border-bottom: 1px solid #dee2e6; font-size: .9rem; }
+    table.checks th { background: #d8f3dc; }
+    .tick  { color: #2c6e49; font-weight: 700; }
+    .cross { color: #dc3545; font-weight: 700; }
+    .section-desc { color: #495057; font-size: .9rem; margin: .5rem 0 0; }
+    .highlight { background: #d8f3dc; font-weight: 700; border-radius: 3px; padding: 0 .3rem; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a th:href="@{/javascript}" th:text="#{nav.javascript}">JavaScript Inline</a>
+    <a th:href="@{/expressions}" th:text="#{nav.expressions}">Expression Language</a>
+    <a th:href="@{/iteration}" th:text="#{nav.iteration}">Iteration</a>
+    <a th:href="@{/conditionals}" th:text="#{nav.conditionals}">Conditionals</a>
+    <a th:href="@{/fragments}" th:text="#{nav.fragments}">Fragments</a>
+  </nav>
+
+  <h1>Conditionals (th:if / th:unless / th:switch)</h1>
+
+  <!-- ============================================================ -->
+  <h2>1. th:if Truth Rules</h2>
+
+  <span id="if-true"        th:if="${truthyBool}">rendered-if-true</span>
+  <span id="if-false"       th:if="${falsyBool}">should-not-render</span>
+  <span id="if-null"        th:if="${nullValue}">should-not-render</span>
+  <span id="if-empty-str"   th:if="${emptyStr}">rendered-empty-string</span>
+  <span id="if-zero"        th:if="${zeroNum}">should-not-render</span>
+  <span id="if-nonzero"     th:if="${nonZeroNum}">rendered-if-nonzero</span>
+  <span id="if-nonempty"    th:if="${nonEmptyStr}">rendered-if-nonempty</span>
+  <span id="if-str-false"   th:if="${'false'}">should-not-render</span>
+  <span id="if-str-off"     th:if="${'off'}">should-not-render</span>
+  <span id="if-str-no"      th:if="${'no'}">should-not-render</span>
+  <span id="if-str-truthy"  th:if="${'yes'}">rendered-if-yes</span>
+
+  <!-- ============================================================ -->
+  <h2>2. th:unless</h2>
+
+  <span id="unless-true"    th:unless="${truthyBool}">should-not-render</span>
+  <span id="unless-false"   th:unless="${falsyBool}">rendered-unless-false</span>
+  <span id="unless-null"    th:unless="${nullValue}">rendered-unless-null</span>
+
+  <!-- ============================================================ -->
+  <h2>3. th:switch / th:case</h2>
+  <p class="section-desc">Model: <code>season="SUMMER"</code></p>
+
+  <div th:switch="${season}">
+    <span id="case-spring"  th:case="'SPRING'">spring</span>
+    <span id="case-summer"  th:case="'SUMMER'">summer</span>
+    <span id="case-autumn"  th:case="'AUTUMN'">autumn</span>
+    <span id="case-default" th:case="*">default</span>
+  </div>
+
+  <!-- switch with no match - default should fire -->
+  <div th:switch="${nonEmptyStr}">
+    <span id="case-x"       th:case="'xyz'">xyz</span>
+    <span id="case-fallback" th:case="*">fallback</span>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>4. Inline Conditionals &amp; Elvis</h2>
+
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Ternary: true branch</td>
+        <td th:text="${truthyBool ? 'PASS' : 'FAIL'}" th:class="${truthyBool ? 'tick' : 'cross'}">...</td>
+        <td><code>${truthyBool ? 'PASS' : 'FAIL'}</code></td>
+      </tr>
+      <tr>
+        <td>Ternary: false branch selects 'PASS'</td>
+        <td th:text="${falsyBool ? 'FAIL' : 'PASS'}" th:class="${falsyBool ? 'cross' : 'tick'}">...</td>
+        <td><code>${falsyBool ? 'FAIL' : 'PASS'}</code></td>
+      </tr>
+      <tr>
+        <td>Elvis: null gives default</td>
+        <td th:with="v=${nullValue ?: 'PASS'}" th:text="${v}" th:class="${v == 'PASS'} ? 'tick' : 'cross'">...</td>
+        <td><code>${nullValue ?: 'PASS'}</code></td>
+      </tr>
+      <tr>
+        <td>Elvis: non-null preserves value</td>
+        <td th:with="v=${nonEmptyStr ?: 'FAIL'}" th:text="${v == 'hello'} ? 'PASS' : 'FAIL'" th:class="${v == 'hello'} ? 'tick' : 'cross'">...</td>
+        <td><code>${nonEmptyStr ?: 'FAIL'} == 'hello'</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>5. Conditional Attributes (th:classappend / th:attrappend)</h2>
+
+  <span id="classappend-test"
+        class="base"
+        th:classappend="${truthyBool} ? 'highlight' : ''">Should have 'highlight' class</span>
+
+  <span id="attrappend-test"
+        th:attrappend="data-active=${truthyBool} ? '-yes' : '-no'">Active append</span>
+
+  <span id="classappend-false"
+        class="base"
+        th:classappend="${falsyBool} ? 'highlight' : ''">Should NOT have 'highlight' class</span>
+
+  <!-- ============================================================ -->
+  <h2>Automated Checks</h2>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr id="chk-if-true">        <td>th:if true - renders</td>             <td>...</td><td></td></tr>
+      <tr id="chk-if-false">       <td>th:if false - not rendered</td>       <td>...</td><td></td></tr>
+      <tr id="chk-if-null">        <td>th:if null - not rendered</td>        <td>...</td><td></td></tr>
+      <tr id="chk-if-emptystr">    <td>th:if empty string - renders (truthy)</td><td>...</td><td></td></tr>
+      <tr id="chk-if-zero">        <td>th:if 0 - not rendered</td>           <td>...</td><td></td></tr>
+      <tr id="chk-if-nonzero">     <td>th:if 42 - renders</td>               <td>...</td><td></td></tr>
+      <tr id="chk-if-nonempty">    <td>th:if 'hello' - renders</td>          <td>...</td><td></td></tr>
+      <tr id="chk-if-false-str">   <td>th:if 'false' - not rendered</td>     <td>...</td><td></td></tr>
+      <tr id="chk-if-off-str">     <td>th:if 'off' - not rendered</td>       <td>...</td><td></td></tr>
+      <tr id="chk-if-no-str">      <td>th:if 'no' - not rendered</td>        <td>...</td><td></td></tr>
+      <tr id="chk-if-yes-str">     <td>th:if 'yes' - renders</td>            <td>...</td><td></td></tr>
+      <tr id="chk-unless-true">    <td>th:unless true - not rendered</td>    <td>...</td><td></td></tr>
+      <tr id="chk-unless-false">   <td>th:unless false - renders</td>        <td>...</td><td></td></tr>
+      <tr id="chk-unless-null">    <td>th:unless null - renders</td>         <td>...</td><td></td></tr>
+      <tr id="chk-switch-summer">  <td>switch: 'SUMMER' case matches</td>    <td>...</td><td></td></tr>
+      <tr id="chk-switch-spring">  <td>switch: 'SPRING' case skipped</td>   <td>...</td><td></td></tr>
+      <tr id="chk-switch-default"> <td>switch: no match, default fires</td>  <td>...</td><td></td></tr>
+      <tr id="chk-switch-x">       <td>switch: non-matching case skipped</td><td>...</td><td></td></tr>
+      <tr id="chk-classappend-on"> <td>th:classappend adds class</td>        <td>...</td><td></td></tr>
+      <tr id="chk-classappend-off"><td>th:classappend skips on false</td>    <td>...</td><td></td></tr>
+      <tr id="chk-attrappend">     <td>th:attrappend appends value</td>      <td>...</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        function el(id)   { return document.getElementById(id); }
+        function has(id)  { return el(id) !== null; }
+        function none(id) { return el(id) === null; }
+
+        function check(id, pass, note) {
+            var row = el(id);
+            if (!row) return;
+            row.cells[1].textContent = pass ? '\u2714 PASS' : '\u2718 FAIL';
+            row.cells[1].className   = pass ? 'tick' : 'cross';
+            row.cells[2].textContent = note;
+        }
+
+        /* 1. th:if */
+        check('chk-if-true',     has('if-true'),        'element present when th:if is Boolean.TRUE');
+        check('chk-if-false',    none('if-false'),       'element absent when th:if is Boolean.FALSE');
+        check('chk-if-null',     none('if-null'),        'element absent when th:if is null');
+        check('chk-if-emptystr', has('if-empty-str'),    'element present when th:if is empty string (empty string is truthy)');
+        check('chk-if-zero',     none('if-zero'),        'element absent when th:if is 0');
+        check('chk-if-nonzero',  has('if-nonzero'),      'element present when th:if is 42');
+        check('chk-if-nonempty', has('if-nonempty'),     'element present when th:if is "hello"');
+        check('chk-if-false-str',none('if-str-false'),   'element absent when th:if is string "false"');
+        check('chk-if-off-str',  none('if-str-off'),     'element absent when th:if is string "off"');
+        check('chk-if-no-str',   none('if-str-no'),      'element absent when th:if is string "no"');
+        check('chk-if-yes-str',  has('if-str-truthy'),   'element present when th:if is string "yes"');
+
+        /* 2. th:unless */
+        check('chk-unless-true',  none('unless-true'),   'element absent when th:unless is true');
+        check('chk-unless-false', has('unless-false'),   'element present when th:unless is false');
+        check('chk-unless-null',  has('unless-null'),    'element present when th:unless is null');
+
+        /* 3. th:switch */
+        check('chk-switch-summer',  has('case-summer'),   '"SUMMER" case was rendered');
+        check('chk-switch-spring',  none('case-spring'),  '"SPRING" case was not rendered');
+        check('chk-switch-default', none('case-default'), 'default did not fire (SUMMER matched)');
+        check('chk-switch-x',       none('case-x'),       '"xyz" case not rendered (no match)');
+
+        /* 4. Conditional attributes */
+        var ca = el('classappend-test');
+        check('chk-classappend-on',  ca && ca.classList.contains('highlight'),
+              'base + highlight class added by th:classappend');
+
+        var cf = el('classappend-false');
+        var noHighlight = cf && !cf.classList.contains('highlight');
+        check('chk-classappend-off', noHighlight, 'th:classappend does not add class when false');
+
+        var at = el('attrappend-test');
+        check('chk-attrappend', at && at.getAttribute('data-active') === '-yes',
+              'th:attrappend appends "-yes" when truthyBool=true');
+
+    });
+  </script>
+
+</body>
+</html>

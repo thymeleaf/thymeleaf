@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="#{title.app}">Thymeleaf SB3 Features</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    nav { background: #2c6e49; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 1.5rem; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    h1 { color: #2c6e49; }
+    h2 { color: #1b4332; border-bottom: 2px solid #b7e4c7; padding-bottom: .3rem; margin-top: 2rem; }
+    table.checks { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    table.checks th, table.checks td { padding: .45rem .7rem; text-align: left; border-bottom: 1px solid #dee2e6; font-size: .9rem; }
+    table.checks th { background: #d8f3dc; }
+    .tick  { color: #2c6e49; font-weight: 700; }
+    .cross { color: #dc3545; font-weight: 700; }
+    table.data { border-collapse: collapse; margin-top: .5rem; }
+    table.data th, table.data td { padding: .3rem .6rem; text-align: left; border: 1px solid #b7e4c7; font-size: .85rem; }
+    table.data th { background: #d8f3dc; }
+    .section-desc { color: #495057; font-size: .9rem; margin: .5rem 0 0; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a th:href="@{/javascript}" th:text="#{nav.javascript}">JavaScript Inline</a>
+    <a th:href="@{/expressions}" th:text="#{nav.expressions}">Expression Language</a>
+    <a th:href="@{/iteration}" th:text="#{nav.iteration}">Iteration</a>
+    <a th:href="@{/conditionals}" th:text="#{nav.conditionals}">Conditionals</a>
+    <a th:href="@{/fragments}" th:text="#{nav.fragments}">Fragments</a>
+  </nav>
+
+  <h1>Iteration (th:each)</h1>
+
+  <!-- Iteration data rendered for JS to verify -->
+
+  <h2>1. List Iteration with Status Variables</h2>
+  <p class="section-desc">Model: <code>fruits = ["apple","banana","cherry","date","elderberry"]</code></p>
+  <table class="data" id="fruit-table">
+    <thead>
+      <tr><th>fruit</th><th>index</th><th>count</th><th>size</th><th>first</th><th>last</th><th>even</th><th>odd</th></tr>
+    </thead>
+    <tbody>
+      <tr th:each="f,s : ${fruits}"
+          th:attr="data-fruit=${f},data-index=${s.index},data-count=${s.count},data-size=${s.size},data-first=${s.first},data-last=${s.last},data-even=${s.even},data-odd=${s.odd}">
+        <td th:text="${f}">fruit</td>
+        <td th:text="${s.index}">0</td>
+        <td th:text="${s.count}">1</td>
+        <td th:text="${s.size}">5</td>
+        <td th:text="${s.first}">true</td>
+        <td th:text="${s.last}">false</td>
+        <td th:text="${s.even}">false</td>
+        <td th:text="${s.odd}">true</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. Map Iteration</h2>
+  <p class="section-desc">Model: <code>scores = {Alice:95, Bob:87, Carol:92}</code></p>
+  <table class="data" id="score-table">
+    <thead><tr><th>name</th><th>score</th></tr></thead>
+    <tbody>
+      <tr th:each="entry : ${scores}" th:attr="data-key=${entry.key},data-value=${entry.value}">
+        <td th:text="${entry.key}">name</td>
+        <td th:text="${entry.value}">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. Set Iteration</h2>
+  <p class="section-desc">Model: <code>tags = LinkedHashSet(["java","spring","thymeleaf"])</code></p>
+  <ul id="tag-list">
+    <li th:each="tag : ${tags}" th:text="${tag}">tag</li>
+  </ul>
+
+  <h2>4. Primitive Array Iteration</h2>
+  <p class="section-desc">Model: <code>primes = int[]{2,3,5,7,11}</code></p>
+  <ul id="prime-list">
+    <li th:each="p : ${primes}" th:text="${p}">prime</li>
+  </ul>
+
+  <h2>5. Nested Iteration (3x3 Matrix)</h2>
+  <p class="section-desc" th:inline="none">Model: <code>matrix = [[1,2,3],[4,5,6],[7,8,9]]</code></p>
+  <table class="data" id="matrix-table">
+    <tbody>
+      <tr th:each="row : ${matrix}">
+        <td th:each="cell : ${row}" th:text="${cell}">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>6. #numbers.sequence() Iteration</h2>
+  <p class="section-desc">Iterating over <code>#numbers.sequence(1, 5)</code></p>
+  <ul id="seq-list">
+    <li th:each="n : ${#numbers.sequence(1, 5)}" th:text="${n}">n</li>
+  </ul>
+
+  <!-- Checks table -->
+  <h2>Automated Checks</h2>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr id="chk-list-count">       <td>List: 5 rows rendered</td>              <td>...</td><td></td></tr>
+      <tr id="chk-stat-index">       <td>Status: index (0-based)</td>            <td>...</td><td></td></tr>
+      <tr id="chk-stat-count">       <td>Status: count (1-based)</td>            <td>...</td><td></td></tr>
+      <tr id="chk-stat-size">        <td>Status: size == 5</td>                  <td>...</td><td></td></tr>
+      <tr id="chk-stat-first">       <td>Status: first only on row 0</td>        <td>...</td><td></td></tr>
+      <tr id="chk-stat-last">        <td>Status: last only on final row</td>     <td>...</td><td></td></tr>
+      <tr id="chk-stat-even">        <td>Status: even/odd alternation</td>       <td>...</td><td></td></tr>
+      <tr id="chk-stat-fruit">       <td>List: first fruit is 'apple'</td>       <td>...</td><td></td></tr>
+      <tr id="chk-map-count">        <td>Map: 3 rows rendered</td>               <td>...</td><td></td></tr>
+      <tr id="chk-map-keys">         <td>Map: first key is 'Alice'</td>          <td>...</td><td></td></tr>
+      <tr id="chk-map-value">        <td>Map: Alice score == 95</td>             <td>...</td><td></td></tr>
+      <tr id="chk-set-count">        <td>Set: 3 items rendered</td>              <td>...</td><td></td></tr>
+      <tr id="chk-primes-count">     <td>int[]: 5 primes rendered</td>           <td>...</td><td></td></tr>
+      <tr id="chk-primes-first">     <td>int[]: first prime is 2</td>            <td>...</td><td></td></tr>
+      <tr id="chk-matrix-cells">     <td>Matrix: 9 cells rendered</td>           <td>...</td><td></td></tr>
+      <tr id="chk-matrix-cell-5">    <td>Matrix: cell[1][1] == 5</td>            <td>...</td><td></td></tr>
+      <tr id="chk-seq-count">        <td>sequence(1,5): 5 items</td>             <td>...</td><td></td></tr>
+      <tr id="chk-seq-first">        <td>sequence(1,5): first == 1</td>          <td>...</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        function check(id, pass, note) {
+            var row = document.getElementById(id);
+            if (!row) return;
+            row.cells[1].textContent = pass ? '\u2714 PASS' : '\u2718 FAIL';
+            row.cells[1].className   = pass ? 'tick' : 'cross';
+            row.cells[2].textContent = note;
+        }
+
+        /* 1. List iteration with status */
+        var fruitRows = document.querySelectorAll('#fruit-table tbody tr');
+        check('chk-list-count', fruitRows.length === 5, 'tbody has 5 rows');
+
+        var firstRow = fruitRows[0];
+        var lastRow  = fruitRows[fruitRows.length - 1];
+
+        check('chk-stat-index', firstRow && firstRow.dataset.index === '0',
+              'first row data-index="0"');
+        check('chk-stat-count', firstRow && firstRow.dataset.count === '1',
+              'first row data-count="1"');
+        check('chk-stat-size',  firstRow && firstRow.dataset.size === '5',
+              'data-size="5" on every row');
+        check('chk-stat-first', firstRow && firstRow.dataset.first === 'true' &&
+              lastRow && lastRow.dataset.first === 'false',
+              'data-first="true" only on first row');
+        check('chk-stat-last',  lastRow && lastRow.dataset.last === 'true' &&
+              firstRow && firstRow.dataset.last === 'false',
+              'data-last="true" only on last row');
+        check('chk-stat-even',  firstRow && firstRow.dataset.even === 'false' &&
+              fruitRows[1] && fruitRows[1].dataset.even === 'true',
+              'even alternates false/true/false/...');
+        check('chk-stat-fruit', firstRow && firstRow.dataset.fruit === 'apple',
+              'first fruit is "apple"');
+
+        /* 2. Map iteration */
+        var scoreRows = document.querySelectorAll('#score-table tbody tr');
+        check('chk-map-count', scoreRows.length === 3, 'map has 3 rows');
+        check('chk-map-keys',  scoreRows[0] && scoreRows[0].dataset.key === 'Alice',
+              'first map key is "Alice"');
+        check('chk-map-value', scoreRows[0] && scoreRows[0].dataset.value === '95',
+              'Alice score is 95');
+
+        /* 3. Set iteration */
+        var tagItems = document.querySelectorAll('#tag-list li');
+        check('chk-set-count', tagItems.length === 3, 'set rendered 3 li items');
+
+        /* 4. Primitive array */
+        var primeItems = document.querySelectorAll('#prime-list li');
+        check('chk-primes-count', primeItems.length === 5, 'int[] rendered 5 li items');
+        check('chk-primes-first', primeItems[0] && primeItems[0].textContent.trim() === '2',
+              'first prime is 2');
+
+        /* 5. Nested iteration */
+        var matrixCells = document.querySelectorAll('#matrix-table td');
+        check('chk-matrix-cells',  matrixCells.length === 9, '3x3 = 9 cells rendered');
+        check('chk-matrix-cell-5', matrixCells[4] && matrixCells[4].textContent.trim() === '5',
+              'cell at [1][1] (index 4) == 5');
+
+        /* 6. Sequence */
+        var seqItems = document.querySelectorAll('#seq-list li');
+        check('chk-seq-count', seqItems.length === 5, 'sequence(1,5) rendered 5 items');
+        check('chk-seq-first', seqItems[0] && seqItems[0].textContent.trim() === '1',
+              'first sequence element is 1');
+
+    });
+  </script>
+
+</body>
+</html>

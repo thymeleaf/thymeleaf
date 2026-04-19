@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="#{title.app}">Thymeleaf SB3 Features</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    nav { background: #2c6e49; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 1.5rem; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    h1 { color: #2c6e49; }
+    h2 { color: #1b4332; border-bottom: 2px solid #b7e4c7; padding-bottom: .3rem; margin-top: 2rem; }
+    .card { border: 1px solid #b7e4c7; border-radius: 6px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-weight: 700; color: #1b4332; margin: 0 0 .5rem; }
+    .desc { color: #495057; font-size: .9rem; margin: 0 0 .75rem; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: .85rem; margin: 0; min-height: 1.5rem; white-space: pre-wrap; word-break: break-all; }
+    .label-raw { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #6c757d; margin-top: .75rem; margin-bottom: .2rem; }
+    table.checks { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    table.checks th, table.checks td { padding: .45rem .7rem; text-align: left; border-bottom: 1px solid #dee2e6; font-size: .9rem; }
+    table.checks th { background: #d8f3dc; }
+    .tick  { color: #2c6e49; font-weight: 700; }
+    .cross { color: #dc3545; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a th:href="@{/javascript}" th:text="#{nav.javascript}">JavaScript Inline</a>
+    <a th:href="@{/expressions}" th:text="#{nav.expressions}">Expression Language</a>
+    <a th:href="@{/iteration}" th:text="#{nav.iteration}">Iteration</a>
+    <a th:href="@{/conditionals}" th:text="#{nav.conditionals}">Conditionals</a>
+    <a th:href="@{/fragments}" th:text="#{nav.fragments}">Fragments</a>
+  </nav>
+
+  <h1>JavaScript Inline Serialization (Jackson 2)</h1>
+
+  <script th:inline="javascript">
+    var pojo          = /*[[${pojo}]]*/ null;
+    var record        = /*[[${record}]]*/ null;
+    var productList   = /*[[${productList}]]*/ [];
+    var utilDate      = /*[[${utilDate}]]*/ null;
+    var localDate     = /*[[${localDate}]]*/ null;
+    var localDateTime = /*[[${localDateTime}]]*/ null;
+    var dangerousString = /*[[${dangerousString}]]*/ null;
+    var nullValue     = /*[[${nullValue}]]*/ 'NOT_NULL';
+    var boolValue     = /*[[${boolValue}]]*/ null;
+    var numericValue  = /*[[${numericValue}]]*/ null;
+    var enumValue     = /*[[${enumValue}]]*/ null;
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        function show(id, value) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = JSON.stringify(value, null, 2);
+        }
+
+        function check(id, pass, note) {
+            var row = document.getElementById(id);
+            if (!row) return;
+            row.cells[1].textContent = pass ? '\u2714 PASS' : '\u2718 FAIL';
+            row.cells[1].className   = pass ? 'tick' : 'cross';
+            row.cells[2].textContent = note;
+        }
+
+        show('out-pojo',        pojo);
+        show('out-record',      record);
+        show('out-list',        productList);
+        show('out-util-date',   utilDate);
+        show('out-local-date',  localDate);
+        show('out-local-dt',    localDateTime);
+        show('out-dangerous',   dangerousString);
+        show('out-null',        nullValue);
+        show('out-bool',        boolValue);
+        show('out-numeric',     numericValue);
+        show('out-enum',        enumValue);
+
+        /* 1. POJO serialization */
+        check('chk-pojo-name',      pojo !== null && pojo.name === 'Organic Thyme',
+              'pojo.name === "Organic Thyme"');
+        check('chk-pojo-price',     pojo !== null && pojo.price === 3.99,
+              'pojo.price === 3.99');
+        check('chk-pojo-available', pojo !== null && pojo.available === true,
+              'pojo.available === true');
+        check('chk-pojo-date',      pojo !== null && pojo.releaseDate === '2024-03-01',
+              'pojo.releaseDate === "2024-03-01" (LocalDate via JavaTimeModule)');
+        check('chk-pojo-enum',      pojo !== null && pojo.category === 'FOOD',
+              'pojo.category === "FOOD" (enum serialized as string)');
+
+        /* 2. Java Record serialization (Jackson 2 supports records since 2.12) */
+        check('chk-record-name',    record !== null && typeof record.name === 'string' && record.name.indexOf('Basil') === 0,
+              'record.name starts with "Basil" (XSS chars properly escaped)');
+        check('chk-record-price',   record !== null && record.price === 4.50,
+              'record.price === 4.50');
+
+        /* 3. List of POJOs */
+        check('chk-list-length',    Array.isArray(productList) && productList.length === 3,
+              'productList.length === 3');
+        check('chk-list-first',     Array.isArray(productList) && productList[0].name === 'Thyme',
+              'productList[0].name === "Thyme"');
+        check('chk-list-last-avail',Array.isArray(productList) && productList[2].available === false,
+              'productList[2].available === false');
+
+        /* 4. java.util.Date - ISO 8601 with RFC 3339 colon offset */
+        var isoRfc3339 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/;
+        check('chk-date-str',       typeof utilDate === 'string',
+              'utilDate is a string (not a numeric timestamp)');
+        check('chk-date-iso',       typeof utilDate === 'string' && isoRfc3339.test(utilDate),
+              'utilDate matches ISO 8601 with RFC 3339 colon offset (+HH:MM)');
+
+        /* 5. java.time types */
+        check('chk-local-date',     localDate === '2024-06-15',
+              'localDate === "2024-06-15"');
+        check('chk-local-dt',       typeof localDateTime === 'string' && localDateTime.indexOf('T') > 0,
+              'localDateTime is a string containing "T"');
+
+        /* 6. XSS escaping */
+        check('chk-xss-slash',      typeof dangerousString === 'string' && dangerousString.indexOf('<\/script>') >= 0,
+              'JavaScript value contains the original <\/script> sequence');
+        check('chk-xss-amp',        typeof dangerousString === 'string' && dangerousString.indexOf('&') >= 0,
+              'JavaScript value contains the original & character');
+
+        /* 7. Null, boolean, numeric, enum */
+        check('chk-null',           nullValue === null,
+              'nullValue === null');
+        check('chk-bool',           boolValue === true,
+              'boolValue === true (boolean, not string)');
+        check('chk-numeric',        numericValue === 42.5,
+              'numericValue === 42.5 (number, not string)');
+        check('chk-enum',           enumValue === 'ELECTRONICS',
+              'enumValue === "ELECTRONICS" (enum serialized as its name)');
+
+    });
+  </script>
+
+  <h2>Automated Checks</h2>
+  <p class="desc">
+    All rows should show <span class="tick">&#x2714; PASS</span>.
+    A <span class="cross">&#x2718; FAIL</span> indicates a serialization problem.
+  </p>
+
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr id="chk-pojo-name">       <td>POJO: name</td>              <td>...</td><td></td></tr>
+      <tr id="chk-pojo-price">      <td>POJO: price</td>             <td>...</td><td></td></tr>
+      <tr id="chk-pojo-available">  <td>POJO: boolean field</td>     <td>...</td><td></td></tr>
+      <tr id="chk-pojo-date">       <td>POJO: LocalDate field</td>   <td>...</td><td></td></tr>
+      <tr id="chk-pojo-enum">       <td>POJO: enum field</td>        <td>...</td><td></td></tr>
+      <tr id="chk-record-name">     <td>Record: name</td>            <td>...</td><td></td></tr>
+      <tr id="chk-record-price">    <td>Record: price</td>           <td>...</td><td></td></tr>
+      <tr id="chk-list-length">     <td>List length</td>             <td>...</td><td></td></tr>
+      <tr id="chk-list-first">      <td>List[0].name</td>            <td>...</td><td></td></tr>
+      <tr id="chk-list-last-avail"> <td>List[2].available</td>       <td>...</td><td></td></tr>
+      <tr id="chk-date-str">        <td>Date is string</td>          <td>...</td><td></td></tr>
+      <tr id="chk-date-iso">        <td>Date ISO 8601 + RFC 3339</td><td>...</td><td></td></tr>
+      <tr id="chk-local-date">      <td>LocalDate format</td>        <td>...</td><td></td></tr>
+      <tr id="chk-local-dt">        <td>LocalDateTime format</td>    <td>...</td><td></td></tr>
+      <tr id="chk-xss-slash">       <td>XSS: slash escaped</td>      <td>...</td><td></td></tr>
+      <tr id="chk-xss-amp">         <td>XSS: ampersand escaped</td>  <td>...</td><td></td></tr>
+      <tr id="chk-null">            <td>null value</td>              <td>...</td><td></td></tr>
+      <tr id="chk-bool">            <td>boolean value</td>           <td>...</td><td></td></tr>
+      <tr id="chk-numeric">         <td>numeric value</td>           <td>...</td><td></td></tr>
+      <tr id="chk-enum">            <td>enum value</td>              <td>...</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Serialized Values</h2>
+
+  <div class="card">
+    <p class="card-title">POJO: <code>Product</code></p>
+    <p class="desc">A regular JavaBeans POJO with getters. Jackson 2 discovers fields via <code>getXxx()</code> methods.</p>
+    <div class="label-raw">Rendered JSON</div>
+    <pre id="out-pojo">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title">Java Record: <code>ProductRecord</code></p>
+    <p class="desc">A Java 17 record. Jackson 2.12+ serializes records via their accessor methods. Name contains XSS chars.</p>
+    <div class="label-raw">Rendered JSON</div>
+    <pre id="out-record">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title">List of POJOs</p>
+    <p class="desc">Three Product instances. Verify array output and field access by index.</p>
+    <div class="label-raw">Rendered JSON</div>
+    <pre id="out-list">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title"><code>java.util.Date</code></p>
+    <p class="desc">Must be ISO 8601 with milliseconds and RFC 3339 colon offset (<code>+02:00</code> not <code>+0200</code>).</p>
+    <div class="label-raw">Rendered JSON</div>
+    <pre id="out-util-date">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title"><code>java.time.LocalDate</code></p>
+    <p class="desc">Must be <code>"2024-06-15"</code> (ISO 8601 date only, no time component).</p>
+    <div class="label-raw">Rendered JSON</div>
+    <pre id="out-local-date">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title"><code>java.time.LocalDateTime</code></p>
+    <p class="desc">Must contain a <code>T</code> separator between date and time.</p>
+    <div class="label-raw">Rendered JSON</div>
+    <pre id="out-local-dt">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title">XSS-dangerous String</p>
+    <p class="desc">In page source, <code>/</code> must appear as <code>\/</code> and <code>&amp;</code> as <code>\u0026</code>. JavaScript receives originals.</p>
+    <div class="label-raw">Rendered JSON (decoded)</div>
+    <pre id="out-dangerous">Loading...</pre>
+  </div>
+
+  <div class="card">
+    <p class="card-title">Null / Boolean / Numeric / Enum</p>
+    <p class="desc">null -> null; true -> boolean true; 42.5 -> number; enum -> string name.</p>
+    <div class="label-raw">null</div><pre id="out-null">Loading...</pre>
+    <div class="label-raw">boolean</div><pre id="out-bool">Loading...</pre>
+    <div class="label-raw">numeric</div><pre id="out-numeric">Loading...</pre>
+    <div class="label-raw">enum</div><pre id="out-enum">Loading...</pre>
+  </div>
+
+</body>
+</html>

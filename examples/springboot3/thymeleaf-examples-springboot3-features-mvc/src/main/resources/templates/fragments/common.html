@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Fragments</title>
+</head>
+<body>
+
+  <!-- Simple header fragment, no parameters -->
+  <div th:fragment="simple-header">
+    <p id="from-simple-header">Rendered by simple-header fragment</p>
+  </div>
+
+  <!-- Card fragment with two parameters: cardTitle and cardBody -->
+  <div th:fragment="card(cardTitle, cardBody)">
+    <div class="frag-card">
+      <strong th:text="${cardTitle}">title</strong>
+      <p th:text="${cardBody}">body</p>
+    </div>
+  </div>
+
+  <!-- List fragment: renders an ordered list from a 'listItems' parameter -->
+  <div th:fragment="item-list(listItems)">
+    <ol id="frag-item-list">
+      <li th:each="item : ${listItems}" th:text="${item}">item</li>
+    </ol>
+  </div>
+
+  <!-- Badge fragment: renders a colored span with text -->
+  <span th:fragment="badge(label)" class="frag-badge" th:text="${label}">badge</span>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="#{title.app}">Thymeleaf SB3 Features</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    nav { background: #2c6e49; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 1.5rem; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    h1 { color: #2c6e49; }
+    h2 { color: #1b4332; border-bottom: 2px solid #b7e4c7; padding-bottom: .3rem; margin-top: 2rem; }
+    table.checks { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    table.checks th, table.checks td { padding: .45rem .7rem; text-align: left; border-bottom: 1px solid #dee2e6; font-size: .9rem; }
+    table.checks th { background: #d8f3dc; }
+    .tick  { color: #2c6e49; font-weight: 700; }
+    .cross { color: #dc3545; font-weight: 700; }
+    .section-desc { color: #495057; font-size: .9rem; margin: .5rem 0 0; }
+    .frag-box { border: 2px dashed #b7e4c7; padding: .75rem 1rem; margin: .5rem 0; border-radius: 4px; }
+    .frag-card { border: 1px solid #adb5bd; border-radius: 4px; padding: .5rem .75rem; margin: .3rem 0; }
+    .frag-badge { background: #d8f3dc; color: #1b4332; border-radius: 12px; padding: .15rem .6rem; font-size: .85rem; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a th:href="@{/javascript}" th:text="#{nav.javascript}">JavaScript Inline</a>
+    <a th:href="@{/expressions}" th:text="#{nav.expressions}">Expression Language</a>
+    <a th:href="@{/iteration}" th:text="#{nav.iteration}">Iteration</a>
+    <a th:href="@{/conditionals}" th:text="#{nav.conditionals}">Conditionals</a>
+    <a th:href="@{/fragments}" th:text="#{nav.fragments}">Fragments</a>
+  </nav>
+
+  <h1 th:text="${pageTitle}">Fragment Tests</h1>
+
+  <!-- ============================================================
+       Define inline fragments in this template
+       ============================================================ -->
+
+  <div style="display:none">
+
+    <div th:fragment="inline-greeting">
+      <span id="inline-greeting-content">Greetings from inline fragment!</span>
+    </div>
+
+    <div th:fragment="inline-param(msg)">
+      <p class="frag-param-content" th:text="${msg}">message</p>
+    </div>
+
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>1. th:insert (host element preserved)</h2>
+  <p class="section-desc">
+    <code>th:insert</code> inserts the fragment's content <em>inside</em> the host element.
+    The host <code>div#insert-host</code> should remain in the DOM.
+  </p>
+
+  <div id="insert-host" class="frag-box"
+       th:insert="~{fragments/common :: simple-header}">
+    (fragment will be inserted here)
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>2. th:replace (host element replaced)</h2>
+  <p class="section-desc">
+    <code>th:replace</code> replaces the host element entirely with the fragment.
+    The host <code>span#replace-host</code> should NOT exist in the DOM.
+  </p>
+
+  <div class="frag-box">
+    <span id="replace-host"
+          th:replace="~{fragments/common :: badge('Replaced badge')}">
+      (this span should be gone)
+    </span>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>3. Parameterized Fragment (external)</h2>
+  <p class="section-desc">
+    Calling the <code>card(cardTitle, cardBody)</code> fragment from <code>fragments/common.html</code>
+    with literal arguments.
+  </p>
+
+  <div id="card-insert-host" class="frag-box"
+       th:insert="~{fragments/common :: card('Test Card', 'This body came from a parameter.')}">
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>4. Parameterized Fragment (inline, model attribute)</h2>
+  <p class="section-desc">
+    Using an inline fragment defined in this template, passing a model attribute as argument.
+  </p>
+
+  <div id="inline-param-host" class="frag-box"
+       th:insert="~{::inline-param(${greeting})}">
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>5. List Fragment (external, model attribute passed)</h2>
+  <p class="section-desc">
+    Calling the <code>item-list(listItems)</code> fragment, passing the <code>items</code> model
+    attribute as the parameter.
+  </p>
+
+  <div id="list-insert-host" class="frag-box"
+       th:insert="~{fragments/common :: item-list(${items})}">
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>6. th:ref selector</h2>
+  <p class="section-desc">
+    <code>th:ref</code> marks an element as a named reference that can be targeted
+    by <code>~{template :: #ref-name}</code>. The element itself is not changed.
+  </p>
+
+  <div style="display:none">
+    <div th:fragment="ref-section">
+      <p id="ref-target-content">Content from th:ref section</p>
+    </div>
+  </div>
+
+  <div id="ref-insert-host" class="frag-box"
+       th:insert="~{:: ref-section}">
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>Automated Checks</h2>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr id="chk-insert-host">     <td>th:insert: host div exists</td>             <td>...</td><td></td></tr>
+      <tr id="chk-insert-content">  <td>th:insert: fragment content inside host</td><td>...</td><td></td></tr>
+      <tr id="chk-replace-gone">    <td>th:replace: host span is gone</td>          <td>...</td><td></td></tr>
+      <tr id="chk-replace-badge">   <td>th:replace: badge span present</td>         <td>...</td><td></td></tr>
+      <tr id="chk-replace-text">    <td>th:replace: badge text correct</td>         <td>...</td><td></td></tr>
+      <tr id="chk-card-title">      <td>Parameterized: card title rendered</td>     <td>...</td><td></td></tr>
+      <tr id="chk-card-body">       <td>Parameterized: card body rendered</td>      <td>...</td><td></td></tr>
+      <tr id="chk-inline-param">    <td>Inline param: model attr passed</td>        <td>...</td><td></td></tr>
+      <tr id="chk-list-frag-count"> <td>List fragment: 4 items rendered</td>        <td>...</td><td></td></tr>
+      <tr id="chk-list-frag-first"> <td>List fragment: first item is Alpha</td>     <td>...</td><td></td></tr>
+      <tr id="chk-ref-content">     <td>th:ref: content inserted via ref</td>       <td>...</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        function el(id)   { return document.getElementById(id); }
+        function has(id)  { return el(id) !== null; }
+        function none(id) { return el(id) === null; }
+
+        function check(id, pass, note) {
+            var row = el(id);
+            if (!row) return;
+            row.cells[1].textContent = pass ? '\u2714 PASS' : '\u2718 FAIL';
+            row.cells[1].className   = pass ? 'tick' : 'cross';
+            row.cells[2].textContent = note;
+        }
+
+        /* 1. th:insert - host preserved, content inside */
+        var insertHost = el('insert-host');
+        check('chk-insert-host',    insertHost !== null,
+              'div#insert-host still in DOM (th:insert preserves host)');
+        check('chk-insert-content', insertHost !== null && insertHost.querySelector('#from-simple-header') !== null,
+              '#from-simple-header found inside insert-host');
+
+        /* 2. th:replace - host gone, fragment element present */
+        check('chk-replace-gone',   none('replace-host'),
+              'span#replace-host removed from DOM by th:replace');
+
+        var badge = document.querySelector('.frag-badge');
+        check('chk-replace-badge',  badge !== null,
+              '.frag-badge span is present (fragment replaced host)');
+        check('chk-replace-text',   badge && badge.textContent.trim() === 'Replaced badge',
+              'badge text is "Replaced badge"');
+
+        /* 3. Parameterized external fragment */
+        var cardHost = el('card-insert-host');
+        var cardTitle = cardHost ? cardHost.querySelector('strong') : null;
+        check('chk-card-title', cardTitle && cardTitle.textContent.trim() === 'Test Card',
+              'card strong text is "Test Card"');
+        var cardBody = cardHost ? cardHost.querySelector('p') : null;
+        check('chk-card-body', cardBody && cardBody.textContent.trim() === 'This body came from a parameter.',
+              'card body text matches parameter');
+
+        /* 4. Inline parameterized fragment with model attribute */
+        var inlineParamHost = el('inline-param-host');
+        var paramContent = inlineParamHost ? inlineParamHost.querySelector('.frag-param-content') : null;
+        check('chk-inline-param', paramContent && paramContent.textContent.trim() === 'Hello from fragment!',
+              'inline param content is model attribute greeting value');
+
+        /* 5. List fragment */
+        var listItems = document.querySelectorAll('#frag-item-list li');
+        check('chk-list-frag-count', listItems.length === 4,
+              'item-list fragment rendered 4 li elements');
+        check('chk-list-frag-first', listItems[0] && listItems[0].textContent.trim() === 'Alpha',
+              'first list item is "Alpha"');
+
+        /* 6. th:ref */
+        var refHost = el('ref-insert-host');
+        var refContent = refHost ? refHost.querySelector('#ref-target-content') : null;
+        check('chk-ref-content', refContent !== null,
+              '#ref-target-content found inside ref-insert-host');
+
+    });
+  </script>
+
+</body>
+</html>

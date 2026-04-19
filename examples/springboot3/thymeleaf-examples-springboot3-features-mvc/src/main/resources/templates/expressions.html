@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="#{title.app}">Thymeleaf SB3 Features</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    nav { background: #2c6e49; padding: .75rem 1rem; border-radius: 6px; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 1.5rem; font-weight: 600; }
+    nav a:hover { text-decoration: underline; }
+    h1 { color: #2c6e49; }
+    h2 { color: #1b4332; border-bottom: 2px solid #b7e4c7; padding-bottom: .3rem; margin-top: 2rem; }
+    table.checks { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    table.checks th, table.checks td { padding: .45rem .7rem; text-align: left; border-bottom: 1px solid #dee2e6; font-size: .9rem; }
+    table.checks th { background: #d8f3dc; }
+    .tick  { color: #2c6e49; font-weight: 700; }
+    .cross { color: #dc3545; font-weight: 700; }
+    .section-desc { color: #495057; font-size: .9rem; margin: .5rem 0 0; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a th:href="@{/javascript}" th:text="#{nav.javascript}">JavaScript Inline</a>
+    <a th:href="@{/expressions}" th:text="#{nav.expressions}">Expression Language</a>
+    <a th:href="@{/iteration}" th:text="#{nav.iteration}">Iteration</a>
+    <a th:href="@{/conditionals}" th:text="#{nav.conditionals}">Conditionals</a>
+    <a th:href="@{/fragments}" th:text="#{nav.fragments}">Fragments</a>
+  </nav>
+
+  <h1>Expression Language &amp; Utility Objects</h1>
+
+  <!-- ============================================================ -->
+  <h2>1. Arithmetic &amp; Operators</h2>
+  <p class="section-desc">
+    Model: <code>name="Thymeleaf"</code>, <code>num=42</code>, <code>nullValue=null</code>, <code>boolTrue=true</code>, <code>boolFalse=false</code>
+  </p>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Addition</td>
+        <td th:text="${5 + 3 == 8} ? 'PASS' : 'FAIL'" th:class="${5 + 3 == 8} ? 'tick' : 'cross'">...</td>
+        <td><code>${5 + 3} == 8</code></td>
+      </tr>
+      <tr>
+        <td>Subtraction</td>
+        <td th:text="${10 - 4 == 6} ? 'PASS' : 'FAIL'" th:class="${10 - 4 == 6} ? 'tick' : 'cross'">...</td>
+        <td><code>${10 - 4} == 6</code></td>
+      </tr>
+      <tr>
+        <td>Multiplication</td>
+        <td th:text="${3 * 7 == 21} ? 'PASS' : 'FAIL'" th:class="${3 * 7 == 21} ? 'tick' : 'cross'">...</td>
+        <td><code>${3 * 7} == 21</code></td>
+      </tr>
+      <tr>
+        <td>Modulo</td>
+        <td th:text="${17 % 5 == 2} ? 'PASS' : 'FAIL'" th:class="${17 % 5 == 2} ? 'tick' : 'cross'">...</td>
+        <td><code>${17 % 5} == 2</code></td>
+      </tr>
+      <tr>
+        <td>Greater-than (gt)</td>
+        <td th:text="${5 gt 3} ? 'PASS' : 'FAIL'" th:class="${5 gt 3} ? 'tick' : 'cross'">...</td>
+        <td><code>${5 gt 3} == true</code></td>
+      </tr>
+      <tr>
+        <td>Greater-or-equal (ge)</td>
+        <td th:text="${3 ge 3} ? 'PASS' : 'FAIL'" th:class="${3 ge 3} ? 'tick' : 'cross'">...</td>
+        <td><code>${3 ge 3} == true</code></td>
+      </tr>
+      <tr>
+        <td>Less-than (lt)</td>
+        <td th:text="${2 lt 4} ? 'PASS' : 'FAIL'" th:class="${2 lt 4} ? 'tick' : 'cross'">...</td>
+        <td><code>${2 lt 4} == true</code></td>
+      </tr>
+      <tr>
+        <td>Equality (eq)</td>
+        <td th:text="${name == 'Thymeleaf'} ? 'PASS' : 'FAIL'" th:class="${name == 'Thymeleaf'} ? 'tick' : 'cross'">...</td>
+        <td><code>${name == 'Thymeleaf'}</code></td>
+      </tr>
+      <tr>
+        <td>Inequality (ne)</td>
+        <td th:text="${name != 'Java'} ? 'PASS' : 'FAIL'" th:class="${name != 'Java'} ? 'tick' : 'cross'">...</td>
+        <td><code>${name != 'Java'}</code></td>
+      </tr>
+      <tr>
+        <td>Logical AND</td>
+        <td th:text="${boolTrue and boolTrue} ? 'PASS' : 'FAIL'" th:class="${boolTrue and boolTrue} ? 'tick' : 'cross'">...</td>
+        <td><code>${boolTrue and boolTrue} == true</code></td>
+      </tr>
+      <tr>
+        <td>Logical OR</td>
+        <td th:text="${boolFalse or boolTrue} ? 'PASS' : 'FAIL'" th:class="${boolFalse or boolTrue} ? 'tick' : 'cross'">...</td>
+        <td><code>${boolFalse or boolTrue} == true</code></td>
+      </tr>
+      <tr>
+        <td>Logical NOT</td>
+        <td th:text="${not boolFalse} ? 'PASS' : 'FAIL'" th:class="${not boolFalse} ? 'tick' : 'cross'">...</td>
+        <td><code>${not boolFalse} == true</code></td>
+      </tr>
+      <tr>
+        <td>Ternary: true branch</td>
+        <td th:text="${(boolTrue ? 'yes' : 'no') == 'yes'} ? 'PASS' : 'FAIL'" th:class="${(boolTrue ? 'yes' : 'no') == 'yes'} ? 'tick' : 'cross'">...</td>
+        <td><code>${boolTrue ? 'yes' : 'no'} == 'yes'</code></td>
+      </tr>
+      <tr>
+        <td>Ternary: false branch</td>
+        <td th:text="${(boolFalse ? 'yes' : 'no') == 'no'} ? 'PASS' : 'FAIL'" th:class="${(boolFalse ? 'yes' : 'no') == 'no'} ? 'tick' : 'cross'">...</td>
+        <td><code>${boolFalse ? 'yes' : 'no'} == 'no'</code></td>
+      </tr>
+      <tr>
+        <td>Elvis: null value</td>
+        <td th:text="${(nullValue ?: 'default') == 'default'} ? 'PASS' : 'FAIL'" th:class="${(nullValue ?: 'default') == 'default'} ? 'tick' : 'cross'">...</td>
+        <td><code>${nullValue ?: 'default'} == 'default'</code></td>
+      </tr>
+      <tr>
+        <td>Elvis: non-null value</td>
+        <td th:text="${(name ?: 'default') == 'Thymeleaf'} ? 'PASS' : 'FAIL'" th:class="${(name ?: 'default') == 'Thymeleaf'} ? 'tick' : 'cross'">...</td>
+        <td><code>${name ?: 'default'} == 'Thymeleaf'</code></td>
+      </tr>
+      <tr>
+        <td>Literal substitution</td>
+        <td th:with="v=|Hello, ${name}!|" th:text="${v == 'Hello, Thymeleaf!'} ? 'PASS' : 'FAIL'" th:class="${v == 'Hello, Thymeleaf!'} ? 'tick' : 'cross'">...</td>
+        <td><code>|Hello, ${name}!| == 'Hello, Thymeleaf!'</code></td>
+      </tr>
+      <tr>
+        <td>String concatenation</td>
+        <td th:with="v=${'Hello, ' + name + '!'}" th:text="${v == 'Hello, Thymeleaf!'} ? 'PASS' : 'FAIL'" th:class="${v == 'Hello, Thymeleaf!'} ? 'tick' : 'cross'">...</td>
+        <td><code>${'Hello, ' + name + '!'}</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>2. #strings Utilities</h2>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>length</td>
+        <td th:text="${#strings.length('hello') == 5} ? 'PASS' : 'FAIL'" th:class="${#strings.length('hello') == 5} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.length('hello') == 5</code></td>
+      </tr>
+      <tr>
+        <td>toUpperCase</td>
+        <td th:text="${#strings.toUpperCase('hello') == 'HELLO'} ? 'PASS' : 'FAIL'" th:class="${#strings.toUpperCase('hello') == 'HELLO'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.toUpperCase('hello') == 'HELLO'</code></td>
+      </tr>
+      <tr>
+        <td>toLowerCase</td>
+        <td th:text="${#strings.toLowerCase('WORLD') == 'world'} ? 'PASS' : 'FAIL'" th:class="${#strings.toLowerCase('WORLD') == 'world'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.toLowerCase('WORLD') == 'world'</code></td>
+      </tr>
+      <tr>
+        <td>contains: true</td>
+        <td th:text="${#strings.contains('hello world', 'world')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains('hello world', 'world')} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.contains('hello world', 'world')</code></td>
+      </tr>
+      <tr>
+        <td>contains: false</td>
+        <td th:text="${!#strings.contains('hello world', 'java')} ? 'PASS' : 'FAIL'" th:class="${!#strings.contains('hello world', 'java')} ? 'tick' : 'cross'">...</td>
+        <td><code>!#strings.contains('hello world', 'java')</code></td>
+      </tr>
+      <tr>
+        <td>startsWith</td>
+        <td th:text="${#strings.startsWith('thymeleaf', 'thyme')} ? 'PASS' : 'FAIL'" th:class="${#strings.startsWith('thymeleaf', 'thyme')} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.startsWith('thymeleaf', 'thyme')</code></td>
+      </tr>
+      <tr>
+        <td>endsWith</td>
+        <td th:text="${#strings.endsWith('thymeleaf', 'leaf')} ? 'PASS' : 'FAIL'" th:class="${#strings.endsWith('thymeleaf', 'leaf')} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.endsWith('thymeleaf', 'leaf')</code></td>
+      </tr>
+      <tr>
+        <td>indexOf</td>
+        <td th:text="${#strings.indexOf('hello', 'l') == 2} ? 'PASS' : 'FAIL'" th:class="${#strings.indexOf('hello', 'l') == 2} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.indexOf('hello', 'l') == 2</code></td>
+      </tr>
+      <tr>
+        <td>substring</td>
+        <td th:text="${#strings.substring('thymeleaf', 0, 5) == 'thyme'} ? 'PASS' : 'FAIL'" th:class="${#strings.substring('thymeleaf', 0, 5) == 'thyme'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.substring('thymeleaf', 0, 5) == 'thyme'</code></td>
+      </tr>
+      <tr>
+        <td>replace</td>
+        <td th:text="${#strings.replace('hello world', 'world', 'thymeleaf') == 'hello thymeleaf'} ? 'PASS' : 'FAIL'" th:class="${#strings.replace('hello world', 'world', 'thymeleaf') == 'hello thymeleaf'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.replace(...) == 'hello thymeleaf'</code></td>
+      </tr>
+      <tr>
+        <td>trim</td>
+        <td th:text="${#strings.trim('  hello  ') == 'hello'} ? 'PASS' : 'FAIL'" th:class="${#strings.trim('  hello  ') == 'hello'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.trim('  hello  ') == 'hello'</code></td>
+      </tr>
+      <tr>
+        <td>isEmpty: empty string</td>
+        <td th:text="${#strings.isEmpty('')} ? 'PASS' : 'FAIL'" th:class="${#strings.isEmpty('')} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.isEmpty('') == true</code></td>
+      </tr>
+      <tr>
+        <td>isEmpty: non-empty string</td>
+        <td th:text="${!#strings.isEmpty('x')} ? 'PASS' : 'FAIL'" th:class="${!#strings.isEmpty('x')} ? 'tick' : 'cross'">...</td>
+        <td><code>!#strings.isEmpty('x') == true</code></td>
+      </tr>
+      <tr>
+        <td>defaultString: null input</td>
+        <td th:text="${#strings.defaultString(null, 'fallback') == 'fallback'} ? 'PASS' : 'FAIL'" th:class="${#strings.defaultString(null, 'fallback') == 'fallback'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.defaultString(null, 'fallback') == 'fallback'</code></td>
+      </tr>
+      <tr>
+        <td>toUpperCase on model attr</td>
+        <td th:text="${#strings.toUpperCase(name) == 'THYMELEAF'} ? 'PASS' : 'FAIL'" th:class="${#strings.toUpperCase(name) == 'THYMELEAF'} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.toUpperCase(name) == 'THYMELEAF'</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>3. #numbers Utilities</h2>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>formatInteger with COMMA grouping</td>
+        <td th:text="${#numbers.formatInteger(1234567, 3, 'COMMA') == '1,234,567'} ? 'PASS' : 'FAIL'" th:class="${#numbers.formatInteger(1234567, 3, 'COMMA') == '1,234,567'} ? 'tick' : 'cross'">...</td>
+        <td><code>#numbers.formatInteger(1234567, 3, 'COMMA') == '1,234,567'</code></td>
+      </tr>
+      <tr>
+        <td>formatDecimal</td>
+        <td th:text="${#numbers.formatDecimal(1234.5678, 1, 'COMMA', 2, 'POINT') == '1,234.57'} ? 'PASS' : 'FAIL'" th:class="${#numbers.formatDecimal(1234.5678, 1, 'COMMA', 2, 'POINT') == '1,234.57'} ? 'tick' : 'cross'">...</td>
+        <td><code>#numbers.formatDecimal(1234.5678, 1, 'COMMA', 2, 'POINT') == '1,234.57'</code></td>
+      </tr>
+      <tr>
+        <td>sequence size</td>
+        <td th:text="${#lists.size(#numbers.sequence(1, 5)) == 5} ? 'PASS' : 'FAIL'" th:class="${#lists.size(#numbers.sequence(1, 5)) == 5} ? 'tick' : 'cross'">...</td>
+        <td><code>#lists.size(#numbers.sequence(1, 5)) == 5</code></td>
+      </tr>
+      <tr>
+        <td>sequence first element</td>
+        <td th:with="seq=${#numbers.sequence(10, 14)}" th:text="${seq[0] == 10} ? 'PASS' : 'FAIL'" th:class="${seq[0] == 10} ? 'tick' : 'cross'">...</td>
+        <td><code>#numbers.sequence(10, 14)[0] == 10</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>4. #lists and #arrays Utilities</h2>
+  <p class="section-desc">Model: <code>items=["banana","apple","cherry","date"]</code>, <code>emptyList=[]</code>, <code>strArray=["java","spring","thymeleaf"]</code></p>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>lists.size</td>
+        <td th:text="${#lists.size(items) == 4} ? 'PASS' : 'FAIL'" th:class="${#lists.size(items) == 4} ? 'tick' : 'cross'">...</td>
+        <td><code>#lists.size(items) == 4</code></td>
+      </tr>
+      <tr>
+        <td>lists.contains: found</td>
+        <td th:text="${#lists.contains(items, 'banana')} ? 'PASS' : 'FAIL'" th:class="${#lists.contains(items, 'banana')} ? 'tick' : 'cross'">...</td>
+        <td><code>#lists.contains(items, 'banana')</code></td>
+      </tr>
+      <tr>
+        <td>lists.contains: not found</td>
+        <td th:text="${!#lists.contains(items, 'mango')} ? 'PASS' : 'FAIL'" th:class="${!#lists.contains(items, 'mango')} ? 'tick' : 'cross'">...</td>
+        <td><code>!#lists.contains(items, 'mango')</code></td>
+      </tr>
+      <tr>
+        <td>lists.isEmpty: empty list</td>
+        <td th:text="${#lists.isEmpty(emptyList)} ? 'PASS' : 'FAIL'" th:class="${#lists.isEmpty(emptyList)} ? 'tick' : 'cross'">...</td>
+        <td><code>#lists.isEmpty(emptyList)</code></td>
+      </tr>
+      <tr>
+        <td>lists.isEmpty: non-empty list</td>
+        <td th:text="${!#lists.isEmpty(items)} ? 'PASS' : 'FAIL'" th:class="${!#lists.isEmpty(items)} ? 'tick' : 'cross'">...</td>
+        <td><code>!#lists.isEmpty(items)</code></td>
+      </tr>
+      <tr>
+        <td>lists.sort first element</td>
+        <td th:with="sorted=${#lists.sort(items)}" th:text="${sorted[0] == 'apple'} ? 'PASS' : 'FAIL'" th:class="${sorted[0] == 'apple'} ? 'tick' : 'cross'">...</td>
+        <td><code>#lists.sort(items)[0] == 'apple'</code></td>
+      </tr>
+      <tr>
+        <td>arrays.length</td>
+        <td th:text="${#arrays.length(strArray) == 3} ? 'PASS' : 'FAIL'" th:class="${#arrays.length(strArray) == 3} ? 'tick' : 'cross'">...</td>
+        <td><code>#arrays.length(strArray) == 3</code></td>
+      </tr>
+      <tr>
+        <td>arrays.contains</td>
+        <td th:text="${#arrays.contains(strArray, 'spring')} ? 'PASS' : 'FAIL'" th:class="${#arrays.contains(strArray, 'spring')} ? 'tick' : 'cross'">...</td>
+        <td><code>#arrays.contains(strArray, 'spring')</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>5. #maps and #bools Utilities</h2>
+  <p class="section-desc">Model: <code>myMap={alpha:1, beta:2, gamma:3}</code>, <code>boolTrue=true</code>, <code>boolFalse=false</code></p>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>maps.size</td>
+        <td th:text="${#maps.size(myMap) == 3} ? 'PASS' : 'FAIL'" th:class="${#maps.size(myMap) == 3} ? 'tick' : 'cross'">...</td>
+        <td><code>#maps.size(myMap) == 3</code></td>
+      </tr>
+      <tr>
+        <td>maps.containsKey: found</td>
+        <td th:text="${#maps.containsKey(myMap, 'alpha')} ? 'PASS' : 'FAIL'" th:class="${#maps.containsKey(myMap, 'alpha')} ? 'tick' : 'cross'">...</td>
+        <td><code>#maps.containsKey(myMap, 'alpha')</code></td>
+      </tr>
+      <tr>
+        <td>maps.containsKey: not found</td>
+        <td th:text="${!#maps.containsKey(myMap, 'omega')} ? 'PASS' : 'FAIL'" th:class="${!#maps.containsKey(myMap, 'omega')} ? 'tick' : 'cross'">...</td>
+        <td><code>!#maps.containsKey(myMap, 'omega')</code></td>
+      </tr>
+      <tr>
+        <td>maps.containsValue</td>
+        <td th:text="${#maps.containsValue(myMap, 2)} ? 'PASS' : 'FAIL'" th:class="${#maps.containsValue(myMap, 2)} ? 'tick' : 'cross'">...</td>
+        <td><code>#maps.containsValue(myMap, 2)</code></td>
+      </tr>
+      <tr>
+        <td>bools.isTrue</td>
+        <td th:text="${#bools.isTrue(boolTrue)} ? 'PASS' : 'FAIL'" th:class="${#bools.isTrue(boolTrue)} ? 'tick' : 'cross'">...</td>
+        <td><code>#bools.isTrue(boolTrue)</code></td>
+      </tr>
+      <tr>
+        <td>bools.isFalse</td>
+        <td th:text="${#bools.isFalse(boolFalse)} ? 'PASS' : 'FAIL'" th:class="${#bools.isFalse(boolFalse)} ? 'tick' : 'cross'">...</td>
+        <td><code>#bools.isFalse(boolFalse)</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>6. #dates Utilities</h2>
+  <p class="section-desc">Model: <code>today=new Date()</code></p>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>format year length == 4</td>
+        <td th:text="${#strings.length(#dates.format(today, 'yyyy')) == 4} ? 'PASS' : 'FAIL'" th:class="${#strings.length(#dates.format(today, 'yyyy')) == 4} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.length(#dates.format(today,'yyyy')) == 4</code></td>
+      </tr>
+      <tr>
+        <td>year >= 2024</td>
+        <td th:text="${#dates.year(today) >= 2024} ? 'PASS' : 'FAIL'" th:class="${#dates.year(today) >= 2024} ? 'tick' : 'cross'">...</td>
+        <td><code>#dates.year(today) >= 2024</code></td>
+      </tr>
+      <tr>
+        <td>format contains dash</td>
+        <td th:text="${#strings.contains(#dates.format(today, 'yyyy-MM-dd'), '-')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains(#dates.format(today, 'yyyy-MM-dd'), '-')} ? 'tick' : 'cross'">...</td>
+        <td><code>#strings.contains(#dates.format(today, 'yyyy-MM-dd'), '-')</code></td>
+      </tr>
+      <tr>
+        <td>month between 1 and 12</td>
+        <td th:text="${#dates.month(today) >= 1 and #dates.month(today) <= 12} ? 'PASS' : 'FAIL'" th:class="${#dates.month(today) >= 1 and #dates.month(today) <= 12} ? 'tick' : 'cross'">...</td>
+        <td><code>#dates.month(today) between 1 and 12</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>7. Message Expressions #{...}</h2>
+  <p class="section-desc">Messages from <code>messages.properties</code></p>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Simple message key</td>
+        <td th:with="m=#{title.app}" th:text="${#strings.contains(m, 'Thymeleaf')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains(m, 'Thymeleaf')} ? 'tick' : 'cross'">...</td>
+        <td><code>#{title.app} contains 'Thymeleaf'</code></td>
+      </tr>
+      <tr>
+        <td>Parameterized message</td>
+        <td th:with="m=#{msg.hello('World')}" th:text="${#strings.contains(m, 'World')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains(m, 'World')} ? 'tick' : 'cross'">...</td>
+        <td><code>#{msg.hello('World')} contains 'World'</code></td>
+      </tr>
+      <tr>
+        <td>Message with dynamic key</td>
+        <td th:with="m=#{msg.category.FOOD}" th:text="${#strings.contains(m, 'Food')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains(m, 'Food')} ? 'tick' : 'cross'">...</td>
+        <td><code>#{msg.category.FOOD} contains 'Food'</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>8. Link Expressions @{...}</h2>
+  <p class="section-desc">Verify @{...} URL building with and without parameters.</p>
+  <table class="checks">
+    <thead><tr><th>Check</th><th>Result</th><th>Expression</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Simple link</td>
+        <td th:with="u=@{/javascript}" th:text="${#strings.endsWith(u, '/javascript')} ? 'PASS' : 'FAIL'" th:class="${#strings.endsWith(u, '/javascript')} ? 'tick' : 'cross'">...</td>
+        <td><code>@{/javascript} ends with '/javascript'</code></td>
+      </tr>
+      <tr>
+        <td>Link with query param</td>
+        <td th:with="u=@{/expressions(page=1)}" th:text="${#strings.contains(u, 'page=1')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains(u, 'page=1')} ? 'tick' : 'cross'">...</td>
+        <td><code>@{/expressions(page=1)} contains 'page=1'</code></td>
+      </tr>
+      <tr>
+        <td>Link with path variable</td>
+        <td th:with="u=@{/item/{id}(id=42)}" th:text="${#strings.contains(u, '42')} ? 'PASS' : 'FAIL'" th:class="${#strings.contains(u, '42')} ? 'tick' : 'cross'">...</td>
+        <td><code>@{/item/{id}(id=42)} contains '42'</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
