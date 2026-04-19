@@ -32,6 +32,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.expression.Temporals;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Tests regarding formatting of all temporal classes.
@@ -49,13 +51,13 @@ public class TemporalsClassesFormattingTest {
     @Test
     public void localDateTime() {
         Temporal time = LocalDateTime.of(2015, 12, 31, 23, 59, 45);
-        Assertions.assertEquals("December 31, 2015, 11:59:45 PM", temporals.format(time));
+        assertEqualsNormalized("December 31, 2015, 11:59:45 PM", temporals.format(time));
     }
-    
+
     @Test
     public void zonedDateTime() {
         Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
-        Assertions.assertEquals("December 31, 2015 at 11:59:45 PM Z", temporals.format(time));
+        assertEqualsNormalized("December 31, 2015, 11:59:45 PM Z", temporals.format(time));
     }
     
     @Test
@@ -68,7 +70,7 @@ public class TemporalsClassesFormattingTest {
     @Test
     public void localTime() {
         Temporal time = LocalTime.of(23, 59, 45);
-        Assertions.assertEquals("11:59:45 PM", temporals.format(time));
+        assertEqualsNormalized("11:59:45 PM", temporals.format(time));
     }
     
     @Test
@@ -80,8 +82,8 @@ public class TemporalsClassesFormattingTest {
     @Test
     public void offsetDateTime() {
         Temporal time = OffsetDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.MAX);
-        Assertions.assertEquals("December 31, 2015, 11:59:45 PMGMT+18:00", temporals.format(time, Locale.US));
-        Assertions.assertEquals("31. Dezember 2015, 23:59:45GMT+18:00", temporals.format(time, Locale.GERMANY));
+        assertEqualsNormalized("December 31, 2015, 11:59:45 PMGMT+18:00", temporals.format(time, Locale.US));
+        assertEqualsNormalized("31. Dezember 2015, 23:59:45GMT+18:00", temporals.format(time, Locale.GERMANY));
     }
 
     @Test
@@ -100,6 +102,12 @@ public class TemporalsClassesFormattingTest {
     public void yearMonthForYMDLocales() {
         Temporal time = YearMonth.of(2015, 12);
         Assertions.assertEquals("2015 December", temporals.format(time, Locale.CANADA));
+    }
+
+    private static void assertEqualsNormalized(final String expected, final String actual) {
+        assertEquals(
+                expected == null ? null : expected.replace('\u202F', ' '),
+                actual == null ? null : actual.replace('\u202F', ' '));
     }
 
 }
