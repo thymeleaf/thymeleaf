@@ -161,23 +161,39 @@ public final class SpringSelectedValueComparator {
             if (enumLabelAsString.equals(candidateDisplayString)) {
                 return true;
             }
-        } else if (ObjectUtils.getDisplayString(boundValue).equals(candidateDisplayString)) {
-            return true;
-        } else if (editor != null && candidate instanceof String) {
-            // Try PE-based comparison (PE should *not* be allowed to escape creating thread)
-            final String candidateAsString = (String) candidate;
-            final Object candidateAsValue;
-            if (convertedValueCache != null && convertedValueCache.containsKey(editor)) {
-                candidateAsValue = convertedValueCache.get(editor);
-            } else {
-                editor.setAsText(candidateAsString);
-                candidateAsValue = editor.getValue();
-                if (convertedValueCache != null) {
-                    convertedValueCache.put(editor, candidateAsValue);
+        } else {
+            if (ObjectUtils.getDisplayString(boundValue).equals(candidateDisplayString)) {
+                return true;
+            }
+            if (editor != null && !(boundValue instanceof String)) {
+                // Try forward Object->String conversion before the more expensive reverse String->Object,
+                // which may trigger side effects such as database queries via a ConversionService.
+                try {
+                    editor.setValue(boundValue);
+                    final String boundValueAsText = editor.getAsText();
+                    if (boundValueAsText != null && boundValueAsText.equals(candidateDisplayString)) {
+                        return true;
+                    }
+                } catch (final Throwable ex) {
+                    // The PropertyEditor might not support this value - fall through.
                 }
             }
-            if (ObjectUtils.nullSafeEquals(boundValue, candidateAsValue)) {
-                return true;
+            if (editor != null && candidate instanceof String) {
+                // Try PE-based comparison (PE should *not* be allowed to escape creating thread)
+                final String candidateAsString = (String) candidate;
+                final Object candidateAsValue;
+                if (convertedValueCache != null && convertedValueCache.containsKey(editor)) {
+                    candidateAsValue = convertedValueCache.get(editor);
+                } else {
+                    editor.setAsText(candidateAsString);
+                    candidateAsValue = editor.getValue();
+                    if (convertedValueCache != null) {
+                        convertedValueCache.put(editor, candidateAsValue);
+                    }
+                }
+                if (ObjectUtils.nullSafeEquals(boundValue, candidateAsValue)) {
+                    return true;
+                }
             }
         }
         return false;
