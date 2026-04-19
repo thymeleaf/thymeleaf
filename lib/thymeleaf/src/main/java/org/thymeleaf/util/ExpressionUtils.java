@@ -50,6 +50,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -126,7 +127,7 @@ public final class ExpressionUtils {
             new HashSet<>(Arrays.asList(
                     // java.util
                     Collection.class, Iterable.class, Iterator.class, List.class, Map.class, Map.Entry.class, Set.class,
-                    Calendar.class, Stream.class));
+                    Calendar.class, TimeZone.class, Stream.class));
 
     private static final Set<String> BLOCKED_MEMBER_CALL_JAVA_SUPERS_NAMES =
             new HashSet<>(Arrays.asList(
