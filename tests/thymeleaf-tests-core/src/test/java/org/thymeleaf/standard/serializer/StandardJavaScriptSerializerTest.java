@@ -48,6 +48,9 @@ public class StandardJavaScriptSerializerTest {
     }
 
 
+    public record PersonRecord(String name, int age) {}
+
+
     public static enum AnonymousEnum {
         FIRST {
             @Override
@@ -162,6 +165,54 @@ public class StandardJavaScriptSerializerTest {
     }
 
 
+
+
+    @Test
+    public void testPrintRecordDefaultJS01() {
+
+        final IStandardJavaScriptSerializer serializer = new StandardJavaScriptSerializer(false);
+
+        final StringWriter stringWriter = new StringWriter();
+        serializer.serializeValue(new PersonRecord("Alice", 30), stringWriter);
+        Assertions.assertEquals("{\"name\":\"Alice\",\"age\":30}", stringWriter.toString());
+
+    }
+
+
+    @Test
+    public void testPrintRecordJacksonJS01() {
+
+        final IStandardJavaScriptSerializer serializer = new StandardJavaScriptSerializer(true);
+
+        final StringWriter stringWriter = new StringWriter();
+        serializer.serializeValue(new PersonRecord("Alice", 30), stringWriter);
+        Assertions.assertEquals("{\"name\":\"Alice\",\"age\":30}", stringWriter.toString());
+
+    }
+
+
+    @Test
+    public void testPrintRecordWithSpecialCharsDefaultJS01() {
+
+        final IStandardJavaScriptSerializer serializer = new StandardJavaScriptSerializer(false);
+
+        final StringWriter stringWriter = new StringWriter();
+        serializer.serializeValue(new PersonRecord("</script>&", 0), stringWriter);
+        Assertions.assertEquals("{\"name\":\"<\\/script>\\u0026\",\"age\":0}", stringWriter.toString());
+
+    }
+
+
+    @Test
+    public void testPrintRecordWithSpecialCharsJacksonJS01() {
+
+        final IStandardJavaScriptSerializer serializer = new StandardJavaScriptSerializer(true);
+
+        final StringWriter stringWriter = new StringWriter();
+        serializer.serializeValue(new PersonRecord("</script>&", 0), stringWriter);
+        Assertions.assertEquals("{\"name\":\"<\\/script>\\u0026\",\"age\":0}", stringWriter.toString());
+
+    }
 
 
 }

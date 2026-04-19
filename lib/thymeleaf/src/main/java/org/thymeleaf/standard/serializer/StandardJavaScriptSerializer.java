@@ -377,6 +377,13 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                 writeEnum(writer, object);
                 return;
             }
+            // Java Records (Java 16+): must be checked before bean introspection because
+            // Introspector does not recognise record accessor methods (which follow no 'getX()' convention).
+            // Class.isRecord() is accessed via reflection to maintain Java 8 source compatibility.
+            if (isRecord(object.getClass())) {
+                writeRecord(writer, object);
+                return;
+            }
             writeObject(writer, object);
         }
 
@@ -575,6 +582,46 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
             }
         }
 
+
+
+        private static boolean isRecord(final Class<?> clazz) {
+            // Class.isRecord() was added in Java 16; use reflection to keep Java 8 source compatibility.
+            try {
+                return Boolean.TRUE.equals(Class.class.getMethod("isRecord").invoke(clazz));
+            } catch (final NoSuchMethodException ignored) {
+                return false; // Running on Java < 16
+            } catch (final Exception ignored) {
+                return false;
+            }
+        }
+
+
+        private static void writeRecord(final Writer writer, final Object object) throws IOException {
+            // Class.getRecordComponents() and RecordComponent.getName()/getAccessor() added in Java 16.
+            // All accessed via reflection to maintain Java 8 source compatibility.
+            try {
+                final Object[] components =
+                        (Object[]) Class.class.getMethod("getRecordComponents").invoke(object.getClass());
+                if (components == null || components.length == 0) {
+                    writeMap(writer, new LinkedHashMap<String, Object>(0));
+                    return;
+                }
+                final Map<String, Object> properties = new LinkedHashMap<String, Object>(components.length + 1, 1.0f);
+                for (final Object component : components) {
+                    final Class<?> componentClass = component.getClass();
+                    final String name = (String) componentClass.getMethod("getName").invoke(component);
+                    final Method accessor = (Method) componentClass.getMethod("getAccessor").invoke(component);
+                    properties.put(name, accessor.invoke(object));
+                }
+                writeMap(writer, properties);
+            } catch (final InvocationTargetException e) {
+                throw new IllegalArgumentException(
+                        "Could not read record components of class " + object.getClass().getName(), e.getCause());
+            } catch (final Exception e) {
+                throw new IllegalArgumentException(
+                        "Could not read record components of class " + object.getClass().getName(), e);
+            }
+        }
 
 
         private static void writeEnum(final Writer writer, final Object object) throws IOException {

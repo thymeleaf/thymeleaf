@@ -37,6 +37,11 @@
   <packaging>jar</packaging>
   <name>thymeleaf tests - core</name>
 
+  <properties>
+    <!-- Override to Java 17 so test code can use records and other Java 16+ syntax.
+         This does not affect the library itself, which remains compiled at Java 8. -->
+    <java.version>17</java.version>
+  </properties>
 
 
   <dependencies>
