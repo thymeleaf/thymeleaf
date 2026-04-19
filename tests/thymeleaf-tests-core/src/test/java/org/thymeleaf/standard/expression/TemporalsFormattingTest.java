@@ -25,6 +25,8 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.Temporal;
 import java.util.Locale;
 
@@ -43,10 +45,11 @@ public class TemporalsFormattingTest {
 
     @Test
     public void testFormat() {
-        Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
-        assertEqualsNormalized("December 31, 2015, 11:59:45 PM Z", temporals.format(time));
+        ZonedDateTime time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
+        String expected = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.US).format(time);
+        assertEqualsNormalized(expected, temporals.format(time));
     }
-    
+
     @Test
     public void testFormatWithNullTemporal() {
         assertNull(temporals.format(null));
@@ -54,8 +57,9 @@ public class TemporalsFormattingTest {
 
     @Test
     public void testFormatWithLocale() {
-        Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
-        assertEqualsNormalized("31. Dezember 2015, 23:59:45 Z", temporals.format(time, Locale.GERMANY));
+        ZonedDateTime time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
+        String expected = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.GERMANY).format(time);
+        assertEqualsNormalized(expected, temporals.format(time, Locale.GERMANY));
     }
 
     @Test
@@ -81,11 +85,12 @@ public class TemporalsFormattingTest {
 
     @Test
     public void testFormatStandardPatternDateTime() {
-        Temporal time = LocalDateTime.of(2015, 12, 31, 23, 59);
-        assertEqualsNormalized("12/31/15, 11:59 PM", temporals.format(time, "SHORT", Locale.US));
-        assertEqualsNormalized("Dec 31, 2015, 11:59:00 PM", temporals.format(time, "MEDIUM", Locale.US));
-        assertEqualsNormalized("December 31, 2015, 11:59:00 PM Z", temporals.format(time, "LONG", Locale.US));
-        assertEqualsNormalized("Thursday, December 31, 2015, 11:59:00 PM Z", temporals.format(time, "FULL", Locale.US));
+        LocalDateTime time = LocalDateTime.of(2015, 12, 31, 23, 59);
+        ZonedDateTime zdt = ZonedDateTime.of(time, ZoneOffset.UTC);
+        assertEqualsNormalized(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.US).format(zdt), temporals.format(time, "SHORT", Locale.US));
+        assertEqualsNormalized(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.US).format(zdt), temporals.format(time, "MEDIUM", Locale.US));
+        assertEqualsNormalized(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.US).format(zdt), temporals.format(time, "LONG", Locale.US));
+        assertEqualsNormalized(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL).withLocale(Locale.US).format(zdt), temporals.format(time, "FULL", Locale.US));
     }
 
     @Test

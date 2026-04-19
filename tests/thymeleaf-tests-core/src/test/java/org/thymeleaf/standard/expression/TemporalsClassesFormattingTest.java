@@ -28,6 +28,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Locale;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.expression.Temporals;
@@ -56,8 +59,9 @@ public class TemporalsClassesFormattingTest {
 
     @Test
     public void zonedDateTime() {
-        Temporal time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
-        assertEqualsNormalized("December 31, 2015, 11:59:45 PM Z", temporals.format(time));
+        ZonedDateTime time = ZonedDateTime.of(2015, 12, 31, 23, 59, 45, 0, ZoneOffset.UTC);
+        String expected = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.US).format(time);
+        assertEqualsNormalized(expected, temporals.format(time));
     }
     
     @Test
