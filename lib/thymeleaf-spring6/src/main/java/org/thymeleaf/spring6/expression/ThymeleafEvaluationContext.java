@@ -34,6 +34,7 @@ import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.util.ClassUtils;
 import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
@@ -218,6 +219,7 @@ public final class ThymeleafEvaluationContext
     static final class ThymeleafEvaluationContextACLTypeLocator implements TypeLocator {
 
         private final TypeLocator typeLocator;
+        private final boolean usesDynamicClassLoaderResolution;
         private final Set<String> allowedClassOverridesForViews;
 
         ThymeleafEvaluationContextACLTypeLocator() {
@@ -234,13 +236,11 @@ public final class ThymeleafEvaluationContext
 
         ThymeleafEvaluationContextACLTypeLocator(final TypeLocator typeLocator, final Set<Class<?>> allowedClassOverridesForViews) {
             super();
-            // typeLocator CAN be null
-            this.typeLocator = typeLocator;
-            if (this.typeLocator instanceof StandardTypeLocator) {
-                // A default prefix on "java.lang" is added by default, but we will remove it in order to avoid
-                // the filter forbidding all "java.lang.*" classes to be bypassed.
-                ((StandardTypeLocator)this.typeLocator).removeImport("java.lang");
-            }
+            // When wrapping a StandardTypeLocator, we bypass it at findType() time and resolve types using the
+            // thread's current context classloader instead. This avoids capturing a stale classloader at
+            // construction time, which may cause issues with environments providing dynamic class loading.
+            this.usesDynamicClassLoaderResolution = (typeLocator instanceof StandardTypeLocator);
+            this.typeLocator = this.usesDynamicClassLoaderResolution ? null : typeLocator;
             this.allowedClassOverridesForViews =
                     (allowedClassOverridesForViews == null || allowedClassOverridesForViews.isEmpty())?
                             null : allowedClassOverridesForViews.stream().map(Class::getName).collect(Collectors.toSet());
@@ -248,12 +248,19 @@ public final class ThymeleafEvaluationContext
 
         @Override
         public Class<?> findType(final String typeName) throws EvaluationException {
-            if (this.typeLocator == null) {
-                throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
-            }
             if (isTypeForbidden(typeName)) {
                 throw new EvaluationException(
                         String.format("Access is forbidden for type '%s' in this expression context.", typeName));
+            }
+            if (this.usesDynamicClassLoaderResolution) {
+                try {
+                    return ClassUtils.forName(typeName, Thread.currentThread().getContextClassLoader());
+                } catch (final ClassNotFoundException e) {
+                    throw new EvaluationException("Type cannot be found '" + typeName + "'", e);
+                }
+            }
+            if (this.typeLocator == null) {
+                throw new EvaluationException("Type could not be located (no type locator configured): " + typeName);
             }
             return this.typeLocator.findType(typeName);
         }
