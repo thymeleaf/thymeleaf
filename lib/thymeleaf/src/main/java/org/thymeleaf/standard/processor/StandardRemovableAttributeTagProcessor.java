@@ -101,6 +101,7 @@ public final class StandardRemovableAttributeTagProcessor extends AbstractStanda
                     "maxlength",
                     "media",
                     "min",
+                    "minlength",
                     "optimum",
                     "pattern",
                     "placeholder",
