@@ -41,7 +41,7 @@ public class FeaturesController {
         model.addAttribute("utilDate", new Date());
         model.addAttribute("localDate", LocalDate.of(2024, 6, 15));
         model.addAttribute("localDateTime", LocalDateTime.of(2024, 6, 15, 12, 30, 0));
-        model.addAttribute("dangerousString", "Product details & specifications: /info/details");
+        model.addAttribute("dangerousString", "Product details & specifications: </script>");
         model.addAttribute("nullValue", null);
         model.addAttribute("boolValue", true);
         model.addAttribute("numericValue", 42.5);
