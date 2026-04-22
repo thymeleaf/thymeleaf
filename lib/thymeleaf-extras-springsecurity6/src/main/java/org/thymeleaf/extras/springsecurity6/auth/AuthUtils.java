@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.servlet.FilterChain;
@@ -200,14 +201,14 @@ public final class AuthUtils {
 
         final ApplicationContext ctx = getContext(context);
 
-        final Map<String, SecurityExpressionHandler> expressionHandlers =
-                ctx.getBeansOfType(SecurityExpressionHandler.class);
+        final Optional<SecurityExpressionHandler> handler =
+                ctx.getBeanProvider(SecurityExpressionHandler.class).orderedStream()
+                        .filter(h -> FilterInvocation.class.equals(
+                                GenericTypeResolver.resolveTypeArgument(h.getClass(), SecurityExpressionHandler.class)))
+                        .findFirst();
 
-        for (SecurityExpressionHandler handler : expressionHandlers.values()) {
-            final Class<?> clazz = GenericTypeResolver.resolveTypeArgument(handler.getClass(), SecurityExpressionHandler.class);
-            if (FilterInvocation.class.equals(GenericTypeResolver.resolveTypeArgument(handler.getClass(), SecurityExpressionHandler.class))) {
-                return handler;
-            }
+        if (handler.isPresent()) {
+            return handler.get();
         }
 
         throw new TemplateProcessingException(
