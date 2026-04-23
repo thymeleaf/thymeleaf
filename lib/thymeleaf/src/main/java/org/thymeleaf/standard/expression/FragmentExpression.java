@@ -341,7 +341,7 @@ public final class FragmentExpression extends SimpleExpression {
                 }
             } else if (c == ')' && !inLiteral) {
                 parenLevel++;
-            } else if (c == '\'') {
+            } else if (c == '\'' && !TextLiteralExpression.isDelimiterEscaped(input, i)) {
                 inLiteral = !inLiteral;
             }
         }

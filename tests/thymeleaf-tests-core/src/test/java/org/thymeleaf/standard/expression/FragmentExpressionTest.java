@@ -65,6 +65,7 @@ public class FragmentExpressionTest {
         checkFragmentSelection("/some/template :: frag('test(value')", "'/some/template'", "frag", "'_arg0'='test(value'");
         checkFragmentSelection("/some/template :: frag('test)value')", "'/some/template'", "frag", "'_arg0'='test)value'");
         checkFragmentSelection("/some/template :: frag('(testvalue)')", "'/some/template'", "frag", "'_arg0'='(testvalue)'");
+        checkFragmentSelection("/some/template :: frag('test\\'')", "'/some/template'", "frag", "'_arg0'='test\\''");
     }
 
 
