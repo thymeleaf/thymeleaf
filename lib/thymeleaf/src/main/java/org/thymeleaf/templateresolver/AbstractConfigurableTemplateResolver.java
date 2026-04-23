@@ -971,6 +971,10 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         final boolean shouldApplySuffix =
                 hasSuffix && (forceSuffix || !ContentTypeUtils.hasRecognizedFileExtension(unaliasedName));
 
+        if (hasPrefix && prefix.endsWith("/") && unaliasedName.startsWith("/")) {
+            unaliasedName = unaliasedName.substring(1);
+        }
+
         if (!hasPrefix && !shouldApplySuffix){
             return unaliasedName;
         }
