@@ -228,6 +228,11 @@ import org.thymeleaf.util.Validate;
  */
 public class TemplateEngine implements ITemplateEngine {
 
+    // Done here only to make sure that it is initialized at startup and doesn't cause blocking
+    // in reactive event loops later
+    static final String THYMELEAF_VERSION = Thymeleaf.getVersion();
+    static final String THYMELEAF_BUILD_TIMESTAMP = Thymeleaf.getBuildTimestamp();
+
     /**
      * <p>
      *   Name of the {@code TIMER} logger. This logger will output the time required

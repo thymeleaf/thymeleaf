@@ -68,8 +68,8 @@ final class ConfigurationPrinterHelper {
 
     private static final Logger configLogger = LoggerFactory.getLogger(CONFIGURATION_LOGGER_NAME);
 
-    private static String THYMELEAF_VERSION = Thymeleaf.getVersion();
-    private static String THYMELEAF_BUILD_TIMESTAMP = Thymeleaf.getBuildTimestamp();
+    private static String THYMELEAF_VERSION = TemplateEngine.THYMELEAF_VERSION;
+    private static String THYMELEAF_BUILD_TIMESTAMP = TemplateEngine.THYMELEAF_BUILD_TIMESTAMP;
 
     
     
