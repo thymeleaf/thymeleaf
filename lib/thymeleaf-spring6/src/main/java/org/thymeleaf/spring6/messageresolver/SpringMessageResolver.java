@@ -27,6 +27,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.AbstractMessageResolver;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
@@ -128,6 +129,7 @@ public class SpringMessageResolver
         /*
          * FIRST STEP: Look for the message using template-based resolution
          */
+        NoSuchMessageException noSuchMessageException = null;
         if (context != null) {
 
             checkMessageSourceInitialized();
@@ -142,6 +144,7 @@ public class SpringMessageResolver
             try {
                 return this.messageSource.getMessage(key, messageParameters, context.getLocale());
             } catch (NoSuchMessageException e) {
+                noSuchMessageException = e;
                 // Try other methods
             }
 
@@ -161,8 +164,16 @@ public class SpringMessageResolver
 
 
         /*
-         * NOT FOUND, return null
+         * NOT FOUND. If the MessageSource threw NoSuchMessageException in step 1, re-throw it so that
+         * applications configured with useCodeAsDefaultMessage=false can fail-fast instead of silently
+         * producing an absent message representation (??key??).
          */
+        if (noSuchMessageException != null) {
+            throw new TemplateProcessingException(
+                    "Could not resolve message with key \"" + key + "\" for locale \"" + context.getLocale() + "\"",
+                    noSuchMessageException);
+        }
+
         return null;
 
     }
