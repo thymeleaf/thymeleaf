@@ -163,7 +163,12 @@ public final class FieldUtils {
         }
 
         if (bindExpression != null) {
-            final List<FieldError> fieldErrors = errors.getFieldErrors(bindStatus.getExpression());
+            // Use the no-arg getFieldErrors() for wildcard expressions, as some Errors implementations
+            // (e.g. Spring Webflow's BindingModel) do not accept wildcard field expressions.
+            final boolean wildcardExpression =
+                    ALL_FIELDS.equals(bindExpression) || ALL_EXPRESSION.equals(bindExpression);
+            final List<FieldError> fieldErrors =
+                    wildcardExpression ? errors.getFieldErrors() : errors.getFieldErrors(bindExpression);
             for (final FieldError fieldError : fieldErrors) {
                 final String message = requestContext.getMessage(fieldError, false);
                 final DetailedError errorObject =
