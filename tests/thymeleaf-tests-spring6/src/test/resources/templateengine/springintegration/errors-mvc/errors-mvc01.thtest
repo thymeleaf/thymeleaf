@@ -1,0 +1,59 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+bindingError01 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name is not valid'}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : null,\
+                    'message' : 'Global form error'}
+
+bindingErrors = { bindingError01, bindingError02 }
+# ------------------------------------------------------------
+%INPUT
+<form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
+
+<div>
+  <p th:each="e : ${#fields.detailedErrors()}">[[${e.fieldName}]] - [[${e.code}]] - [[${e.message}]] - [[${e.global}]]</p>
+</div>
+<div>
+  <p th:each="e : ${#fields.globalDetailedErrors()}">[[${e.fieldName}]] - [[${e.code}]] - [[${e.message}]] - [[${e.global}]]</p>
+</div>
+<div>
+  <p th:each="e : ${#fields.detailedErrors('name')}">[[${e.fieldName}]] - [[${e.code}]] - [[${e.message}]] - [[${e.global}]]</p>
+</div>
+
+  <fieldset>
+
+    <div>
+      Name: <input type="text" th:field="*{name}" />
+    </div>
+
+  </fieldset>
+
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/process" method="post">
+
+<div>
+  <p>[global] - no_code - Global form error - true</p>
+  <p>name - no_code - Name is not valid - false</p>
+</div>
+<div>
+  <p>[global] - no_code - Global form error - true</p>
+</div>
+<div>
+  <p>name - no_code - Name is not valid - false</p>
+</div>
+
+  <fieldset>
+
+    <div>
+      Name: <input type="text" id="name" name="name" value="Mark Lettuce" />
+    </div>
+
+  </fieldset>
+
+</form>

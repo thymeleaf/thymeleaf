@@ -103,6 +103,21 @@ public class SpringIntegrationTest {
 
     @ParameterizedTest
     @ArgumentsSource(ThrottleArgumentsProvider.class)
+    public void testErrorsMvc(final int throttleStep) throws Exception {
+
+        final TestExecutor executor = TestExecutorFactory.createTestExecutor(new ErrorsSpringIntegrationWebProcessingContextBuilder());
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringStandardDialectUtils.createSpringStandardDialectInstance(true, false)}));
+        executor.setThrottleStep(throttleStep);
+        executor.execute("classpath:templateengine/springintegration/errors-mvc");
+
+        Assertions.assertTrue(executor.isAllOK());
+
+    }
+
+
+
+    @ParameterizedTest
+    @ArgumentsSource(ThrottleArgumentsProvider.class)
     public void testErrorsWebflow(final int throttleStep) throws Exception {
 
         final TestExecutor executor = TestExecutorFactory.createTestExecutor(new WebflowLikeErrorsSpringIntegrationWebProcessingContextBuilder());

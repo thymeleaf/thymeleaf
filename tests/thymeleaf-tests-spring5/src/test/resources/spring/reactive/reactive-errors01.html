@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+
+  <body>
+
+    <form th:action="@{/process}" th:object="${formBean}" method="post">
+
+      <div>
+        <p th:each="e : ${#fields.detailedErrors()}">[[${e.fieldName}]] - [[${e.code}]] - [[${e.message}]] - [[${e.global}]]</p>
+      </div>
+      <div>
+        <p th:each="e : ${#fields.globalDetailedErrors()}">[[${e.fieldName}]] - [[${e.code}]] - [[${e.message}]] - [[${e.global}]]</p>
+      </div>
+      <div>
+        <p th:each="e : ${#fields.detailedErrors('name')}">[[${e.fieldName}]] - [[${e.code}]] - [[${e.message}]] - [[${e.global}]]</p>
+      </div>
+
+      <div>
+        <input type="text" th:field="*{name}">
+      </div>
+
+    </form>
+
+  </body>
+
+</html>
