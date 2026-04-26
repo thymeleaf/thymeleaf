@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.spring5.ISpringTemplateEngine;
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -91,6 +93,7 @@ public class ThymeleafViewResolver
 
     private boolean redirectContextRelative = true;
     private boolean redirectHttp10Compatible = true;
+    private Function<String, RedirectView> redirectViewProvider = null;
 
     private boolean alwaysProcessRedirectAndForward = true;
 
@@ -523,8 +526,54 @@ public class ThymeleafViewResolver
     public boolean isRedirectHttp10Compatible() {
         return this.redirectHttp10Compatible;
     }
-    
-    
+
+
+    /**
+     * <p>
+     *   Sets the provider function for creating {@link RedirectView} instances when a redirect
+     *   request is passed to the view resolver.
+     * </p>
+     * <p>
+     *   When set, this provider takes full control of {@link RedirectView} creation and the
+     *   {@link #setRedirectContextRelative(boolean)} and {@link #setRedirectHttp10Compatible(boolean)}
+     *   settings are not applied automatically. The provider function receives the redirect URL
+     *   (as specified in the view name returned by the controller, without the {@code redirect:}
+     *   prefix) and must return a fully configured {@link RedirectView} instance.
+     * </p>
+     * <p>
+     *   This is useful for configuring any property of {@link RedirectView} that is not covered by
+     *   the individual redirect-related setters in this resolver, such as
+     *   {@link RedirectView#setExposeModelAttributes(boolean)},
+     *   {@link RedirectView#setPropagateQueryParams(boolean)},
+     *   {@link RedirectView#setExpandUriTemplateVariables(boolean)}, or
+     *   {@link RedirectView#setHosts(String...)}.
+     * </p>
+     *
+     * @param redirectViewProvider the redirect-view provider function.
+     * @since 3.1.6
+     */
+    public void setRedirectViewProvider(final Function<String, RedirectView> redirectViewProvider) {
+        Validate.notNull(redirectViewProvider, "RedirectView provider cannot be null");
+        this.redirectViewProvider = redirectViewProvider;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the provider function for creating {@link RedirectView} instances when a redirect
+     *   request is passed to the view resolver, or {@code null} if no custom provider has been set
+     *   (in which case the default {@link RedirectView} construction based on
+     *   {@link #isRedirectContextRelative()} and {@link #isRedirectHttp10Compatible()} is used).
+     * </p>
+     *
+     * @return the redirect-view provider function, or {@code null} if none set.
+     * @since 3.1.6
+     */
+    public Function<String, RedirectView> getRedirectViewProvider() {
+        return this.redirectViewProvider;
+    }
+
+
 
     /**
      * <p>
@@ -775,7 +824,10 @@ public class ThymeleafViewResolver
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length(), viewName.length());
-            final RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
+            final RedirectView view =
+                    (this.redirectViewProvider != null ?
+                            this.redirectViewProvider.apply(redirectUrl) :
+                            new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible()));
             return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, REDIRECT_URL_PREFIX);
         }
         // Process forwards (to JSP resources)
