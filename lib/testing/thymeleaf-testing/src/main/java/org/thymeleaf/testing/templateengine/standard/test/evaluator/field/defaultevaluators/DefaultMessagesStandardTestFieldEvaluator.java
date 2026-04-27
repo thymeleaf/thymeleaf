@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
-import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -58,15 +58,8 @@ public class DefaultMessagesStandardTestFieldEvaluator extends AbstractStandardT
         final Properties properties = new Properties();
 
         try {
-            
-            /*
-             * This String -> byte[] conversion is needed because java.util.Properties 
-             * did not allow using a java.io.Reader for loading properties until Java 6.
-             */
-            final byte[] valueAsBytes = fieldValue.getBytes("ISO-8859-1");
-            final ByteArrayInputStream inputStream = new ByteArrayInputStream(valueAsBytes);
 
-            properties.load(inputStream);
+            properties.load(new StringReader(fieldValue));
             
         } catch (final Throwable t) {
             throw new TestEngineExecutionException( 

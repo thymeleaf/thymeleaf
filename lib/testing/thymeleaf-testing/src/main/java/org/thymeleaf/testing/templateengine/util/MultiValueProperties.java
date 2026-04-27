@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,6 +49,11 @@ public final class MultiValueProperties {
     public void load(final InputStream inputStream) throws IOException {
         final PropertiesSupport support = new PropertiesSupport(this.values);
         support.load(inputStream);
+    }
+
+    public void load(final Reader reader) throws IOException {
+        final PropertiesSupport support = new PropertiesSupport(this.values);
+        support.load(reader);
     }
  
     
