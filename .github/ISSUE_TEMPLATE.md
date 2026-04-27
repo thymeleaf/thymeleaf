@@ -7,6 +7,11 @@ For POSSIBLE SECURITY VULNERABILITIES:
 Please NEVER create a GitHub issue for what you think might be a
 security vulnerability. Instead, send security@thymeleaf.org an email
 telling your findings.
+
+Also, if your finding is related to the restricted expression execution
+mode, please make sure you -as well as any automated tools you may use- have
+read the relevant parts of the official Thymeleaf tutorials and
+documentation before sending anything to the project maintainers.
 *****************************
 
 For ENHANCEMENTS or SUGGESTIONS:
