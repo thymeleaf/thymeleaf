@@ -40,6 +40,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -66,6 +67,8 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
 
 
     private String applicationContextConfigLocation = DEFAULT_APPLICATION_CONTEXT_CONFIG_LOCATION;
+    private Class<?>[] configurationClasses = null;
+    private WebApplicationContext applicationContext = null;
 
     private boolean shareAppContextForAllTests = false;
     private String sharedContextConfigLocation = null;
@@ -94,6 +97,24 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
 
     public void setApplicationContextConfigLocation(final String applicationContextConfigLocation) {
         this.applicationContextConfigLocation = applicationContextConfigLocation;
+    }
+
+
+    public Class<?>[] getConfigurationClasses() {
+        return this.configurationClasses;
+    }
+
+    public void setConfigurationClasses(final Class<?>... configurationClasses) {
+        this.configurationClasses = configurationClasses;
+    }
+
+
+    public WebApplicationContext getApplicationContext() {
+        return this.applicationContext;
+    }
+
+    public void setApplicationContext(final WebApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
 
@@ -212,12 +233,15 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
     protected WebApplicationContext createApplicationContext(
             final ITest test, final ServletContext servletContext, final Locale locale, final Map<String,Object> variables) {
 
-        final String nullSafeConfigLocation =
-                this.applicationContextConfigLocation == null? "null" : this.applicationContextConfigLocation;
+        if (this.applicationContext != null) {
+            return this.applicationContext;
+        }
+
+        final String cacheKey = computeContextCacheKey();
 
         if (this.shareAppContextForAllTests) {
             if (this.sharedContextConfigLocation != null) {
-                if (!this.sharedContextConfigLocation.equals(nullSafeConfigLocation)) {
+                if (!this.sharedContextConfigLocation.equals(cacheKey)) {
                     throw new RuntimeException(
                             "Invalid configuration for context builder. Builder is configured to share Spring " +
                             "application context across executions, but more than one different context config " +
@@ -228,20 +252,35 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
         }
 
 
+        if (this.configurationClasses != null && this.configurationClasses.length > 0) {
+
+            final AnnotationConfigWebApplicationContext appCtx = new AnnotationConfigWebApplicationContext();
+            appCtx.setServletContext(servletContext);
+            appCtx.register(this.configurationClasses);
+            appCtx.refresh();
+
+            if (this.shareAppContextForAllTests) {
+                this.sharedContextConfigLocation = cacheKey;
+                this.sharedApplicationContext = appCtx;
+            }
+
+            return appCtx;
+        }
+
         if (this.applicationContextConfigLocation == null) {
             final WebApplicationContext appCtx = createEmptyStaticApplicationContext(servletContext);
             if (this.shareAppContextForAllTests) {
-                this.sharedContextConfigLocation = nullSafeConfigLocation;
+                this.sharedContextConfigLocation = cacheKey;
                 this.sharedApplicationContext = appCtx;
             }
             return appCtx;
         }
-        
+
         final XmlWebApplicationContext appCtx = new XmlWebApplicationContext();
-        
+
         appCtx.setServletContext(servletContext);
         appCtx.setConfigLocation(this.applicationContextConfigLocation);
-        
+
         try {
             appCtx.refresh();
         } catch (final BeanDefinitionStoreException e) {
@@ -256,12 +295,27 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
         }
 
         if (this.shareAppContextForAllTests) {
-            this.sharedContextConfigLocation = nullSafeConfigLocation;
+            this.sharedContextConfigLocation = cacheKey;
             this.sharedApplicationContext = appCtx;
         }
 
         return appCtx;
 
+    }
+
+
+    private String computeContextCacheKey() {
+        if (this.configurationClasses != null && this.configurationClasses.length > 0) {
+            final StringBuilder sb = new StringBuilder();
+            for (final Class<?> cls : this.configurationClasses) {
+                if (sb.length() > 0) {
+                    sb.append(',');
+                }
+                sb.append(cls.getName());
+            }
+            return sb.toString();
+        }
+        return this.applicationContextConfigLocation == null? "null" : this.applicationContextConfigLocation;
     }
     
     
