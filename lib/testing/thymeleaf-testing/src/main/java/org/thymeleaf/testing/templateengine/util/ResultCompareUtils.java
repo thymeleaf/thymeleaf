@@ -116,7 +116,7 @@ public class ResultCompareUtils {
 
                 final String explanation = createExplanation(actualFragment, locator[0], locator[1], expectedFragment);
 
-                return new ResultComparison(false, explanation);
+                return new ResultComparison(false, explanation, actual, expected);
 
             }
             countChar(locator, c);
@@ -131,7 +131,7 @@ public class ResultCompareUtils {
 
             final String explanation = createExplanation(actualFragment, locator[0], locator[1], expectedFragment);
 
-            return new ResultComparison(false, explanation);
+            return new ResultComparison(false, explanation, actual, expected);
 
         }
 
@@ -210,7 +210,7 @@ public class ResultCompareUtils {
                 final String explanation =
                         createExplanation(actualFragment, actualTraceItemLine, actualTraceItemCol, expectedFragment);
 
-                return new ResultComparison(false, explanation);
+                return new ResultComparison(false, explanation, actual, expected);
 
             }
 
@@ -241,7 +241,7 @@ public class ResultCompareUtils {
                 final String explanation =
                         createExplanation(actualFragment, actualTraceItemLine, actualTraceItemCol, expectedFragment);
 
-                return new ResultComparison(false, explanation);
+                return new ResultComparison(false, explanation, actual, expected);
 
             }
 
@@ -894,14 +894,24 @@ public class ResultCompareUtils {
     
     
     public static class ResultComparison {
-        
+
         private final boolean result;
         private final String explanation;
-        
+        private final String actualResult;
+        private final String expectedResult;
+
         public ResultComparison(final boolean result, final String explanation) {
+            this(result, explanation, null, null);
+        }
+
+        public ResultComparison(
+                final boolean result, final String explanation,
+                final String actualResult, final String expectedResult) {
             super();
             this.result = result;
             this.explanation = explanation;
+            this.actualResult = actualResult;
+            this.expectedResult = expectedResult;
         }
 
         public boolean getResult() {
@@ -911,7 +921,15 @@ public class ResultCompareUtils {
         public String getExplanation() {
             return this.explanation;
         }
-        
+
+        public String getActualResult() {
+            return this.actualResult;
+        }
+
+        public String getExpectedResult() {
+            return this.expectedResult;
+        }
+
     }
     
     

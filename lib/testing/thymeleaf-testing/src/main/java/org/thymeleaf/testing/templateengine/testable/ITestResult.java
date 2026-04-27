@@ -24,11 +24,14 @@ package org.thymeleaf.testing.templateengine.testable;
 public interface ITestResult {
 
     public boolean isOK();
-    
+
     public boolean hasMessage();
     public String getMessage();
-    
-    public boolean hasThrowable(); 
+
+    public boolean hasThrowable();
     public Throwable getThrowable();
-    
+
+    default String getActualResult() { return null; }
+    default String getExpectedResult() { return null; }
+
 }

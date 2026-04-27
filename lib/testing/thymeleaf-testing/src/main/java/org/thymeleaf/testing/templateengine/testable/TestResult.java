@@ -29,54 +29,66 @@ public class TestResult implements ITestResult {
     private final boolean ok;
     private final String message;
     private final Throwable throwable;
+    private final String actualResult;
+    private final String expectedResult;
     
     
     public static TestResult ok(final String testName) {
-        return new TestResult(testName, true, null, null);
+        return new TestResult(testName, true, null, null, null, null);
     }
-    
+
     public static TestResult ok(final String testName, final String message) {
         Validate.notEmpty(message, "Message cannot be null or empty");
-        return new TestResult(testName, true, message, null);
+        return new TestResult(testName, true, message, null, null, null);
     }
-    
+
     public static TestResult ok(final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, true, null, t);
+        return new TestResult(testName, true, null, t, null, null);
     }
-    
+
     public static TestResult ok(final String testName, final String message, final Throwable t) {
         Validate.notEmpty(message, "Message cannot be null or empty");
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, true, message, t);
+        return new TestResult(testName, true, message, t, null, null);
     }
     
     public static TestResult error(final String testName, final String message) {
         Validate.notEmpty(message, "Message cannot be null or empty");
-        return new TestResult(testName, false, message, null);
+        return new TestResult(testName, false, message, null, null, null);
+    }
+
+    public static TestResult error(
+            final String testName, final String message,
+            final String actualResult, final String expectedResult) {
+        Validate.notEmpty(message, "Message cannot be null or empty");
+        return new TestResult(testName, false, message, null, actualResult, expectedResult);
     }
     
     public static TestResult error(final String testName, final String message, final Throwable t) {
         Validate.notEmpty(message, "Message cannot be null or empty");
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, false, message, t);
+        return new TestResult(testName, false, message, t, null, null);
     }
-    
+
     public static TestResult error(final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, false, t.getMessage(), t);
+        return new TestResult(testName, false, t.getMessage(), t, null, null);
     }
     
     
     
     protected TestResult(
-            final String testName, final boolean ok, final String message, final Throwable throwable) {
+            final String testName, final boolean ok, final String message, final Throwable throwable,
+            final String actualResult, final String expectedResult) {
         super();
         Validate.notNull(testName, "Test name cannot be null. Remember this must be the context-registered name.");
         this.testName = testName;
         this.ok = ok;
         this.message = message;
         this.throwable = throwable;
+        this.actualResult = actualResult;
+        this.expectedResult = expectedResult;
     }
     
     
@@ -99,10 +111,20 @@ public class TestResult implements ITestResult {
     public boolean hasThrowable() {
         return this.throwable != null;
     }
-    
+
     public Throwable getThrowable() {
         return this.throwable;
     }
 
-    
+    @Override
+    public String getActualResult() {
+        return this.actualResult;
+    }
+
+    @Override
+    public String getExpectedResult() {
+        return this.expectedResult;
+    }
+
+
 }

@@ -188,8 +188,8 @@ public class Test extends AbstractTest {
         if (comparison.getResult()) {
             return TestResult.ok(testName);
         }
-        
-        return TestResult.error(testName, comparison.getExplanation());
+
+        return TestResult.error(testName, comparison.getExplanation(), comparison.getActualResult(), comparison.getExpectedResult());
         
     }
  
