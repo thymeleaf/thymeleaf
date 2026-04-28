@@ -37,6 +37,7 @@ import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
@@ -71,6 +72,7 @@ public final class TestExecutor {
     private int throttleStep = Integer.MAX_VALUE;
     private ThrottleType throttleType = ThrottleType.CHARS;
     protected ITestReporter reporter = new ConsoleTestReporter();
+    private IMessageResolver messageResolver = null;
     
     
     private static ThreadLocal<String> threadExecutionId = new ThreadLocal<String>();
@@ -174,9 +176,18 @@ public final class TestExecutor {
         Validate.notNull(reporter, "Reporter cannot be null");
         this.reporter = reporter;
     }
-    
+
     public ITestReporter getReporter() {
         return this.reporter;
+    }
+
+
+    public void setMessageResolver(final IMessageResolver messageResolver) {
+        this.messageResolver = messageResolver;
+    }
+
+    public IMessageResolver getMessageResolver() {
+        return this.messageResolver;
     }
 
     
@@ -217,9 +228,10 @@ public final class TestExecutor {
         Validate.notNull(context, "Test execution context cannot be null");
         
         final TestEngineTemplateResolver templateResolver = new TestEngineTemplateResolver();
-        final TestEngineMessageResolver messageResolver = new TestEngineMessageResolver();
+        final IMessageResolver messageResolver =
+                (this.messageResolver != null ? this.messageResolver : new TestEngineMessageResolver());
         final TestCacheManager cacheManager = new TestCacheManager();
-        
+
         final TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.setMessageResolver(messageResolver);
