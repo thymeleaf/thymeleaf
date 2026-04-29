@@ -5,6 +5,9 @@
 Thank you for your collaboration keeping Thymeleaf safe and secure. If you believe you have found a security
 issue in Thymeleaf, please notify us so that we can work with you in its prompt resolution.
 
+Also, before reporting a vulnerability related to the execution of expressions, make sure you read the
+official Thymeleaf documentation, especially the sections on Expression Restrictions.
+
 ### Disclosure Policy
 
 * Let us know as soon as possible by sending an email to [security@thymeleaf.org][security-email].
