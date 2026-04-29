@@ -86,7 +86,7 @@ public final class ExpressionUtils {
                     "java.time."));
     private static final Set<String> BLOCKED_TYPE_REFERENCE_PACKAGE_NAME_PREFIXES =
             new HashSet<>(Arrays.asList(
-                    "com.squareup.javapoet.",
+                    "ch.qos.logback.", "com.squareup.javapoet.",
                     "com.zaxxer.hikari.", "com.fasterxml.jackson.", "tools.jackson.",
                     "groovy.", "io.netty.", "javassist.", "javax0.geci.", "kotlin.",
                     "net.bytebuddy.", "net.sf.cglib.",
@@ -96,7 +96,7 @@ public final class ExpressionUtils {
                     "org.codehaus.groovy.", "org.eclipse.jetty.", "org.glassfish.",
                     "org.javassist.", "org.jboss.", "org.jetbrains.kotlin.", "org.jruby.", "org.junit.",
                     "org.mockito.", "org.mortbay.jetty.", "org.objectweb.asm.", "org.objenesis.",
-                    "org.python.", "org.springframework.", "scala."));
+                    "org.python.", "org.slf4j.", "org.springframework.", "scala."));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
