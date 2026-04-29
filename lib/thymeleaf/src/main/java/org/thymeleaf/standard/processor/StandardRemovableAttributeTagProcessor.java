@@ -42,7 +42,6 @@ public final class StandardRemovableAttributeTagProcessor extends AbstractStanda
                     "accept-charset",
                     "accesskey",
                     "align",
-                    "alt",
                     "archive",
                     "audio",
                     "autocomplete",

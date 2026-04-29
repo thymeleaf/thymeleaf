@@ -16,10 +16,10 @@ one = 'one!'
 %OUTPUT
 <div alt="one!">..</div>
 <div alt="hello">..</div>
-<div>..</div>
-<div>..</div>
+<div alt="">..</div>
+<div alt="">..</div>
 
 <div alt="one!">..</div>
 <div alt="hello">..</div>
-<div>..</div>
-<div>..</div>
+<div alt="">..</div>
+<div alt="">..</div>

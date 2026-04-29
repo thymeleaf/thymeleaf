@@ -37,6 +37,7 @@ public final class StandardNonRemovableAttributeTagProcessor extends AbstractSta
     // processors executing afterwards (e.g. th:field) might need attribute values already processed by these.
     public static final String[] ATTR_NAMES =
             new String[] {
+                    "alt",
                     "name",
                     "type"
             };
