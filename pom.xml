@@ -142,21 +142,21 @@
     <attoparser.version>2.0.7.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <spring-framework5.version>5.3.39</spring-framework5.version>
-    <spring-framework6.version>6.2.17</spring-framework6.version>
+    <spring-framework6.version>6.2.18</spring-framework6.version>
     <spring-security5.version>5.8.16</spring-security5.version>
-    <spring-security6.version>6.5.9</spring-security6.version>
+    <spring-security6.version>6.5.10</spring-security6.version>
     <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>
     <spring-webflow3.version>3.0.1</spring-webflow3.version>
-    <jackson.version>2.18.2</jackson.version>
-    <reactor.version>2024.0.0</reactor.version>
+    <jackson.version>2.19.0</jackson.version>
+    <reactor.version>2024.0.6</reactor.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
-    <commons-io.version>2.21.0</commons-io.version>
+    <commons-io.version>2.22.0</commons-io.version>
     <commons-fileupload.version>1.6.0</commons-fileupload.version>
     <hibernate-validator-jakarta.version>9.1.0.Final</hibernate-validator-jakarta.version>
     <hibernate-validator-javax.version>6.2.5.Final</hibernate-validator-javax.version>
     <mockito.version>5.23.0</mockito.version>
     <slf4j.version>2.0.17</slf4j.version>
-    <log4j.version>2.25.3</log4j.version>
+    <log4j.version>2.25.4</log4j.version>
     <junit.version>5.14.3</junit.version>
     <!-- ======================     -->
     <!-- MAVEN PLUGIN versions      -->
@@ -166,7 +166,7 @@
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
     <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
-    <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
+    <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
     <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
     <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
