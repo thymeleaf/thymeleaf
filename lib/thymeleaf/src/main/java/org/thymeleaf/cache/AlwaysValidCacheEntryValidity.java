@@ -27,8 +27,8 @@ package org.thymeleaf.cache;
  * </p>
  * <p>
  *   This means that a cache entry for this template resolution would
- *   only be evicted by the effect of LRU (being the least-recently
- *   used entry).
+ *   only be evicted by the effect of FIFO (being the oldest inserted
+ *   entry).
  * </p>
  * 
  * 
@@ -70,7 +70,7 @@ public class AlwaysValidCacheEntryValidity
     /**
      * <p>
      *   Returns true. Template cache entries using this validity are always
-     *   considered valid, and thus only evicted from cache by LRU.
+     *   considered valid, and thus only evicted from cache by FIFO.
      * </p>
      * 
      * @return true

@@ -78,7 +78,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     /**
      * <p>
      *   Default value for the cache TTL: null. This means the parsed template will live in
-     *   cache until removed by LRU (because of being the oldest entry).
+     *   cache until removed by FIFO (because of being the oldest inserted entry).
      * </p>
      */
     public static final Long DEFAULT_CACHE_TTL_MS = null;
@@ -417,10 +417,10 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   If a template is resolved as <i>cacheable</i> but cache TTL is null,
-     *   this means the template will live in cache until evicted by LRU
-     *   (Least Recently Used) algorithm for being the oldest entry in cache.
+     *   this means the template will live in cache until evicted by FIFO
+     *   (oldest inserted entry in cache).
      * </p>
-     * 
+     *
      * @return the cache TTL for resolved templates.
      */
     public final Long getCacheTTLMs() {
@@ -434,11 +434,11 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   If a template is resolved as <i>cacheable</i> but cache TTL is null,
-     *   this means the template will live in cache until evicted by LRU
-     *   (Least Recently Used) algorithm for being the oldest entry in cache.
+     *   this means the template will live in cache until evicted by FIFO
+     *   (oldest inserted entry in cache).
      * </p>
-     * 
-     * @param cacheTTLMs the new cache TTL, or null for using natural LRU eviction.
+     *
+     * @param cacheTTLMs the new cache TTL, or null for using natural FIFO eviction.
      */
     public final void setCacheTTLMs(final Long cacheTTLMs) {
         this.cacheTTLMs = cacheTTLMs;
