@@ -1,0 +1,18 @@
+%EXTENDS numbers.common
+# ------------------------------------------------------------
+%CONTEXT
+locale = 'en_US'
+eurCurrency = @java.util.Currency@getInstance('EUR')
+jpyCurrency = @java.util.Currency@getInstance('JPY')
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#numbers.formatCurrency(one, eurCurrency)}">...</p>
+<p th:text="${#numbers.formatCurrency(three, eurCurrency)}">...</p>
+<p th:text="${#numbers.formatCurrency(one, jpyCurrency)}">...</p>
+<p th:text="${#numbers.formatCurrency(three, jpyCurrency)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>€123.00</p>
+<p>€0.12</p>
+<p>¥123</p>
+<p>¥0</p>
