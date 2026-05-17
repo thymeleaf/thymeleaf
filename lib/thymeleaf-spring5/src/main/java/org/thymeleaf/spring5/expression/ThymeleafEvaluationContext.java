@@ -239,17 +239,11 @@ public final class ThymeleafEvaluationContext
 
     @Override
     public List<MethodResolver> getMethodResolvers() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getMethodResolvers();
-        }
         return super.getMethodResolvers();
     }
 
     @Override
     public List<PropertyAccessor> getPropertyAccessors() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getPropertyAccessors();
-        }
         return super.getPropertyAccessors();
     }
 

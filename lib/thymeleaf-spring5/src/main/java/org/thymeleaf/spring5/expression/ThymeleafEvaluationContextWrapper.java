@@ -149,16 +149,10 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
     public List<MethodResolver> getMethodResolvers() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getMethodResolvers();
-        }
         return this.methodResolvers == null ? this.delegate.getMethodResolvers() : this.methodResolvers;
     }
 
     public List<PropertyAccessor> getPropertyAccessors() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getPropertyAccessors();
-        }
         return this.propertyAccessors == null ? this.delegate.getPropertyAccessors() : this.propertyAccessors;
     }
 
