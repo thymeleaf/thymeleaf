@@ -157,14 +157,12 @@ public final class ThymeleafEvaluationContext
         this.setMethodResolvers(aclMethodResolvers);
         this.setPropertyAccessors(propertyAccessors);
 
-        // Build the SimpleEvaluationContext used in restricted mode. It holds the same Thymeleaf property
-        // accessors and ACL method resolvers as normal mode, but naturally provides no constructor resolution,
-        // no type references (T(...)) and no bean references (@bean), all of which are already blocked by the
-        // expression-level checks but are now also blocked at the evaluation-context level.
-        this.restrictedModeContext = SimpleEvaluationContext
-                .forPropertyAccessors(propertyAccessors.toArray(new PropertyAccessor[0]))
-                .withMethodResolvers(aclMethodResolvers.toArray(new MethodResolver[0]))
-                .build();
+        // Build the SimpleEvaluationContext used in restricted mode: an empty evaluation context. This is because
+        // resolution of property accessors and ACL method resolvers will be delegated to the superclass to allow for
+        // customization by devs, and at the same time providing no constructor resolution at all, no type
+        // references (T(...)) and no bean references (@bean), all of which are already blocked by the
+        // expression-level checks but will also be blocked here, at the evaluation-context level.
+        this.restrictedModeContext = SimpleEvaluationContext.forPropertyAccessors().build();
 
     }
 
@@ -239,17 +237,17 @@ public final class ThymeleafEvaluationContext
 
     @Override
     public List<MethodResolver> getMethodResolvers() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getMethodResolvers();
-        }
+        // We are not checking for variable access restrictions here as they are
+        // already handled at the expression level, and we need to allow method resolvers
+        // to be customizable.
         return super.getMethodResolvers();
     }
 
     @Override
     public List<PropertyAccessor> getPropertyAccessors() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getPropertyAccessors();
-        }
+        // We are not checking for variable access restrictions here as they are
+        // already handled at the expression level, and we need to allow property accessors
+        // to be customizable.
         return super.getPropertyAccessors();
     }
 

@@ -96,14 +96,6 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
             this.typeLocator = null;       // No need to initialize our own type locator
             this.methodResolvers = null;   // No need to initialize our own method resolvers
 
-            // Build the restricted mode context from the delegate's already ACL-wrapped resolvers/accessors.
-            // In restricted mode this wrapper uses it instead of the delegate, so it naturally provides no
-            // constructor resolution, no type references and no bean references.
-            this.restrictedModeContext = SimpleEvaluationContext
-                    .forPropertyAccessors(this.delegate.getPropertyAccessors().toArray(new PropertyAccessor[0]))
-                    .withMethodResolvers(this.delegate.getMethodResolvers().toArray(new MethodResolver[0]))
-                    .build();
-
         } else {
 
             // We need to wrap any reflective method resolvers in order to forbid calling methods on any of the blocked classes
@@ -126,13 +118,14 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
                                 new ThymeleafEvaluationContextACLMethodResolver((ReflectiveMethodResolver) mr) : mr)
                         .collect(Collectors.toList());
 
-            // Build the restricted mode context from the ACL-wrapped resolvers/accessors we just prepared.
-            this.restrictedModeContext = SimpleEvaluationContext
-                    .forPropertyAccessors(this.propertyAccessors.toArray(new PropertyAccessor[0]))
-                    .withMethodResolvers(this.methodResolvers.toArray(new MethodResolver[0]))
-                    .build();
-
         }
+
+        // Build the SimpleEvaluationContext used in restricted mode: an empty evaluation context. This is because
+        // resolution of property accessors and ACL method resolvers will be delegated to the superclass to allow for
+        // customization by devs, and at the same time providing no constructor resolution at all, no type
+        // references (T(...)) and no bean references (@bean), all of which are already blocked by the
+        // expression-level checks but will also be blocked here, at the evaluation-context level.
+        this.restrictedModeContext = SimpleEvaluationContext.forPropertyAccessors().build();
 
     }
 
@@ -149,16 +142,16 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
     public List<MethodResolver> getMethodResolvers() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getMethodResolvers();
-        }
+        // We are not checking for variable access restrictions here as they are
+        // already handled at the expression level, and we need to allow method resolvers
+        // to be customizable.
         return this.methodResolvers == null ? this.delegate.getMethodResolvers() : this.methodResolvers;
     }
 
     public List<PropertyAccessor> getPropertyAccessors() {
-        if (this.variableAccessRestricted) {
-            return this.restrictedModeContext.getPropertyAccessors();
-        }
+        // We are not checking for variable access restrictions here as they are
+        // already handled at the expression level, and we need to allow property accessors
+        // to be customizable.
         return this.propertyAccessors == null ? this.delegate.getPropertyAccessors() : this.propertyAccessors;
     }
 
