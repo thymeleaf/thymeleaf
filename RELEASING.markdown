@@ -51,7 +51,7 @@ mvn -P releases clean compile deploy
 mvn scm:tag -Dtag=thymeleaf-X.Y.Z
 mvn versions:set -DprocessAllModules=true -DnewVersion=X.Y.[Z+1]-SNAPSHOT
 mvn versions:commit
-git add .;
+git add .
 git commit -m "Prepare for next development iteration"
 git push
 ```
