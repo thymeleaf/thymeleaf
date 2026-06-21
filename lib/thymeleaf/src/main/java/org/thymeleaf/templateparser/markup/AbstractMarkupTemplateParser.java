@@ -236,15 +236,21 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e);
         } catch (final ParseException e) {
             final String message = "An error happened during template parsing";
-            if (e.getLine() != null && e.getCol() != null) {
-                throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e.getLine().intValue(), e.getCol().intValue(), e);
-            }
+            // We check the cause chain for a TemplateProcessingException FIRST, before looking at
+            // AttoParser's own e.getLine()/getCol(): a TemplateProcessingException's line/col is tracked
+            // by Thymeleaf itself at the exact point of processing (e.g. the offending th:* attribute),
+            // and so is always at least as precise -- usually more precise -- than whatever position
+            // AttoParser's own wrapping exception reports, which only reflects its scanner's position at
+            // the (possibly later) point where the exception was caught.
             final Throwable cause = e.getCause();
             if (cause instanceof TemplateProcessingException) {
                 final TemplateProcessingException tpe = (TemplateProcessingException) cause;
                 if (tpe.hasLineAndCol()) {
                     throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), tpe.getLine().intValue(), tpe.getCol().intValue(), e);
                 }
+            }
+            if (e.getLine() != null && e.getCol() != null) {
+                throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e.getLine().intValue(), e.getCol().intValue(), e);
             }
             throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e);
         }
