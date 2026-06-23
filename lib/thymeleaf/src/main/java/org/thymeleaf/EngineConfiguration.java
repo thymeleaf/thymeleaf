@@ -344,7 +344,19 @@ public class EngineConfiguration implements IEngineConfiguration {
      *         after the second.
      */
     private static int nullSafeIntegerComparison(Integer o1, Integer o2) {
-        return o1 != null ? o2 != null ? o1.compareTo(o2) : -1 : o2 != null ? 1 : 0;
+        if (o1 != null) {
+            if (o2 != null) {
+                return o1.compareTo(o2);
+            } else {
+                return -1;
+            }
+        } else {
+            if (o2 != null) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
     }
 
 
