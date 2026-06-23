@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.templateparser.text;
 
-/*
+/**
  * This class performs the processing of comments, just after they are identified by the parser. The idea
  * is that every comment that is identified as a 'commented element' should be converted to the adequate
  * 'element' events, and also that every comment that is identified as a 'commented expression' is processed by
