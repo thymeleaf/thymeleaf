@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.util.SpringRequestUtils;
 import org.thymeleaf.testing.templateengine.util.JavaxServletMockUtils;
@@ -60,6 +62,12 @@ public final class SpringRequestUtilsTest {
         Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("Some __e__ other", mockRequest("a/e","p0","Some __e__ other")));
         Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("Some |e| other", mockRequest("a/e","p0","Some |e| other")));
 
+        // 3-arg overload: the request's form data (the WebFlux request body, which is not part of the parameter map) is inspected too
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e"), null);
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e"), formData("p0","${lili}::le"));
+        SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e"), formData("p0","${lala}_le//"));
+        Assertions.assertThrows(TemplateProcessingException.class, () -> SpringRequestUtils.checkViewNameNotInRequest("${lala} :: le", mockRequest("a/e"), formData("p0","${lala} :: le")));
+
     }
 
 
@@ -81,6 +89,17 @@ public final class SpringRequestUtilsTest {
 
         return webExchange.getRequest();
 
+    }
+
+
+    private MultiValueMap<String,String> formData(final String... values) {
+        final MultiValueMap<String,String> formData = new LinkedMultiValueMap<String,String>();
+        if (values != null && values.length > 0 && (values.length % 2 == 0)) {
+            for (int i = 0; i < values.length; i += 2) {
+                formData.add(values[i], values[i+1]);
+            }
+        }
+        return formData;
     }
 
 

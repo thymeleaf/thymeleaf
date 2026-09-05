@@ -19,8 +19,10 @@
  */
 package org.thymeleaf.spring6.util;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.util.MultiValueMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.web.IWebRequest;
@@ -38,6 +40,12 @@ public final class SpringRequestUtils {
 
 
     public static void checkViewNameNotInRequest(final String viewName, final IWebRequest request) {
+        checkViewNameNotInRequest(viewName, request, null);
+    }
+
+
+    public static void checkViewNameNotInRequest(
+            final String viewName, final IWebRequest request, final MultiValueMap<String,String> formData) {
 
         final String vn = StringUtils.pack(viewName);
 
@@ -115,6 +123,24 @@ public final class SpringRequestUtils {
                     if (found) {
                         break;
                     }
+                }
+            }
+        }
+
+        if (!found && formData != null && !formData.isEmpty()) {
+            for (final List<String> formValues : formData.values()) {
+                if (formValues == null) {
+                    continue;
+                }
+                for (int i = 0; !found && i < formValues.size(); i++) {
+                    final String formValue = StringUtils.pack(formValues.get(i));
+                    if (formValue != null && containsExpression(formValue) && vn.contains(formValue)) {
+                        // Form data contains an expression, and it is contained in the view name. Too dangerous.
+                        found = true;
+                    }
+                }
+                if (found) {
+                    break;
                 }
             }
         }

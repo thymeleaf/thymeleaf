@@ -46,6 +46,7 @@ import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.view.AbstractView;
 import org.springframework.web.reactive.result.view.RequestContext;
@@ -61,6 +62,7 @@ import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContex
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.SpringReactiveModelAdditionsUtils;
+import org.thymeleaf.spring5.util.SpringRequestUtils;
 import org.thymeleaf.spring5.web.webflux.SpringWebFluxWebApplication;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
@@ -360,6 +362,26 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             final Set<String> markupSelectorsToRender, final Map<String, Object> renderAttributes,
             final MediaType contentType, final ServerWebExchange exchange) {
 
+        // Fragment (::) view names are parsed and evaluated as expressions, so before doing so we must ensure the
+        // view name does not originate from request input. That check also inspects the request's form data, which
+        // is read-once and cached by the ServerWebExchange (so consuming it here is safe and does not prevent the
+        // rest of the request-handling pipeline from consuming it too). Non-fragment view names need no such check
+        // and therefore avoid touching the form data at all.
+        final String viewTemplateName = getTemplateName();
+        if (viewTemplateName != null && viewTemplateName.contains("::")) {
+            return exchange.getFormData().flatMap(formData ->
+                    doRenderFragmentInternal(markupSelectorsToRender, renderAttributes, contentType, exchange, formData));
+        }
+        return doRenderFragmentInternal(markupSelectorsToRender, renderAttributes, contentType, exchange, null);
+
+    }
+
+
+    private Mono<Void> doRenderFragmentInternal(
+            final Set<String> markupSelectorsToRender, final Map<String, Object> renderAttributes,
+            final MediaType contentType, final ServerWebExchange exchange,
+            final MultiValueMap<String,String> requestFormData) {
+
         final String viewTemplateName = getTemplateName();
         final ISpringWebFluxTemplateEngine viewTemplateEngine = getTemplateEngine();
 
@@ -497,6 +519,14 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         } else {
             // Template name contains a fragment name, so we should parse it as such
+
+            // A check must be made that the template name is not included in the request, so that we make sure
+            // no code to be executed comes from direct user input.
+            try {
+                SpringRequestUtils.checkViewNameNotInRequest(viewTemplateName, webExchange.getRequest(), requestFormData);
+            } catch (final TemplateProcessingException e) {
+                return Mono.error(e);
+            }
 
             final IStandardExpressionParser parser = StandardExpressions.getExpressionParser(configuration);
 

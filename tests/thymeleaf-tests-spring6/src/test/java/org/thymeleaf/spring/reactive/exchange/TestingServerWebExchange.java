@@ -33,6 +33,7 @@ import org.springframework.context.i18n.SimpleLocaleContext;
 import org.springframework.http.codec.multipart.Part;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
@@ -44,6 +45,7 @@ public final class TestingServerWebExchange implements ServerWebExchange {
     private final TestingServerHttpResponse response;
     private final TestingWebSession session;
     private final Map<String,Object> attributes;
+    private MultiValueMap<String,String> formData = new LinkedMultiValueMap<String,String>();
 
 
     public TestingServerWebExchange(
@@ -106,9 +108,13 @@ public final class TestingServerWebExchange implements ServerWebExchange {
         return null;
     }
 
+    public void setFormData(final MultiValueMap<String,String> formData) {
+        this.formData = (formData == null ? new LinkedMultiValueMap<String,String>() : formData);
+    }
+
     @Override
     public Mono<MultiValueMap<String, String>> getFormData() {
-        throw new UnsupportedOperationException();
+        return Mono.just(this.formData);
     }
 
     @Override

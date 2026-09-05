@@ -20,14 +20,20 @@
 package org.thymeleaf.spring.reactive.view;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.result.view.View;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring.reactive.exchange.TestingServerWebExchange;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
@@ -64,6 +70,87 @@ public class ThymeleafReactiveViewTest {
         final TestingServerWebExchange exchange = new TestingServerWebExchange("/testing");
 
         view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block();
+
+    }
+
+
+
+
+    @Test
+    public void testViewNameInRequestForbidden() throws Exception {
+
+        final ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:spring/view/applicationContextConversionService.xml");
+
+        final SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
+        final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("spring/view/");
+        templateResolver.setSuffix(".html");
+        templateEngine.setTemplateResolver(templateResolver);
+
+        final ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
+        resolver.setApplicationContext(context);
+        resolver.setTemplateEngine(templateEngine);
+        resolver.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+
+        final Map<String,Object> model = new ModelMap();
+        model.put("one", "one");
+
+        // The view name is a fragment expression containing a Standard Expression, and a request parameter
+        // echoes that same expression. As in the servlet ThymeleafView, this must be rejected so that no code
+        // coming from direct user input is executed as a part of view-name resolution.
+        final Map<String,List<String>> queryParams = new HashMap<>();
+        queryParams.put("p", Collections.singletonList("${one}"));
+        final TestingServerWebExchange exchange =
+                new TestingServerWebExchange("/testing", queryParams, new HashMap<>(), new HashMap<>());
+
+        final Mono<View> view = resolver.resolveViewName("testSeveralConversionServices :: ${one}", Locale.US);
+
+        final TemplateProcessingException e = Assertions.assertThrows(
+                TemplateProcessingException.class,
+                () -> view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block());
+        // Make sure it is the request-inspection guard that rejected the view name, and not an incidental error
+        Assertions.assertTrue(e.getMessage() != null && e.getMessage().contains("View name contains an expression"));
+
+    }
+
+
+
+
+    @Test
+    public void testViewNameInFormDataForbidden() throws Exception {
+
+        final ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:spring/view/applicationContextConversionService.xml");
+
+        final SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
+        final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("spring/view/");
+        templateResolver.setSuffix(".html");
+        templateEngine.setTemplateResolver(templateResolver);
+
+        final ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
+        resolver.setApplicationContext(context);
+        resolver.setTemplateEngine(templateEngine);
+        resolver.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+
+        final Map<String,Object> model = new ModelMap();
+        model.put("one", "one");
+
+        // Same as above, but the colliding expression arrives in the request *form data* (body). The servlet
+        // parameter map would include it, but the WebFlux query-parameter map does not, so the reactive check
+        // must inspect the form data too. Query params are left empty so that only the form data can trigger it.
+        final TestingServerWebExchange exchange = new TestingServerWebExchange("/testing");
+        final MultiValueMap<String,String> formData = new LinkedMultiValueMap<String,String>();
+        formData.add("p", "${one}");
+        exchange.setFormData(formData);
+
+        final Mono<View> view = resolver.resolveViewName("testSeveralConversionServices :: ${one}", Locale.US);
+
+        final TemplateProcessingException e = Assertions.assertThrows(
+                TemplateProcessingException.class,
+                () -> view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block());
+        Assertions.assertTrue(e.getMessage() != null && e.getMessage().contains("View name contains an expression"));
 
     }
 
