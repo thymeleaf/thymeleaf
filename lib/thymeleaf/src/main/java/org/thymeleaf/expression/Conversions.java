@@ -20,9 +20,11 @@
 package org.thymeleaf.expression;
 
 import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ClassLoaderUtils;
+import org.thymeleaf.util.ExpressionUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -60,12 +62,15 @@ public final class Conversions {
 
     public Object convert(final Object target, final String className) {
 
+        checkConversionAllowed(className);
         try {
             final Class<?> clazz = ClassLoaderUtils.loadClass(className);
             return convert(target, clazz);
         } catch (final ClassNotFoundException e) {
+            final String javaLangClassName = "java.lang." + className;
+            checkConversionAllowed(javaLangClassName);
             try {
-                final Class<?> clazz = ClassLoaderUtils.loadClass("java.lang." + className);
+                final Class<?> clazz = ClassLoaderUtils.loadClass(javaLangClassName);
                 return convert(target, clazz);
             } catch (final ClassNotFoundException ex) {
                 throw new IllegalArgumentException("Cannot convert to class '" + className + "'", e);
@@ -77,9 +82,20 @@ public final class Conversions {
 
     public Object convert(final Object target, final Class<?> clazz) {
 
+        checkConversionAllowed(clazz.getName());
         final IStandardConversionService conversionService =
                 StandardExpressions.getConversionService(this.context.getConfiguration());
         return conversionService.convert(this.context, target, clazz);
+    }
+
+
+    private static void checkConversionAllowed(final String className) {
+        // Conversion target types are subject to the same type restrictions as expressions.
+        if (ExpressionUtils.isTypeForbidden(className)) {
+            throw new TemplateProcessingException(
+                    "Type \"" + className + "\" cannot be used as a target for type conversion operations " +
+                    "(#conversions): access to this type is forbidden in expressions.");
+        }
     }
 
 
