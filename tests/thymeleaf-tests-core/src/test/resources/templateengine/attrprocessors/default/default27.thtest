@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# For that same non-dedicated "on*" attribute, numeric/boolean variable results and text literals are still allowed.
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onsearch="${one}">..</div>
+<div th:onsearch="${2+3}">..</div>
+<div th:onsearch="${true}">..</div>
+<div th:onsearch="'hello'">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onsearch="2">..</div>
+<div onsearch="5">..</div>
+<div onsearch="true">..</div>
+<div onsearch="hello">..</div>

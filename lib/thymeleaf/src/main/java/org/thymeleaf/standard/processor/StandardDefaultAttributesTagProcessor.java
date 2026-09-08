@@ -161,8 +161,16 @@ public final class StandardDefaultAttributesTagProcessor
                 } else {
 
                     // Default attributes will ALWAYS be executed in RESTRICTED mode, for safety reasons (they might
-                    // create attributes involved in code execution)
-                    expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
+                    // create attributes involved in code execution). In HTML mode, "on*" attributes not handled by
+                    // StandardDOMEventAttributeTagProcessor are executed as event handlers too.
+                    final StandardExpressionExecutionContext expressionExecutionContext =
+                            (templateMode == TemplateMode.HTML
+                                    && newAttributeName.length() > 2
+                                    && (newAttributeName.charAt(0) == 'o' || newAttributeName.charAt(0) == 'O')
+                                    && (newAttributeName.charAt(1) == 'n' || newAttributeName.charAt(1) == 'N'))?
+                                    StandardExpressionExecutionContext.RESTRICTED_FORBID_UNSAFE_EXP_RESULTS :
+                                    StandardExpressionExecutionContext.RESTRICTED;
+                    expressionResult = expression.execute(context, expressionExecutionContext);
 
                 }
 

@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# "onsearch" is a real (WebKit) event-handler attribute that is NOT in the dedicated event-handler list, so it is
+# handled by the default attribute processor. In HTML mode its "on*" name must still forbid text (variable) results.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:onsearch="${one}">..</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qin this context\E(.*)

@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Regression: attributes whose name does NOT start with "on", created through the default attribute processor, are
+# not affected by the event-handler restriction, so variable text results are still allowed for them.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:data-info="${one}">..</div>
+<div th:title="${one}">..</div>
+<div th:data-onx="${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div data-info="one!">..</div>
+<div title="one!">..</div>
+<div data-onx="one!">..</div>

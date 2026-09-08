@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+one = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:onpointerdown="'hello'">..</div>
+<div th:onpointerdown="${one}">..</div>
+<div th:onpointerdown="${2+3}">..</div>
+<div th:onpointerdown="${true}">..</div>
+<div th:onpointerdown="${null}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onpointerdown="hello">..</div>
+<div onpointerdown="2">..</div>
+<div onpointerdown="5">..</div>
+<div onpointerdown="true">..</div>
+<div>..</div>

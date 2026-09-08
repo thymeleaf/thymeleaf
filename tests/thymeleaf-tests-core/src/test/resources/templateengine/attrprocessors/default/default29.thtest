@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# In HTML mode the "on*" namespace is reserved by browsers for event handlers, so the event-handler restriction is
+# applied to ANY attribute whose name starts with "on" (there is no exception list). Even a name that is not a real
+# event handler (here "one") therefore forbids text (variable) results. Numeric/boolean/literal values are still fine.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:one="${one}">..</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qin this context\E(.*)
