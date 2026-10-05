@@ -96,6 +96,11 @@ public final class ThymeleafEvaluationContext
                     StandardExpressionObjectFactory.THIS_EXPRESSION_OBJECT_NAME,
                     StandardExpressionObjectFactory.EXECUTION_INFO_OBJECT_NAME)));
 
+    // In restricted mode, these are only available through their restricted variant (if provided at all)
+    static final Set<String> RESTRICTED_VARIANT_VARIABLE_NAMES =
+            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+                    StandardExpressionObjectFactory.CONVERSIONS_EXPRESSION_OBJECT_NAME)));
+
     private static final ReflectivePropertyAccessor REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE =
             new ThymeleafEvaluationContextACLPropertyAccessor();
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
@@ -189,12 +194,22 @@ public final class ThymeleafEvaluationContext
 
 
 
+    static Object lookupRestrictedVariant(final IExpressionObjects expressionObjects, final String name) {
+        final String restrictedName = name + IExpressionObjects.RESTRICTED_NAME_MODIFIER;
+        return (expressionObjects != null && expressionObjects.containsObject(restrictedName) ?
+                    expressionObjects.getObject(restrictedName) : null);
+    }
+
+
     @Override
     public Object lookupVariable(final String name) {
         if (this.variableAccessRestricted) {
             if (RESTRICTED_VARIABLE_NAMES.contains(name)) {
                 throw new EvaluationException(
                         String.format("Access to variable '%s' is forbidden in this context.", name));
+            }
+            if (RESTRICTED_VARIANT_VARIABLE_NAMES.contains(name)) {
+                return lookupRestrictedVariant(this.expressionObjects, name);
             }
         }
         if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {

@@ -119,7 +119,14 @@ public final class ExpressionUtils {
                     AtomicReferenceFieldUpdater.class, AtomicStampedReference.class, DoubleAccumulator.class,
                     DoubleAdder.class, LongAccumulator.class, LongAdder.class,
                     // java.sql
-                    java.sql.Date.class, Time.class, Timestamp.class));
+                    java.sql.Date.class, Time.class, Timestamp.class,
+                    // java.time (note java.time.* is always allowed for general expression access, but these
+                    // classes also need to be here in order to be allowed as targets for restricted-mode conversions)
+                    java.time.LocalDate.class, java.time.LocalTime.class, java.time.LocalDateTime.class,
+                    java.time.OffsetDateTime.class, java.time.OffsetTime.class, java.time.ZonedDateTime.class,
+                    java.time.Instant.class, java.time.Duration.class, java.time.Period.class,
+                    java.time.Year.class, java.time.YearMonth.class, java.time.MonthDay.class,
+                    java.time.DayOfWeek.class, java.time.Month.class, java.time.ZoneId.class, java.time.ZoneOffset.class));
 
     private static final Set<String> ALLOWED_JAVA_SUPERS_NAMES;
     private static final Set<Class<?>> ALLOWED_JAVA_SUPERS =
@@ -198,8 +205,30 @@ public final class ExpressionUtils {
 
 
     static boolean isJavaPackage(final String typeName) {
-        return (typeName.charAt(0) == 'j' && typeName.charAt(4) == '.' && typeName.charAt(1) == 'a'
+        return (typeName.length() > 4 && typeName.charAt(0) == 'j' && typeName.charAt(4) == '.' && typeName.charAt(1) == 'a'
                 && typeName.charAt(2) == 'v' && typeName.charAt(3) == 'a');
+    }
+
+
+    // Array types are forbidden if their component type is: computes the (innermost) component type name of
+    // array type names, both in binary form (e.g. "[[Ljava.lang.String;") and in source form ("java.lang.String[][]").
+    // Primitive array descriptors (e.g. "[I") are reduced to the primitive descriptor, which is never forbidden.
+    static String componentTypeName(final String typeName) {
+        String name = typeName;
+        if (name.length() > 0 && name.charAt(0) == '[') {
+            int i = 0;
+            while (i < name.length() && name.charAt(i) == '[') {
+                i++;
+            }
+            name = name.substring(i);
+            if (name.length() > 2 && name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';') {
+                name = name.substring(1, name.length() - 1);
+            }
+        }
+        while (name.endsWith("[]")) {
+            name = name.substring(0, name.length() - 2);
+        }
+        return name;
     }
 
     static boolean isTypeBlockedForAllPurposes(final String typeName) {
@@ -222,7 +251,7 @@ public final class ExpressionUtils {
 
         Validate.notNull(typeName, "Type name cannot be null");
 
-        final String normalizedTypeName = normalize(typeName, false);
+        final String normalizedTypeName = componentTypeName(normalize(typeName, false));
 
         if (!isTypeBlockedForTypeReference(normalizedTypeName)) {
             return false;
@@ -231,6 +260,16 @@ public final class ExpressionUtils {
         // We know the package is blocked, but certain classes and interfaces in blocked packages are allowed
         return !ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) && !ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName);
 
+    }
+
+
+    // Allowlist of the types that can be used as instantiation targets in certain scenarios of restricted expression
+    // execution mode: the allowed classes and interfaces, matched by fully qualified name, so implementations
+    // of an allowed interface are not allowed unless they are allowed classes themselves.
+    public static boolean isTypeAllowedForRestrictedInstantiation(final String typeName) {
+        Validate.notNull(typeName, "Type name cannot be null");
+        final String normalizedTypeName = normalize(typeName, false);
+        return ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) || ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName);
     }
 
 

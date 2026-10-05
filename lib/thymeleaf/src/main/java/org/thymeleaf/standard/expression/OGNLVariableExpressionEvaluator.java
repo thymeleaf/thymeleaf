@@ -158,7 +158,8 @@ public final class OGNLVariableExpressionEvaluator
                 // Note this will never happen with shortcut expressions, as the '#' character with which all
                 // expression object names start is not allowed by the OGNLShortcutExpression parser.
 
-                contextVariablesMap = new OGNLExpressionObjectsWrapper(context.getExpressionObjects());
+                contextVariablesMap =
+                        new OGNLExpressionObjectsWrapper(context.getExpressionObjects(), expContext.getRestrictVariableAccess());
 
                 // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
                 // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the

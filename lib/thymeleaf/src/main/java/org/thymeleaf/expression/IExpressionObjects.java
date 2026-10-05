@@ -39,6 +39,18 @@ import org.thymeleaf.context.IExpressionContext;
  */
 public interface IExpressionObjects {
 
+    /**
+     * <p>
+     *   Modifier to be appended to the name of an expression object in order to obtain its variant for expressions
+     *   executed in restricted mode (e.g. {@code "conversions[restricted]"}). Expression objects that are only
+     *   available in restricted mode through such a variant will not be available at all in restricted mode if
+     *   the variant is not provided.
+     * </p>
+     *
+     * @since 3.1.6
+     */
+    public static final String RESTRICTED_NAME_MODIFIER = "[restricted]";
+
 
     public int size();
     public boolean containsObject(final String name);

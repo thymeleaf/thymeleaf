@@ -33,6 +33,7 @@ import org.thymeleaf.expression.Conversions;
 import org.thymeleaf.expression.Dates;
 import org.thymeleaf.expression.ExecutionInfo;
 import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.expression.Ids;
 import org.thymeleaf.expression.Lists;
 import org.thymeleaf.expression.Maps;
@@ -79,6 +80,13 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
 
 
     public static final String CONVERSIONS_EXPRESSION_OBJECT_NAME = "conversions";
+    /**
+     * Variant of #conversions to be used by expressions executed in restricted mode.
+     *
+     * @since 3.1.6
+     */
+    public static final String RESTRICTED_CONVERSIONS_EXPRESSION_OBJECT_NAME =
+            CONVERSIONS_EXPRESSION_OBJECT_NAME + IExpressionObjects.RESTRICTED_NAME_MODIFIER;
     public static final String URIS_EXPRESSION_OBJECT_NAME = "uris";
 
     /**
@@ -115,6 +123,7 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
                             SELECTION_TARGET_EXPRESSION_OBJECT_NAME,
                             LOCALE_EXPRESSION_OBJECT_NAME,
                             CONVERSIONS_EXPRESSION_OBJECT_NAME,
+                            RESTRICTED_CONVERSIONS_EXPRESSION_OBJECT_NAME,
                             URIS_EXPRESSION_OBJECT_NAME,
                             TEMPORALS_EXPRESSION_OBJECT_NAME,
                             CALENDARS_EXPRESSION_OBJECT_NAME,
@@ -214,6 +223,9 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
         }
         if (CONVERSIONS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return new Conversions(context);
+        }
+        if (RESTRICTED_CONVERSIONS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            return new Conversions(context, true);
         }
         if (URIS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return URIS_EXPRESSION_OBJECT;

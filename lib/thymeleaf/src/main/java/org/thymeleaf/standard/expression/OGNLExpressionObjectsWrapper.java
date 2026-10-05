@@ -48,7 +48,15 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
                     StandardExpressionObjectFactory.THIS_EXPRESSION_OBJECT_NAME,
                     StandardExpressionObjectFactory.EXECUTION_INFO_OBJECT_NAME)));
 
+    // In restricted mode, these are only available through their restricted variant (if provided at all)
+    private static final Set<String> RESTRICTED_VARIANT_EXPRESSION_OBJECT_NAMES =
+            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+                    StandardExpressionObjectFactory.CONVERSIONS_EXPRESSION_OBJECT_NAME)));
+
     private final IExpressionObjects expressionObjects;
+    // Set at construction (a wrapper is created for each evaluation) so that the restriction does not depend on the
+    // contents of this map, which backs the OgnlContext used during evaluation.
+    private final boolean restrictExpressionObjects;
 
 
     static boolean isRestricted(final String name) {
@@ -56,9 +64,10 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
     }
 
 
-    OGNLExpressionObjectsWrapper(final IExpressionObjects expressionObjects) {
+    OGNLExpressionObjectsWrapper(final IExpressionObjects expressionObjects, final boolean restrictExpressionObjects) {
         super(5);
         this.expressionObjects = expressionObjects;
+        this.restrictExpressionObjects = restrictExpressionObjects;
     }
 
 
@@ -74,14 +83,19 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
     @Override
     public Object get(final Object key) {
-        if (this.expressionObjects.containsObject(key.toString())) {
-            if (restrictExpressionObjects()) {
-                if (RESTRICTED_EXPRESSION_OBJECT_NAMES.contains(key)) {
+        final String name = key.toString();
+        if (this.restrictExpressionObjects && RESTRICTED_VARIANT_EXPRESSION_OBJECT_NAMES.contains(name)) {
+            final String restrictedName = name + IExpressionObjects.RESTRICTED_NAME_MODIFIER;
+            return (this.expressionObjects.containsObject(restrictedName) ? this.expressionObjects.getObject(restrictedName) : null);
+        }
+        if (this.expressionObjects.containsObject(name)) {
+            if (this.restrictExpressionObjects) {
+                if (RESTRICTED_EXPRESSION_OBJECT_NAMES.contains(name)) {
                     throw new TemplateProcessingException(
                             String.format("Access to variable '%s' is forbidden in this context.", key));
                 }
             }
-            return this.expressionObjects.getObject(key.toString());
+            return this.expressionObjects.getObject(name);
         }
         return super.get(key);
 
@@ -89,12 +103,11 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
     @Override
     public boolean containsKey(final Object key) {
-        return this.expressionObjects.containsObject(key.toString()) || super.containsKey(key);
-    }
-
-
-    private boolean restrictExpressionObjects() {
-        return super.containsKey(OGNLContextPropertyAccessor.RESTRICT_EXPRESSION_OBJECTS);
+        final String name = key.toString();
+        if (this.restrictExpressionObjects && RESTRICTED_VARIANT_EXPRESSION_OBJECT_NAMES.contains(name)) {
+            return this.expressionObjects.containsObject(name + IExpressionObjects.RESTRICTED_NAME_MODIFIER);
+        }
+        return this.expressionObjects.containsObject(name) || super.containsKey(key);
     }
 
 

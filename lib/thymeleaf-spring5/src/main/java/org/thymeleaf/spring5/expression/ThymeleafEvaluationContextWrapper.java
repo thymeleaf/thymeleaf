@@ -195,6 +195,9 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
                 throw new EvaluationException(
                         String.format("Access to variable '%s' is forbidden in this context.", name));
             }
+            if (ThymeleafEvaluationContext.RESTRICTED_VARIANT_VARIABLE_NAMES.contains(name)) {
+                return ThymeleafEvaluationContext.lookupRestrictedVariant(this.expressionObjects, name);
+            }
         }
 
         if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {
