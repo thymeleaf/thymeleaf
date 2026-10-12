@@ -527,7 +527,7 @@ public class AttributeNames {
         private final List<String> repositoryNames;  // read-write, sync will be needed
         private final List<AttributeName> repository;  // read-write, sync will be needed
 
-        private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+        private final ReadWriteLock lock = new ReentrantReadWriteLock(false);
         private final Lock readLock = this.lock.readLock();
         private final Lock writeLock = this.lock.writeLock();
 
