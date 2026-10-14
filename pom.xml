@@ -149,6 +149,7 @@
     <spring-webflow3.version>3.0.1</spring-webflow3.version>
     <jackson.version>2.19.0</jackson.version>
     <reactor.version>2024.0.6</reactor.version>
+    <netty.version>4.1.139.Final</netty.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <commons-io.version>2.22.0</commons-io.version>
     <commons-fileupload.version>1.6.0</commons-fileupload.version>
@@ -384,6 +385,14 @@
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-bom</artifactId>
         <version>${reactor.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

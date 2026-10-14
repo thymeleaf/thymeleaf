@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.TemplateEngine;
@@ -198,6 +199,7 @@ public class SpringWebFluxTemplateEngine
                                 process(templateName, markupSelectors, context, writer);
 
                             } catch (final Throwable t) {
+                                DataBufferUtils.release(dataBuffer);
                                 logger.error(
                                         String.format(
                                                 "[THYMELEAF][%s] Exception processing template \"%s\": %s",
@@ -268,6 +270,7 @@ public class SpringWebFluxTemplateEngine
                         bytesProduced =
                                 throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
                     } catch (final Throwable t) {
+                        DataBufferUtils.release(buffer);
                         emitter.error(t);
                         return null;
                     }
@@ -495,6 +498,7 @@ public class SpringWebFluxTemplateEngine
                                         throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
 
                             } catch (final Throwable t) {
+                                DataBufferUtils.release(buffer);
                                 emitter.error(t);
                                 return Boolean.FALSE;
                             }
