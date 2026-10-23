@@ -8,7 +8,7 @@ get started.
 ## Code of Conduct
 
 This project adheres to the Contributor Covenant
-[code of conduct][code-of-coduct].
+[code of conduct][code-of-conduct].
 By participating, you are expected to uphold this code. Please report
 unacceptable behavior to [the project leads][thymeleaf-team].
 
@@ -18,7 +18,7 @@ unacceptable behavior to [the project leads][thymeleaf-team].
 We use GitHub issues to track bugs and enhancements.
 If you have a general usage question please ask on
 [Stack Overflow][stackoverflow].
-The Thymeleaf team and the broader community monitor the 
+The Thymeleaf maintainers and the broader community monitor the 
 [`thymeleaf`][stackoverflow-thymeleaf] tag.
 
 If you are reporting a bug, please help to speed up problem diagnosis by
@@ -51,7 +51,7 @@ There are two versions of the CLA:
    * **Individual CLA**: For individuals acting on their own behalf, i.e. not
      being backed by any company or government, and not making their
      contributions potentially under the effect of any contracts, agreements or
-     laws that could cause their employeer (or any other entities) claim
+     laws that could cause their employer (or any other entities) claim
      any rights on their contribution.
    * **Corporate CLA**: For corporate entities allowing some of their employees
      to contribute to Thymeleaf on the entity's behalf.
@@ -71,7 +71,7 @@ step, please have a look at the [Thymeleaf CLA repository][cla].
   - Unless for specific artifacts such as documentation translations, all
     code, comments, documentation, names of classes and variables,
     log messages, etc. must be **in English**.
-  - All contribured files must include the standard Thymeleaf copyright header.
+  - All contributed files must include the standard Thymeleaf copyright header.
   - Maximum recommended line length is 120 characters. This is not strictly
     enforced.
   - Indentation should be made with 4 spaces, not tabs. Line feeds should be
@@ -81,7 +81,7 @@ step, please have a look at the [Thymeleaf CLA repository][cla].
   - You shall add yourself as _author_ (e.g. Javadoc `@author`) to any files
     that you create or modify substantially (more than cosmetic changes).
 
-### Specific Java Code Gudelines:
+### Specific Java Code Guidelines:
 
   - All your code should compile and run in the current minimum Java version
     of the project.
@@ -99,14 +99,14 @@ step, please have a look at the [Thymeleaf CLA repository][cla].
     algorithms is always welcome.
   - Writing unit tests for new, existing and modified code is always welcome
     too. For any new algorithms or functionality contributed, or substantial
-    modifications made to existing ones, the team might consider these a
+    modifications made to existing ones, the project maintainers might consider these a
     requirement.
 
 
 
 
 [cla]: https://github.com/thymeleaf/thymeleaf-org/blob/CLA_CURRENT/CLA/
-[code-of-coduct]: https://github.com/thymeleaf/thymeleaf-org/blob/CoC_CURRENT/CoC/THYMELEAF_CODE_OF_CONDUCT.markdown
-[thymeleaf-team]: https://www.thymeleaf.org/team.html
+[code-of-conduct]: https://github.com/thymeleaf/thymeleaf-org/blob/CoC_CURRENT/CoC/THYMELEAF_CODE_OF_CONDUCT.markdown
+[thymeleaf-team]: mailto:contact@thymeleaf.org
 [stackoverflow]: https://stackoverflow.com
 [stackoverflow-thymeleaf]: https://stackoverflow.com/tags/thymeleaf
