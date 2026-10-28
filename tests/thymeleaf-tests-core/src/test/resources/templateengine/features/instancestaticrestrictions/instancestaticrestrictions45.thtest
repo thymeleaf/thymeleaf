@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#strings.getClass().getName()}">ALLOWED</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>org.thymeleaf.expression.Strings</p>
