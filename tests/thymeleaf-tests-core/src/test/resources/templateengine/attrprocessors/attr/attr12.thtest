@@ -1,0 +1,24 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# In HTML mode, attributes created by th:attr whose name starts with "on" forbid text (variable) results, as
+# th:on* attributes do. Numeric/boolean/literal values are still fine, and other attributes are not affected.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+two = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:attr="onclick=${two}">..</div>
+<div th:attr="onclick=${2+3}">..</div>
+<div th:attr="onsearch=${true}">..</div>
+<div th:attr="onclick='hello'">..</div>
+<div th:attr="title=${one}">..</div>
+<div th:attr="data-onx=${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div onclick="2">..</div>
+<div onclick="5">..</div>
+<div onsearch="true">..</div>
+<div onclick="hello">..</div>
+<div title="one!">..</div>
+<div data-onx="one!">..</div>

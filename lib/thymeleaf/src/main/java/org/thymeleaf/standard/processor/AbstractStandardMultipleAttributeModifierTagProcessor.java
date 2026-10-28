@@ -134,15 +134,26 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             final IStandardExpression leftExpr = assignation.getLeft();
             final Object leftValue = leftExpr.execute(context, expCtx);
 
+            final String newAttributeName = (leftValue == null? null : leftValue.toString());
+
+            // In HTML mode, attributes whose name starts with "on" are event handlers (see the same check in
+            // StandardDefaultAttributesTagProcessor), so text expression results are forbidden in their values
+            final String checkedAttributeName = (newAttributeName == null? "" : newAttributeName.trim());
+            final StandardExpressionExecutionContext valueExpCtx =
+                    (getTemplateMode() == TemplateMode.HTML
+                            && checkedAttributeName.length() > 2
+                            && (checkedAttributeName.charAt(0) == 'o' || checkedAttributeName.charAt(0) == 'O')
+                            && (checkedAttributeName.charAt(1) == 'n' || checkedAttributeName.charAt(1) == 'N'))?
+                            StandardExpressionExecutionContext.RESTRICTED_FORBID_UNSAFE_EXP_RESULTS : expCtx;
+
             final IStandardExpression rightExpr = assignation.getRight();
-            final Object rightValue = rightExpr.execute(context, expCtx);
+            final Object rightValue = rightExpr.execute(context, valueExpCtx);
 
             if (rightValue == NoOpToken.VALUE) {
                 // No changes to be done for this attribute
                 continue;
             }
 
-            final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
                 throw new TemplateProcessingException(
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");

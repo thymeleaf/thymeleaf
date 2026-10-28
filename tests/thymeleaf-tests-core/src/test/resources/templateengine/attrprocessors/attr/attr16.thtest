@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Surrounding whitespace in the evaluated attribute name does not avoid the restriction.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+name = ' onclick '
+# ------------------------------------------------------------
+%INPUT
+<div th:attr="${name}=${one}">..</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qnumbers or booleans\E(.*)

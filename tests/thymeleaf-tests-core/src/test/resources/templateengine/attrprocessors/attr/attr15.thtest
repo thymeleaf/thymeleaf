@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# The attribute name is checked once evaluated, case-insensitively.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+name = 'OnClick'
+# ------------------------------------------------------------
+%INPUT
+<div th:attr="${name}=${one}">..</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qnumbers or booleans\E(.*)
