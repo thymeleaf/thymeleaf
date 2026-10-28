@@ -55,14 +55,11 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongArray;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.atomic.AtomicMarkableReference;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.concurrent.atomic.AtomicStampedReference;
 import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.DoubleAdder;
@@ -88,15 +85,27 @@ public final class ExpressionUtils {
             new HashSet<>(Arrays.asList(
                     "ch.qos.logback.", "com.squareup.javapoet.",
                     "com.zaxxer.hikari.", "com.fasterxml.jackson.", "tools.jackson.",
+                    "com.microsoft.sqlserver.", "com.mysql.",
                     "groovy.", "io.netty.", "javassist.", "javax0.geci.", "kotlin.",
-                    "net.bytebuddy.", "net.sf.cglib.",
-                    "org.apache.tomcat.jdbc.", "org.apache.commons.dbcp2.",
+                    "net.bytebuddy.", "net.sf.cglib.", "ognl.", "oracle.jdbc.",
+                    "org.apache.tomcat.", "org.apache.catalina.", "org.apache.coyote.",
+                    "org.apache.el.", "org.apache.naming.", "org.apache.commons.dbcp2.",
+                    "org.apache.commons.io.", "org.apache.commons.text.",
                     "org.apache.commons.lang.reflect.", "org.apache.commons.lang3.reflect.",
-                    "org.apache.bcel.", "org.apache.logging.", "org.aspectj.",
-                    "org.codehaus.groovy.", "org.eclipse.jetty.", "org.glassfish.",
+                    "org.apache.commons.lang.ClassUtils", "org.apache.commons.lang3.ClassUtils",
+                    "org.apache.commons.lang.SerializationUtils", "org.apache.commons.lang3.SerializationUtils",
+                    "org.apache.commons.beanutils.", "org.apache.commons.beanutils2.",
+                    "org.apache.commons.collections.functors.", "org.apache.commons.collections4.functors.",
+                    "org.apache.bcel.", "org.apache.derby.", "org.apache.logging.", "org.aspectj.",
+                    "org.codehaus.groovy.", "org.eclipse.jetty.", "org.glassfish.", "org.h2.",
+                    "org.hibernate.", "org.hsqldb.",
                     "org.javassist.", "org.jboss.", "org.jetbrains.kotlin.", "org.jruby.", "org.junit.",
-                    "org.mockito.", "org.mortbay.jetty.", "org.objectweb.asm.", "org.objenesis.",
-                    "org.python.", "org.slf4j.", "org.springframework.", "scala."));
+                    "org.mariadb.", "org.mockito.", "org.mortbay.jetty.", "org.objectweb.asm.", "org.objenesis.",
+                    "org.postgresql.", "org.python.", "org.slf4j.", "org.springframework.", "org.yaml.snakeyaml.",
+                    "scala."));
+    private static final Set<String> ALLOWED_TYPE_REFERENCE_CLASS_NAMES =
+            new HashSet<>(Arrays.asList(
+                    "org.apache.commons.text.StringEscapeUtils"));
 
 
     private static final Set<String> ALLOWED_JAVA_CLASS_NAMES;
@@ -113,10 +122,10 @@ public final class ExpressionUtils {
                     Date.class, Calendar.class, Optional.class, OptionalDouble.class, OptionalInt.class,
                     OptionalLong.class, UUID.class, Currency.class,
                     // java.util.concurrent.atomic
-                    AtomicBoolean.class, AtomicInteger.class, AtomicIntegerArray.class, AtomicIntegerFieldUpdater.class,
-                    AtomicLong.class, AtomicLongArray.class, AtomicLongFieldUpdater.class,
+                    AtomicBoolean.class, AtomicInteger.class, AtomicIntegerArray.class,
+                    AtomicLong.class, AtomicLongArray.class,
                     AtomicMarkableReference.class, AtomicReference.class, AtomicReferenceArray.class,
-                    AtomicReferenceFieldUpdater.class, AtomicStampedReference.class, DoubleAccumulator.class,
+                    AtomicStampedReference.class, DoubleAccumulator.class,
                     DoubleAdder.class, LongAccumulator.class, LongAdder.class,
                     // java.sql
                     java.sql.Date.class, Time.class, Timestamp.class,
@@ -258,7 +267,8 @@ public final class ExpressionUtils {
         }
 
         // We know the package is blocked, but certain classes and interfaces in blocked packages are allowed
-        return !ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) && !ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName);
+        return !ALLOWED_JAVA_CLASS_NAMES.contains(normalizedTypeName) && !ALLOWED_JAVA_SUPERS_NAMES.contains(normalizedTypeName)
+                && !ALLOWED_TYPE_REFERENCE_CLASS_NAMES.contains(normalizedTypeName);
 
     }
 

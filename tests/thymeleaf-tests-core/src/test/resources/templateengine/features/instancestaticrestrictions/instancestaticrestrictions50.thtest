@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${new java.util.concurrent.atomic.AtomicInteger(3).incrementAndGet()}">x</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>4</p>
