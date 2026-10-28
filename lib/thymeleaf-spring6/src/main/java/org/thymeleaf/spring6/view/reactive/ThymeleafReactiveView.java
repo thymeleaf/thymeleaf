@@ -46,6 +46,7 @@ import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.view.AbstractView;
@@ -364,13 +365,16 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         // Fragment (::) view names are parsed and evaluated as expressions, so before doing so we must ensure the
         // view name does not originate from request input. That check also inspects the request's form data, which
-        // is read-once and cached by the ServerWebExchange (so consuming it here is safe and does not prevent the
-        // rest of the request-handling pipeline from consuming it too). Non-fragment view names need no such check
-        // and therefore avoid touching the form data at all.
+        // is read-once and cached by the ServerWebExchange. If the form data cannot be read (e.g. because the handler
+        // consumed the request body in some other way), the check is performed without it instead of failing.
+        // Non-fragment view names need no such check and therefore avoid touching the form data at all.
         final String viewTemplateName = getTemplateName();
         if (viewTemplateName != null && viewTemplateName.contains("::")) {
-            return exchange.getFormData().flatMap(formData ->
-                    doRenderFragmentInternal(markupSelectorsToRender, renderAttributes, contentType, exchange, formData));
+            return exchange.getFormData()
+                    .onErrorResume(e -> Mono.just(new LinkedMultiValueMap<String,String>()))
+                    .defaultIfEmpty(new LinkedMultiValueMap<String,String>())
+                    .flatMap(formData ->
+                            doRenderFragmentInternal(markupSelectorsToRender, renderAttributes, contentType, exchange, formData));
         }
         return doRenderFragmentInternal(markupSelectorsToRender, renderAttributes, contentType, exchange, null);
 

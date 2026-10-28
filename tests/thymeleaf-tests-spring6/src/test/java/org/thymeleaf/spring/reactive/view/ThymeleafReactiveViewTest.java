@@ -118,6 +118,77 @@ public class ThymeleafReactiveViewTest {
 
 
     @Test
+    public void testFragmentViewNameAllowed() throws Exception {
+
+        final ThymeleafReactiveViewResolver resolver = fragmentTestViewResolver();
+
+        final Map<String,Object> model = new ModelMap();
+        model.put("one", "one");
+
+        // Fragment view name containing an expression, but no request input containing it: rendering is allowed,
+        // also when the form data cannot be read (e.g. the request body was consumed in some other way)
+        for (final boolean formDataReadable : new boolean[] { true, false }) {
+            final TestingServerWebExchange exchange = new TestingServerWebExchange("/testing");
+            if (!formDataReadable) {
+                exchange.setFormDataException(new IllegalStateException("Request body already consumed"));
+            }
+            final Mono<View> view = resolver.resolveViewName("testSeveralConversionServices :: ${one}", Locale.US);
+            Assertions.assertDoesNotThrow(() -> view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block());
+        }
+
+    }
+
+
+
+
+    @Test
+    public void testViewNameInRequestForbiddenIfFormDataNotReadable() throws Exception {
+
+        final ThymeleafReactiveViewResolver resolver = fragmentTestViewResolver();
+
+        final Map<String,Object> model = new ModelMap();
+        model.put("one", "one");
+
+        // Form data that cannot be read must not prevent the rest of the request from being inspected
+        final Map<String,List<String>> queryParams = new HashMap<>();
+        queryParams.put("p", Collections.singletonList("${one}"));
+        final TestingServerWebExchange exchange =
+                new TestingServerWebExchange("/testing", queryParams, new HashMap<>(), new HashMap<>());
+        exchange.setFormDataException(new IllegalStateException("Request body already consumed"));
+
+        final Mono<View> view = resolver.resolveViewName("testSeveralConversionServices :: ${one}", Locale.US);
+
+        final TemplateProcessingException e = Assertions.assertThrows(
+                TemplateProcessingException.class,
+                () -> view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block());
+        Assertions.assertTrue(e.getMessage() != null && e.getMessage().contains("View name contains an expression"));
+
+    }
+
+
+    private static ThymeleafReactiveViewResolver fragmentTestViewResolver() {
+
+        final ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:spring/view/applicationContextConversionService.xml");
+
+        final SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
+        final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("spring/view/");
+        templateResolver.setSuffix(".html");
+        templateEngine.setTemplateResolver(templateResolver);
+
+        final ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
+        resolver.setApplicationContext(context);
+        resolver.setTemplateEngine(templateEngine);
+        resolver.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+        return resolver;
+
+    }
+
+
+
+
+    @Test
     public void testViewNameInFormDataForbidden() throws Exception {
 
         final ClassPathXmlApplicationContext context =

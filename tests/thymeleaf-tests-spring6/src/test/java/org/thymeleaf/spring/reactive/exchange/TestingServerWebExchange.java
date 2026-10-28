@@ -46,6 +46,7 @@ public final class TestingServerWebExchange implements ServerWebExchange {
     private final TestingWebSession session;
     private final Map<String,Object> attributes;
     private MultiValueMap<String,String> formData = new LinkedMultiValueMap<String,String>();
+    private RuntimeException formDataException = null;
 
 
     public TestingServerWebExchange(
@@ -112,8 +113,15 @@ public final class TestingServerWebExchange implements ServerWebExchange {
         this.formData = (formData == null ? new LinkedMultiValueMap<String,String>() : formData);
     }
 
+    public void setFormDataException(final RuntimeException formDataException) {
+        this.formDataException = formDataException;
+    }
+
     @Override
     public Mono<MultiValueMap<String, String>> getFormData() {
+        if (this.formDataException != null) {
+            return Mono.error(this.formDataException);
+        }
         return Mono.just(this.formData);
     }
 
