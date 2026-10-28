@@ -20,8 +20,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.Map;
-
 import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.PropertyAccessor;
@@ -64,7 +62,7 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
 
 
 
-    public Object getProperty(final Map ognlContext, final Object target, final Object name) throws OgnlException {
+    public Object getProperty(final OgnlContext ognlContext, final Object target, final Object name) throws OgnlException {
 
         if (!(target instanceof IContext)) {
             throw new IllegalStateException(
@@ -96,7 +94,7 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
 
 
 
-    public void setProperty(final Map context, final Object target, final Object name, final Object value) throws OgnlException {
+    public void setProperty(final OgnlContext context, final Object target, final Object name, final Object value) throws OgnlException {
         // IVariablesMap implementations should never be set values from OGNL expressions
         throw new UnsupportedOperationException("Cannot set values into VariablesMap instances from OGNL Expressions");
     }

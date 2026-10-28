@@ -346,9 +346,8 @@ public final class OGNLVariableExpressionEvaluator
             return ((OGNLShortcutExpression) parsedExpression).evaluate(configuration, context, root);
         }
 
-        // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
-        // creating the OgnlContext empty and then setting the context Map variables one by one
-        final OgnlContext ognlContext = new OgnlContext(MEMBER_ACCESS, CLASS_RESOLVER, null, context);
+        // The context variables map must not be copied into the OgnlContext (see ThymeleafOgnlContext)
+        final OgnlContext ognlContext = new ThymeleafOgnlContext(MEMBER_ACCESS, CLASS_RESOLVER, context);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
@@ -406,7 +405,7 @@ public final class OGNLVariableExpressionEvaluator
         }
 
         @Override
-        public Class<?> classForName(final String className, final Map context) throws ClassNotFoundException {
+        public <T> Class<T> classForName(final String className, final OgnlContext context) throws ClassNotFoundException {
             if (ExpressionUtils.isTypeForbidden(className)) {
                 throw new TemplateProcessingException(
                         String.format(
@@ -426,16 +425,17 @@ public final class OGNLVariableExpressionEvaluator
      */
     static final class ThymeleafDefaultClassResolver implements ClassResolver {
 
-        private final ConcurrentHashMap<String, Class> classes = new ConcurrentHashMap<>(101);
+        private final ConcurrentHashMap<String, Class<?>> classes = new ConcurrentHashMap<>(101);
 
         ThymeleafDefaultClassResolver() {
             super();
         }
 
-        public Class classForName(final String className, final Map context) throws ClassNotFoundException {
-            Class result = this.classes.get(className);
+        @SuppressWarnings("unchecked")
+        public <T> Class<T> classForName(final String className, final OgnlContext context) throws ClassNotFoundException {
+            Class<?> result = this.classes.get(className);
             if (result != null) {
-                return result;
+                return (Class<T>) result;
             }
             try {
                 result = toClassForName(className);
@@ -443,10 +443,10 @@ public final class OGNLVariableExpressionEvaluator
                 throw e;
             }
             this.classes.putIfAbsent(className, result);
-            return result;
+            return (Class<T>) result;
         }
 
-        private Class toClassForName(String className) throws ClassNotFoundException {
+        private Class<?> toClassForName(String className) throws ClassNotFoundException {
             return Class.forName(className);
         }
 
@@ -460,7 +460,7 @@ public final class OGNLVariableExpressionEvaluator
         }
 
         @Override
-        public boolean isAccessible(final Map context, final Object target, final Member member, final String propertyName) {
+        public boolean isAccessible(final OgnlContext context, final Object target, final Member member, final String propertyName) {
             int modifiers = member.getModifiers();
             if (!Modifier.isPublic(modifiers)) {
                 return false;
@@ -475,6 +475,42 @@ public final class OGNLVariableExpressionEvaluator
             }
             return true;
         }
+    }
+
+
+    /*
+     * Up to OGNL 3.3, the context variables map could be used directly as the values of the OgnlContext. Since
+     * OGNL 3.4, OgnlContext keeps its values in an internal map, and initial values can only be copied into it.
+     * Copying would call get() for every expression object name, which creates all expression objects for every
+     * evaluation, fails in restricted mode for restricted expression objects the expression does not even use,
+     * and replaces OGNL's root and current object with the "root" and "this" expression objects (these names are
+     * reserved keys in OgnlContext). This subclass looks variables up in the context variables map instead, and
+     * falls back to OGNL's internal map for reserved keys and for variables assigned from within the expression.
+     */
+    static final class ThymeleafOgnlContext extends OgnlContext {
+
+        private final Map<String,Object> contextVariables;
+
+        ThymeleafOgnlContext(
+                final MemberAccess memberAccess, final ClassResolver classResolver,
+                final Map<String,Object> contextVariables) {
+            super(memberAccess, classResolver, null, null);
+            this.contextVariables = contextVariables;
+        }
+
+        @Override
+        public Object get(final Object key) {
+            if (key != null && this.contextVariables.containsKey(key)) {
+                return this.contextVariables.get(key);
+            }
+            return super.get(key);
+        }
+
+        @Override
+        public boolean containsKey(final Object key) {
+            return (key != null && this.contextVariables.containsKey(key)) || super.containsKey(key);
+        }
+
     }
 
 }
