@@ -74,7 +74,7 @@ public final class OgnlTestContextExpression implements ITestContextExpression {
         try {
             
             final Object varExpression = Ognl.parseExpression(this.expression);
-            return Ognl.getValue(varExpression, contextVariables, context);
+            return Ognl.getValue(varExpression, Ognl.createDefaultContext(context, contextVariables), context);
             
         } catch (final OgnlException e) {
             throw new TemplateProcessingException(

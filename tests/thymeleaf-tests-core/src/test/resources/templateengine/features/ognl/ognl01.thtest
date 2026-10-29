@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Safe navigation operator (?.), available since OGNL 3.4.9
+# ------------------------------------------------------------
+%CONTEXT
+item = @org.thymeleaf.templateengine.features.ognl.OgnlItem@sample()
+map = #{ 'key' : 'value' }
+list = { 1, 2, 3 }
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${item?.name}">..</p>
+<p th:text="${nonexistent?.name}">..</p>
+<p th:text="${item.child?.name}">..</p>
+<p th:text="${item?.child?.name}">..</p>
+<p th:text="${nonexistent?.name == null}">..</p>
+<p th:text="${list?.size()}">..</p>
+<p th:text="${map?.key}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>item</p>
+<p></p>
+<p></p>
+<p></p>
+<p>true</p>
+<p>3</p>
+<p>value</p>

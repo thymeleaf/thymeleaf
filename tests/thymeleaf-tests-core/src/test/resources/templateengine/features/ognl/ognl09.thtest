@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# In restricted mode, #this is forbidden, also in projections and selections
+# ------------------------------------------------------------
+%CONTEXT
+list = { 1, 2, 3 }
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${list.{? #this &gt; 1 }}">..</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QAccess to variable '#this' is forbidden in this context\E(.*)

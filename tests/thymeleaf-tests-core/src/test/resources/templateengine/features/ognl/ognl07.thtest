@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Collection projection and selection
+# ------------------------------------------------------------
+%CONTEXT
+item = @org.thymeleaf.templateengine.features.ognl.OgnlItem@sample()
+list = { 1, 2, 3 }
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${list.{ #this * 2 }}">..</p>
+<p th:text="${list.{? #this &gt; 1 }}">..</p>
+<p th:text="${list.{^ #this &gt; 1 }}">..</p>
+<p th:text="${list.{$ #this &gt; 1 }}">..</p>
+<p th:text="${item.items.{ name }}">..</p>
+<p th:text="${item.items.{? name == 'bb' }[0].name}">..</p>
+<p th:text="${ { 1, 2, 3 }.size() }">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>[2, 4, 6]</p>
+<p>[2, 3]</p>
+<p>[2]</p>
+<p>[3]</p>
+<p>[aa, bb]</p>
+<p>bb</p>
+<p>3</p>

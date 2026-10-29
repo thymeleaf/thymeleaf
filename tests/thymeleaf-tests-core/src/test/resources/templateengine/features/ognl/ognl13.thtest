@@ -1,0 +1,24 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+intArr = new int[] { 1, 2, 3 }
+longArr = new long[] { 1L, 2L }
+boolArr = new boolean[0]
+strArr = new java.lang.String[] { 'a', 'b', 'c', 'd' }
+objArr = new java.lang.Object[] { 'a', 1 }
+# ------------------------------------------------------------
+%INPUT
+<span th:text="${intArr.length}">...</span>
+<span th:text="${longArr.length}">...</span>
+<span th:text="${boolArr.length}">...</span>
+<span th:text="${intArr.length + 0}">...</span>
+<span th:text="${strArr.length}">...</span>
+<span th:text="${objArr.length}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>3</span>
+<span>2</span>
+<span>0</span>
+<span>3</span>
+<span>4</span>
+<span>2</span>

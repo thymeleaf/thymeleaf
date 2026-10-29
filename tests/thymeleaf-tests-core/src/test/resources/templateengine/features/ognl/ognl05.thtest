@@ -1,0 +1,39 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Property and method access: beans, maps, lists, arrays, overloads, varargs, numeric parameter
+# conversion, interface default methods, enums and records
+# ------------------------------------------------------------
+%CONTEXT
+item = @org.thymeleaf.templateengine.features.ognl.OgnlItem@sample()
+map = #{ 'key' : 'value' }
+list = { 1, 2, 3 }
+arr = new int[] { 1, 2, 3 }
+strArr = new java.lang.String[] { 'aa', 'bb' }
+color = @org.thymeleaf.templateengine.features.ognl.OgnlColor@RED
+rec = new org.thymeleaf.templateengine.features.ognl.OgnlRecord('r', 1)
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${item.name} + ' ' + ${item.getName()} + ' ' + ${item['name']} + ' ' + ${item.active}">..</p>
+<p th:text="${map.key} + ' ' + ${map['key']} + ' ' + ${map['missing']} + ' ' + ${map.size}">..</p>
+<p th:text="${map.getOrDefault('missing', 'default')}">..</p>
+<p th:text="${list[1]} + ' ' + ${list.get(1)} + ' ' + ${list.size} + ' ' + ${list.isEmpty}">..</p>
+<p th:text="${arr[1]} + ' ' + ${strArr[1]} + ' ' + ${strArr.length}">..</p>
+<p th:text="${item.greet('ab')} + ' / ' + ${item.greet(1)}">..</p>
+<p th:text="${item.join('aa', 'bb', 'cc')}">..</p>
+<p th:text="${item.twice(5)}">..</p>
+<p th:text="${item.items[1].name}">..</p>
+<p th:text="${color.name()} + ' ' + ${color.ordinal()} + ' ' + ${color == @org.thymeleaf.templateengine.features.ognl.OgnlColor@RED}">..</p>
+<p th:text="${rec.name} + ' ' + ${rec.name()} + ' ' + ${rec.value + 1}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>item item item true</p>
+<p>value value null 1</p>
+<p>default</p>
+<p>2 2 3 false</p>
+<p>2 bb 2</p>
+<p>string ab / object 1</p>
+<p>aa-bb-cc</p>
+<p>10</p>
+<p>bb</p>
+<p>RED 0 true</p>
+<p>r r 2</p>

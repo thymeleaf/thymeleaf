@@ -84,6 +84,17 @@ public class FeaturesTest {
 
     @ParameterizedTest
     @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
+    public void testOgnl(final TestExecutor executor) throws Exception {
+
+        executor.execute("classpath:templateengine/features/ognl");
+
+        Assertions.assertTrue(executor.isAllOK());
+
+    }
+
+
+    @ParameterizedTest
+    @ArgumentsSource(ThrottledWebTestExecutorArgumentsProvider.class)
     public void testMessages(final TestExecutor executor) throws Exception {
 
         executor.execute("classpath:templateengine/features/messages");

@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Conditional (ternary) operator, including a decimal literal starting with '.' after a space
+# ------------------------------------------------------------
+%CONTEXT
+flag = true
+noflag = false
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${flag ? 'yes' : 'no'}">..</p>
+<p th:text="${noflag?'yes':'no'}">..</p>
+<p th:text="${flag ? .5 : 1}">..</p>
+<p th:text="${noflag ? .5 : 1}">..</p>
+<p th:text="${flag ? (noflag ? 'a' : 'b') : 'c'}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>yes</p>
+<p>no</p>
+<p>0.5</p>
+<p>1</p>
+<p>b</p>

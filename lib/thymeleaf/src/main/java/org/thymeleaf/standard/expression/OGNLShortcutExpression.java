@@ -132,7 +132,7 @@ final class OGNLShortcutExpression {
 
             } else if (ArrayPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
 
-                target = getArrayProperty(expressionCache, propertyName, (Object[]) target);
+                target = getArrayProperty(expressionCache, propertyName, target);
 
             } else {
                 // OGNL would like to apply a different property accessor (probably a custom one we do not know). In
@@ -289,7 +289,7 @@ final class OGNLShortcutExpression {
 
 
     public static Object getArrayProperty(
-            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Object[] array) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Object array) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.ArrayPropertyAccessor class, with the exception

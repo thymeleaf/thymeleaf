@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Members of java.lang.Class are forbidden also when accessed as properties, in restricted mode
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${#strings.class.methods}">..</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden for type\E(.*)

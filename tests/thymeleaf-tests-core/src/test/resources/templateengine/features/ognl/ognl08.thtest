@@ -1,0 +1,24 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Local variables, lambdas, #root and #this, static members and object creation (non-restricted mode)
+# ------------------------------------------------------------
+%CONTEXT
+item = @org.thymeleaf.templateengine.features.ognl.OgnlItem@sample()
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#x = 5, #x + 1}">..</p>
+<p th:text="${#x = 'ab', #x.length()}">..</p>
+<p th:text="${#f = :[ #this * 2 ], #f(3)}">..</p>
+<p th:text="${#root != null} + ' ' + ${#this != null}">..</p>
+<p th:text="${@java.lang.Math@max(1, 2)} + ' ' + ${@java.lang.Integer@MAX_VALUE}">..</p>
+<p th:text="${new java.util.ArrayList().size()} + ' ' + ${new java.math.BigDecimal('1.50').scale()}">..</p>
+<p th:text="${#strings.toUpperCase(item.name)}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>6</p>
+<p>2</p>
+<p>6</p>
+<p>true true</p>
+<p>2 2147483647</p>
+<p>0 2</p>
+<p>ITEM</p>

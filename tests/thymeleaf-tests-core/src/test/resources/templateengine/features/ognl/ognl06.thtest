@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Methods declared in non-public JDK implementation classes (immutable and unmodifiable collections)
+# ------------------------------------------------------------
+%CONTEXT
+listOf = @org.thymeleaf.templateengine.features.ognl.OgnlCollections@listOf()
+unmodifiable = @org.thymeleaf.templateengine.features.ognl.OgnlCollections@unmodifiableList()
+mapOf = @org.thymeleaf.templateengine.features.ognl.OgnlCollections@mapOf()
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${listOf.isEmpty} + ' ' + ${listOf.isEmpty()} + ' ' + ${listOf.size()} + ' ' + ${listOf.contains(2)}">..</p>
+<p th:text="${unmodifiable.isEmpty} + ' ' + ${unmodifiable.size()}">..</p>
+<p th:text="${mapOf.aa} + ' ' + ${mapOf.get('aa')}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>false false 3 true</p>
+<p>false 2</p>
+<p>1 1</p>

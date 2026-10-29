@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Arithmetic, string concatenation and operators
+# ------------------------------------------------------------
+%CONTEXT
+bd = new java.math.BigDecimal('1.50')
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${7 / 2}">..</p>
+<p th:text="${7.0 / 2}">..</p>
+<p th:text="${7 % 3}">..</p>
+<p th:text="${2147483647 + 1}">..</p>
+<p th:text="${bd * 2}">..</p>
+<p th:text="${bd + 1}">..</p>
+<p th:text="${'ab' + 1 + 2}">..</p>
+<p th:text="${1 + 2 + 'ab'}">..</p>
+<p th:text="${6 &amp; 3} + ' ' + ${6 | 3} + ' ' + ${6 ^ 3} + ' ' + ${~6}">..</p>
+<p th:text="${1 &lt;&lt; 3} + ' ' + ${-8 &gt;&gt; 1} + ' ' + ${-8 &gt;&gt;&gt; 28}">..</p>
+<p th:text="${1 lt 2} + ' ' + ${2 gte 2} + ' ' + ${not true} + ' ' + ${true and false} + ' ' + ${true or false}">..</p>
+<p th:text="${1 in { 1, 2 }} + ' ' + ${3 not in { 1, 2 }}">..</p>
+<p th:text="${1 == 1.0} + ' ' + ${'ab' == 'ab'} + ' ' + ${null == null}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>3</p>
+<p>3.5</p>
+<p>1</p>
+<p>-2147483648</p>
+<p>3.00</p>
+<p>2.50</p>
+<p>ab12</p>
+<p>3ab</p>
+<p>2 7 5 -7</p>
+<p>8 -4 15</p>
+<p>true true false false true</p>
+<p>true true</p>
+<p>true true true</p>

@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Members of java.lang.Class are forbidden also when accessed as properties (via their getters)
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#strings.class.classLoader}">..</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden for type\E(.*)

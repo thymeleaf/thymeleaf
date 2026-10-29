@@ -22,8 +22,11 @@ package org.thymeleaf.standard.expression;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ognl.ASTVarRef;
@@ -346,9 +349,10 @@ public final class OGNLVariableExpressionEvaluator
             return ((OGNLShortcutExpression) parsedExpression).evaluate(configuration, context, root);
         }
 
-        // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
-        // creating the OgnlContext empty and then setting the context Map variables one by one
-        final OgnlContext ognlContext = new OgnlContext(MEMBER_ACCESS, CLASS_RESOLVER, null, context);
+        // The context variables map must not be copied into the OgnlContext (see ThymeleafOGNLContext)
+        final OgnlContext ognlContext = new ThymeleafOGNLContext(MEMBER_ACCESS, CLASS_RESOLVER, context);
+        // OGNL 3.4.9 to 3.4.12 ignore the root passed to Ognl.getValue(...) if the context does not define one
+        ognlContext.setRoot(root);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
@@ -406,7 +410,7 @@ public final class OGNLVariableExpressionEvaluator
         }
 
         @Override
-        public Class<?> classForName(final String className, final Map context) throws ClassNotFoundException {
+        public <T> Class<T> classForName(final String className, final OgnlContext context) throws ClassNotFoundException {
             if (ExpressionUtils.isTypeForbidden(className)) {
                 throw new TemplateProcessingException(
                         String.format(
@@ -426,16 +430,17 @@ public final class OGNLVariableExpressionEvaluator
      */
     static final class ThymeleafDefaultClassResolver implements ClassResolver {
 
-        private final ConcurrentHashMap<String, Class> classes = new ConcurrentHashMap<>(101);
+        private final ConcurrentHashMap<String, Class<?>> classes = new ConcurrentHashMap<>(101);
 
         ThymeleafDefaultClassResolver() {
             super();
         }
 
-        public Class classForName(final String className, final Map context) throws ClassNotFoundException {
-            Class result = this.classes.get(className);
+        @SuppressWarnings("unchecked")
+        public <T> Class<T> classForName(final String className, final OgnlContext context) throws ClassNotFoundException {
+            Class<?> result = this.classes.get(className);
             if (result != null) {
-                return result;
+                return (Class<T>) result;
             }
             try {
                 result = toClassForName(className);
@@ -443,10 +448,10 @@ public final class OGNLVariableExpressionEvaluator
                 throw e;
             }
             this.classes.putIfAbsent(className, result);
-            return result;
+            return (Class<T>) result;
         }
 
-        private Class toClassForName(String className) throws ClassNotFoundException {
+        private Class<?> toClassForName(String className) throws ClassNotFoundException {
             return Class.forName(className);
         }
 
@@ -460,7 +465,7 @@ public final class OGNLVariableExpressionEvaluator
         }
 
         @Override
-        public boolean isAccessible(final Map context, final Object target, final Member member, final String propertyName) {
+        public boolean isAccessible(final OgnlContext context, final Object target, final Member member, final String propertyName) {
             int modifiers = member.getModifiers();
             if (!Modifier.isPublic(modifiers)) {
                 return false;
@@ -475,6 +480,55 @@ public final class OGNLVariableExpressionEvaluator
             }
             return true;
         }
+    }
+
+
+    /*
+     * Since OGNL 3.4, initial values can only be copied into an OgnlContext's internal map. Copying the context
+     * variables map would create all (lazily created) expression objects at each evaluation, fail in restricted mode
+     * for restricted expression objects even if not used, and replace OGNL's root and current object with the "root"
+     * and "this" expression objects (reserved keys in OgnlContext). So the context variables map is queried directly
+     * instead, in the same order as in previous OGNL versions: OGNL reserved keys, then context variables, then any
+     * variables set during evaluation.
+     */
+    static final class ThymeleafOGNLContext extends OgnlContext {
+
+        // Keys whose value is computed by OgnlContext itself (see OgnlContext#get)
+        private static final Set<String> OGNL_RESERVED_KEYS =
+                Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+                        "root", "this", "_traceEvaluations", "_lastEvaluation", "_keepLastEvaluation", "_ignoreReadMethods")));
+
+        private final Map<String,Object> contextVariables;
+
+        ThymeleafOGNLContext(
+                final MemberAccess memberAccess, final ClassResolver classResolver,
+                final Map<String,Object> contextVariables) {
+            super(memberAccess, classResolver, null, null);
+            this.contextVariables = contextVariables;
+        }
+
+        @Override
+        public Object get(final Object key) {
+            if (key != null && !OGNL_RESERVED_KEYS.contains(key.toString()) && this.contextVariables.containsKey(key)) {
+                return this.contextVariables.get(key);
+            }
+            return super.get(key);
+        }
+
+        @Override
+        public Object put(final String key, final Object value) {
+            if (key != null && !OGNL_RESERVED_KEYS.contains(key) && this.contextVariables.containsKey(key)) {
+                // Will fail for expression objects (see OGNLExpressionObjectsWrapper#put()), as with previous OGNL versions
+                return this.contextVariables.put(key, value);
+            }
+            return super.put(key, value);
+        }
+
+        @Override
+        public boolean containsKey(final Object key) {
+            return (key != null && this.contextVariables.containsKey(key)) || super.containsKey(key);
+        }
+
     }
 
 }

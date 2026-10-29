@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Since OGNL 3.4.9, '?.' is always parsed as the safe navigation operator, so a conditional operator
+# directly followed by a decimal literal starting with '.' (e.g. 'flag?.5:1') no longer parses. Up to OGNL 3.3.x
+# this evaluated to 0.5. A space after '?' avoids the problem (see ognl02).
+# ------------------------------------------------------------
+%CONTEXT
+flag = true
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${flag?.5:1}">..</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QException evaluating OGNL expression\E(.*)

@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Local variables, safe navigation and expression objects in restricted mode
+# ------------------------------------------------------------
+%CONTEXT
+item = @org.thymeleaf.templateengine.features.ognl.OgnlItem@sample()
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${#x = 5, #x + 1}">..</p>
+<p th:utext="${item.child?.name == null}">..</p>
+<p th:utext="${#strings.toUpperCase(item.name)}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>6</p>
+<p>true</p>
+<p>ITEM</p>

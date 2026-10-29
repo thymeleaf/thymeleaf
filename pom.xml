@@ -137,7 +137,7 @@
     <javax-validation-api.version>2.0.1.Final</javax-validation-api.version>
     <javax-mail-api.version>1.6.2</javax-mail-api.version>
     <apache-taglibs-standard.version>1.2.5</apache-taglibs-standard.version>
-    <ognl.version>3.3.4</ognl.version>
+    <ognl.version>3.4.17</ognl.version>
     <glassfish-jakarta-servlet-jsp-jstl.version>3.0.1</glassfish-jakarta-servlet-jsp-jstl.version>
     <attoparser.version>2.0.9.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
