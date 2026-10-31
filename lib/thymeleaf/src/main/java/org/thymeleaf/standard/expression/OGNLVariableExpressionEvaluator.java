@@ -191,7 +191,9 @@ public final class OGNLVariableExpressionEvaluator
             // Execute the expression!
             final Object result;
             try {
-                result = executeExpression(configuration, parsedExpression.expression, contextVariablesMap, evaluationRoot);
+                result = executeExpression(
+                        configuration, parsedExpression.expression, contextVariablesMap, evaluationRoot,
+                        expContext.getRestrictVariableAccess());
             } catch (final OGNLShortcutExpression.OGNLShortcutExpressionNotApplicableException notApplicable) {
                 // We tried to apply shortcuts, but it is not possible for this expression even if it parsed OK,
                 // so we need to empty the cache and try again disabling shortcuts. Once processed for the first time,
@@ -343,7 +345,7 @@ public final class OGNLVariableExpressionEvaluator
 
     private static Object executeExpression(
             final IEngineConfiguration configuration, final Object parsedExpression,
-            final Map<String,Object> context, final Object root)
+            final Map<String,Object> context, final Object root, final boolean restrictVariableAccess)
             throws Exception {
 
         if (parsedExpression instanceof OGNLShortcutExpression) {
@@ -351,7 +353,8 @@ public final class OGNLVariableExpressionEvaluator
         }
 
         // The context variables map must not be copied into the OgnlContext (see ThymeleafOGNLContext)
-        final OgnlContext ognlContext = new ThymeleafOGNLContext(MEMBER_ACCESS, CLASS_RESOLVER, context);
+        final OgnlContext ognlContext =
+                new ThymeleafOGNLContext(MEMBER_ACCESS, CLASS_RESOLVER, context, restrictVariableAccess);
         // OGNL 3.4.9 to 3.4.12 ignore the root passed to Ognl.getValue(...) if the context does not define one
         ognlContext.setRoot(root);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
@@ -471,6 +474,13 @@ public final class OGNLVariableExpressionEvaluator
             if (!Modifier.isPublic(modifiers)) {
                 return false;
             }
+            if (target instanceof IContext
+                    && (!(context instanceof ThymeleafOGNLContext) || ((ThymeleafOGNLContext) context).restrictVariableAccess)) {
+                throw new TemplateProcessingException(
+                        String.format(
+                                "Accessing member '%s' of the context object is forbidden in this context.",
+                                member.getName()));
+            }
             if (member instanceof Method) {
                 if (ExpressionUtils.isMemberForbidden(target, member.getName())) {
                     throw new TemplateProcessingException(
@@ -500,12 +510,14 @@ public final class OGNLVariableExpressionEvaluator
                         "root", "this", "_traceEvaluations", "_lastEvaluation", "_keepLastEvaluation", "_ignoreReadMethods")));
 
         private final Map<String,Object> contextVariables;
+        private final boolean restrictVariableAccess;
 
         ThymeleafOGNLContext(
                 final MemberAccess memberAccess, final ClassResolver classResolver,
-                final Map<String,Object> contextVariables) {
+                final Map<String,Object> contextVariables, final boolean restrictVariableAccess) {
             super(memberAccess, classResolver, null, null);
             this.contextVariables = contextVariables;
+            this.restrictVariableAccess = restrictVariableAccess;
         }
 
         @Override
