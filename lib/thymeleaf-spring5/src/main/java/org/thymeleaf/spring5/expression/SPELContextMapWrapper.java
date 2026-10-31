@@ -111,6 +111,16 @@ public final class SPELContextMapWrapper implements Map {
             throw new TemplateProcessingException("Cannot read property on null target");
         }
 
+        if (this.evaluationContext.isVariableAccessRestricted()) {
+            if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(key == null? null : key.toString())) {
+                throw new TemplateProcessingException(
+                        "Access to variable \"" + key + "\" is forbidden in this context. Note some restrictions apply to " +
+                        "variable access. For example, direct access to request parameters is forbidden in preprocessing and " +
+                        "unescaped expressions, in TEXT template mode, in fragment insertion specifications and " +
+                        "in some specific attribute processors.");
+            }
+        }
+
         return this.context.getVariable(key == null? null : key.toString());
 
     }
