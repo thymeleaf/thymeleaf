@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+baseurl = "javascript:void(0)"
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{'{p}'(p=${baseurl})}">go</a>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qforbidden in this context\E(.*)

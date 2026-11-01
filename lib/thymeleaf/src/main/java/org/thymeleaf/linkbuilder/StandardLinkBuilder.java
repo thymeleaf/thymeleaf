@@ -66,6 +66,9 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
     private static final char URL_TEMPLATE_DELIMITER_SUFFIX = '}';
     private static final String URL_TEMPLATE_DELIMITER_SEGMENT_PREFIX = "{/";
 
+    private static final String JAVASCRIPT_SCHEME = "javascript:";
+    private static final int JAVASCRIPT_SCHEME_LEN = JAVASCRIPT_SCHEME.length();
+
 
 
     public StandardLinkBuilder() {
@@ -166,6 +169,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
          */
         if (mightHaveVariableTemplates) {
             linkBase = replaceTemplateParamsInBase(linkBase, linkParameters);
+            filterOutJavaScriptLinks(linkBase);
         }
 
 
@@ -240,24 +244,33 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
 
 
     private static void filterOutJavaScriptLinks(final CharSequence linkBase) {
-        if (linkBase.length() >= 11 &&
-                Character.toLowerCase(linkBase.charAt(0)) == 'j' &&
-                Character.toLowerCase(linkBase.charAt(1)) == 'a' &&
-                Character.toLowerCase(linkBase.charAt(2)) == 'v' &&
-                Character.toLowerCase(linkBase.charAt(3)) == 'a' &&
-                Character.toLowerCase(linkBase.charAt(4)) == 's' &&
-                Character.toLowerCase(linkBase.charAt(5)) == 'c' &&
-                Character.toLowerCase(linkBase.charAt(6)) == 'r' &&
-                Character.toLowerCase(linkBase.charAt(7)) == 'i' &&
-                Character.toLowerCase(linkBase.charAt(8)) == 'p' &&
-                Character.toLowerCase(linkBase.charAt(9)) == 't' &&
-                Character.toLowerCase(linkBase.charAt(10)) == ':') {
 
+        // Scheme is read as in the WHATWG URL parser: leading C0 controls and spaces are skipped,
+        // and ASCII tabs and newlines are ignored anywhere
+        final int linkBaseLen = linkBase.length();
+        int i = 0;
+        while (i < linkBaseLen && linkBase.charAt(i) <= ' ') {
+            i++;
+        }
+
+        int matched = 0;
+        while (i < linkBaseLen && matched < JAVASCRIPT_SCHEME_LEN) {
+            final char c = linkBase.charAt(i++);
+            if (c == '\t' || c == '\n' || c == '\r') {
+                continue;
+            }
+            if (Character.toLowerCase(c) != JAVASCRIPT_SCHEME.charAt(matched)) {
+                return;
+            }
+            matched++;
+        }
+
+        if (matched == JAVASCRIPT_SCHEME_LEN) {
             throw new TemplateProcessingException(
                     "'javascript:' is forbidden in this context. Link expressions cannot " +
                     "contain inlined JavaScript code.");
-
         }
+
     }
 
 
