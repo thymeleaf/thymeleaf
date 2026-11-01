@@ -99,8 +99,9 @@ public class ClassForPositionAttributeTagProcessor extends AbstractAttributeTagP
          * Set the new value into the 'class' attribute (maybe appending to an existing value)
          */
         if (newValue != null) {
-            if (attributeValue != null) {
-                structureHandler.setAttribute("class", attributeValue + " " + newValue);
+            final String currentClass = tag.getAttributeValue("class");
+            if (currentClass != null) {
+                structureHandler.setAttribute("class", currentClass + " " + newValue);
             } else {
                 structureHandler.setAttribute("class", newValue);
             }
