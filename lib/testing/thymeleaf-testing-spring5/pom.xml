@@ -38,6 +38,7 @@
   <name>thymeleaf-testing-spring5</name>
 
   <properties>
+    <java.version>11</java.version>
     <!-- A project-name-based approach is adopted for module name (instead a reverse-DNS).      -->
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be  -->
     <!-- a valid approach for project names containing hyphens (not allowed in module names).   -->
