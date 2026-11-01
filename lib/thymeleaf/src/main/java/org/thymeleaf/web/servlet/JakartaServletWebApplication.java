@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Objects;
 
 import jakarta.servlet.ServletContext;
@@ -58,6 +59,26 @@ public class JakartaServletWebApplication implements IServletWebApplication {
 
     public IServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
                                              final HttpServletResponse httpServletResponse) {
+        return buildExchange(httpServletRequest, httpServletResponse, null);
+    }
+
+    /**
+     * <p>
+     *   Builds a web exchange for the specified request and response, specifying the locale resolved for
+     *   the request by the calling framework (e.g. by Spring MVC). This will be the locale returned by
+     *   {@link org.thymeleaf.web.IWebExchange#getLocale()}.
+     * </p>
+     *
+     * @param httpServletRequest the request.
+     * @param httpServletResponse the response.
+     * @param locale the locale resolved for the request, or null for using the locale of the request
+     *               ({@code HttpServletRequest#getLocale()}).
+     * @return the web exchange.
+     * @since 3.1.6
+     */
+    public IServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
+                                             final HttpServletResponse httpServletResponse,
+                                             final Locale locale) {
 
         Validate.notNull(httpServletRequest, "Request cannot be null");
         Validate.notNull(httpServletResponse, "Response cannot be null");
@@ -68,7 +89,7 @@ public class JakartaServletWebApplication implements IServletWebApplication {
         final JakartaServletWebRequest request = new JakartaServletWebRequest(httpServletRequest);
         final JakartaServletWebSession session = new JakartaServletWebSession(httpServletRequest);
 
-        return new JakartaServletWebExchange(request, session, this, httpServletResponse);
+        return new JakartaServletWebExchange(request, session, this, httpServletResponse, locale);
 
     }
 

@@ -202,7 +202,7 @@ public class ThymeleafView
         final ServletContext servletContext = getServletContext() ;
         final IWebExchange webExchange =
                 JakartaServletWebApplication.
-                        buildApplication(servletContext).buildExchange(request, response);
+                        buildApplication(servletContext).buildExchange(request, response, getLocale());
 
         final String viewTemplateName = getTemplateName();
         final ISpringTemplateEngine viewTemplateEngine = getTemplateEngine();

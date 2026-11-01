@@ -44,6 +44,15 @@ public interface IWebExchange {
 
     public Principal getPrincipal();
 
+    /**
+     * <p>
+     *   Returns the locale resolved for the current request. Frameworks can establish this locale according
+     *   to their own resolution mechanisms (e.g. Spring's locale resolvers). In Servlet environments
+     *   without such a framework, it is the locale of the request (based on its {@code Accept-Language} header).
+     * </p>
+     *
+     * @return the locale resolved for the current request.
+     */
     public Locale getLocale();
     public String getContentType();
     public String getCharacterEncoding();

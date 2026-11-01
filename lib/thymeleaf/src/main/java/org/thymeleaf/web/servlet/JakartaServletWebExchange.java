@@ -44,12 +44,14 @@ final class JakartaServletWebExchange implements IServletWebExchange {
 
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
+    private final Locale locale; // can be null
 
 
     JakartaServletWebExchange(final JakartaServletWebRequest webRequest,
                               final JakartaServletWebSession webSession,
                               final JakartaServletWebApplication webApplication,
-                              final HttpServletResponse httpServletResponse) {
+                              final HttpServletResponse httpServletResponse,
+                              final Locale locale) {
         super();
         Validate.notNull(webRequest, "Web Request cannot be null");
         // session CAN be null
@@ -60,6 +62,7 @@ final class JakartaServletWebExchange implements IServletWebExchange {
         this.webApplication = webApplication;
         this.httpServletRequest = (HttpServletRequest) this.webRequest.getNativeRequestObject();
         this.httpServletResponse = httpServletResponse;
+        this.locale = locale;
     }
 
 
@@ -87,7 +90,7 @@ final class JakartaServletWebExchange implements IServletWebExchange {
 
     @Override
     public Locale getLocale() {
-        return this.httpServletResponse.getLocale();
+        return (this.locale != null ? this.locale : this.httpServletRequest.getLocale());
     }
 
     @Override
