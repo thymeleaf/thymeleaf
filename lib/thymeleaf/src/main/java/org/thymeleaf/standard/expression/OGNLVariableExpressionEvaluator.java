@@ -29,6 +29,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import ognl.ASTCtor;
+import ognl.ASTMap;
+import ognl.ASTStaticField;
+import ognl.ASTStaticMethod;
 import ognl.ASTVarRef;
 import ognl.AbstractMemberAccess;
 import ognl.ClassResolver;
@@ -138,6 +142,9 @@ public final class OGNLVariableExpressionEvaluator
 
         if (expContext.getRestrictVariableAccess()) {
             checkRestrictedVariables(parsedExpression.expression);
+        }
+        if (expContext.getRestrictExternalAccess()) {
+            checkExternalAccess(parsedExpression.expression);
         }
 
         try {
@@ -383,6 +390,26 @@ public final class OGNLVariableExpressionEvaluator
         }
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             checkRestrictedVariables(node.jjtGetChild(i));
+        }
+    }
+
+
+    static void checkExternalAccess(final Object parsedExpression) {
+        if (parsedExpression instanceof Node) {
+            checkExternalAccess((Node) parsedExpression);
+        }
+    }
+
+
+    private static void checkExternalAccess(final Node node) {
+        // Maps with a specified class (#@SomeMap@{...}) are instantiated from that class
+        if (node instanceof ASTCtor || node instanceof ASTStaticMethod || node instanceof ASTStaticField
+                || (node instanceof ASTMap && node.toString().startsWith("#@"))) {
+            throw new TemplateProcessingException(
+                    "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
+        }
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            checkExternalAccess(node.jjtGetChild(i));
         }
     }
 

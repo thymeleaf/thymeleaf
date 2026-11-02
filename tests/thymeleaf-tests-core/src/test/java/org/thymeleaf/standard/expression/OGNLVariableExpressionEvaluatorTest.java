@@ -21,10 +21,12 @@ package org.thymeleaf.standard.expression;
 
 import java.util.Locale;
 
+import ognl.Ognl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 
 public class OGNLVariableExpressionEvaluatorTest {
@@ -70,6 +72,43 @@ public class OGNLVariableExpressionEvaluatorTest {
         final Exception e = Assertions.assertThrows(Exception.class,
                 () -> process("<p th:text=\"${#strings = 'x', #strings}\">..</p>"));
         Assertions.assertTrue(String.valueOf(rootMessage(e)).contains("key matches the name of one of the expression objects"));
+    }
+
+
+    @Test
+    public void testExternalAccessCheck() throws Exception {
+        final String[] refused = {
+                "new java.util.ArrayList()", "new int[1]", "{1, new java.util.ArrayList()}",
+                "@java.lang.Math@max(1,2)", "@java.lang.Math@PI", "@@max(1,2)", "#@java.util.LinkedHashMap@{'a':1}",
+                "item.name + @java.lang.Math@max(1,2)"
+        };
+        for (final String exp : refused) {
+            final Object parsed = Ognl.parseExpression(exp);
+            final TemplateProcessingException e = Assertions.assertThrows(TemplateProcessingException.class,
+                    () -> OGNLVariableExpressionEvaluator.checkExternalAccess(parsed), exp);
+            Assertions.assertTrue(e.getMessage().contains("forbidden in this context"), exp);
+        }
+        final String[] allowed = {
+                "item.name", "{1,2}", "#{'a':1}", "#strings.toUpperCase('a')", "item instanceof java.lang.String"
+        };
+        for (final String exp : allowed) {
+            final Object parsed = Ognl.parseExpression(exp);
+            Assertions.assertDoesNotThrow(() -> OGNLVariableExpressionEvaluator.checkExternalAccess(parsed), exp);
+        }
+    }
+
+
+    @Test
+    public void testExternalAccessInRestrictedMode() {
+        Assertions.assertEquals("<p>2</p>", process("<p th:text=\"${@java.lang.Math@max(1,2)}\">..</p>"));
+        final String[] refused = {
+                "<p th:utext=\"${@\u02C2java.lang.Math@max(1,2)}\">..</p>",
+                "<p th:utext=\"${@java.lang.Math\u02C2@max(1,2)}\">..</p>"
+        };
+        for (final String template : refused) {
+            final Exception e = Assertions.assertThrows(Exception.class, () -> process(template), template);
+            Assertions.assertTrue(String.valueOf(rootMessage(e)).contains("forbidden in this context"), template);
+        }
     }
 
 
