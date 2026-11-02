@@ -44,12 +44,14 @@ import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypeLocator;
+import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.springframework.expression.spel.support.StandardTypeLocator;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring6.view.ThymeleafView;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
@@ -468,9 +470,43 @@ public final class ThymeleafEvaluationContext
                                     "Calling method '%s' is forbidden for type '%s' in this expression context.",
                                     name, targetObject.getClass()));
                 }
+                if (targetObject instanceof IContext) {
+                    checkContextMemberCallAllowed(context, name);
+                    // Resolved executors are cached in parsed expressions, which can be executed in different modes
+                    return new ContextMethodExecutor(methodExecutor, name);
+                }
             }
 
             return methodExecutor;
+
+        }
+
+        private static void checkContextMemberCallAllowed(final EvaluationContext context, final String name) {
+            if (!(context instanceof IThymeleafEvaluationContext)
+                    || ((IThymeleafEvaluationContext) context).isVariableAccessRestricted()) {
+                throw new EvaluationException(
+                        String.format(
+                                "Calling method '%s' of the context object is forbidden in this context.", name));
+            }
+        }
+
+        private static final class ContextMethodExecutor implements MethodExecutor {
+
+            private final MethodExecutor methodExecutor;
+            private final String name;
+
+            ContextMethodExecutor(final MethodExecutor methodExecutor, final String name) {
+                super();
+                this.methodExecutor = methodExecutor;
+                this.name = name;
+            }
+
+            @Override
+            public TypedValue execute(
+                    final EvaluationContext context, final Object target, final Object... arguments) throws AccessException {
+                checkContextMemberCallAllowed(context, this.name);
+                return this.methodExecutor.execute(context, target, arguments);
+            }
 
         }
 
