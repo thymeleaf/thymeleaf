@@ -77,6 +77,7 @@ public class SPELVariableExpressionEvaluator
     public static final SPELVariableExpressionEvaluator INSTANCE = new SPELVariableExpressionEvaluator();
 
     private static final String EXPRESSION_CACHE_TYPE_SPEL = "spel";
+    private static final String EXPRESSION_CACHE_TYPE_SPEL_RESTRICTED = "spelr";
 
 
     private static final Logger logger = LoggerFactory.getLogger(SPELVariableExpressionEvaluator.class);
@@ -320,15 +321,21 @@ public class SPELVariableExpressionEvaluator
                 "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
         }
 
+        // SpEL nodes cache the executors and accessors resolved during evaluation, and compiled expressions do
+        // not use the evaluation context for some operations, so restricted executions use their own
+        // (never compiled) SpelExpression objects.
+        final boolean restricted = expContext.getRestrictVariableAccess();
+
         if (expression instanceof VariableExpression) {
 
             final VariableExpression vexpression = (VariableExpression) expression;
 
             Object cachedExpression = vexpression.getCachedExpression();
-            if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
+            if (cachedExpression instanceof ComputedSpelExpression
+                    && ((ComputedSpelExpression) cachedExpression).restricted == restricted) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression);
+            cachedExpression = getExpression(configuration, spelExpression, restricted);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -341,10 +348,11 @@ public class SPELVariableExpressionEvaluator
             final SelectionVariableExpression vexpression = (SelectionVariableExpression) expression;
 
             Object cachedExpression = vexpression.getCachedExpression();
-            if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
+            if (cachedExpression instanceof ComputedSpelExpression
+                    && ((ComputedSpelExpression) cachedExpression).restricted == restricted) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression);
+            cachedExpression = getExpression(configuration, spelExpression, restricted);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -352,13 +360,15 @@ public class SPELVariableExpressionEvaluator
 
         }
 
-        return getExpression(configuration, spelExpression);
+        return getExpression(configuration, spelExpression, restricted);
 
     }
 
 
     private static ComputedSpelExpression getExpression(
-            final IEngineConfiguration configuration, final String spelExpression) {
+            final IEngineConfiguration configuration, final String spelExpression, final boolean restricted) {
+
+        final String cacheType = (restricted ? EXPRESSION_CACHE_TYPE_SPEL_RESTRICTED : EXPRESSION_CACHE_TYPE_SPEL);
 
         ComputedSpelExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
@@ -367,7 +377,7 @@ public class SPELVariableExpressionEvaluator
         if (cacheManager != null) {
             cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                exp = (ComputedSpelExpression) cache.get(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression));
+                exp = (ComputedSpelExpression) cache.get(new ExpressionCacheKey(cacheType, spelExpression));
             }
         }
 
@@ -375,17 +385,17 @@ public class SPELVariableExpressionEvaluator
 
             // SELECT THE ADEQUATE SpEL EXPRESSION PARSER depending on whether SpEL compilation is enabled
             final SpelExpressionParser spelExpressionParser =
-                    PARSER_WITH_COMPILED_SPEL != null && SpringStandardExpressions.isSpringELCompilerEnabled(configuration)?
+                    !restricted && PARSER_WITH_COMPILED_SPEL != null && SpringStandardExpressions.isSpringELCompilerEnabled(configuration)?
                             PARSER_WITH_COMPILED_SPEL : PARSER_WITHOUT_COMPILED_SPEL;
 
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
 
             final SpelExpression spelExpressionObject = (SpelExpression) spelExpressionParser.parseExpression(spelExpression);
 
-            exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
+            exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects, restricted);
 
             if (cache != null && null != exp) {
-                cache.put(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression), exp);
+                cache.put(new ExpressionCacheKey(cacheType, spelExpression), exp);
             }
 
         }
@@ -447,11 +457,14 @@ public class SPELVariableExpressionEvaluator
 
         final SpelExpression expression;
         final boolean mightNeedExpressionObjects;
+        final boolean restricted;
 
-        ComputedSpelExpression(final SpelExpression expression, final boolean mightNeedExpressionObjects) {
+        ComputedSpelExpression(
+                final SpelExpression expression, final boolean mightNeedExpressionObjects, final boolean restricted) {
             super();
             this.expression = expression;
             this.mightNeedExpressionObjects = mightNeedExpressionObjects;
+            this.restricted = restricted;
         }
 
 

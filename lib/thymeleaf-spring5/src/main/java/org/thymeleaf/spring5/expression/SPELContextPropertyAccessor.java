@@ -70,6 +70,13 @@ public final class SPELContextPropertyAccessor implements PropertyAccessor {
 
     public boolean canRead(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
+        checkVariableAccess(context, name);
+        return target != null;
+    }
+
+
+    private static void checkVariableAccess(final EvaluationContext context, final String name)
+            throws AccessException {
         if (context instanceof IThymeleafEvaluationContext) {
             if (((IThymeleafEvaluationContext) context).isVariableAccessRestricted()) {
                 if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name)) {
@@ -81,7 +88,6 @@ public final class SPELContextPropertyAccessor implements PropertyAccessor {
                 }
             }
         }
-        return target != null;
     }
 
 
@@ -92,6 +98,9 @@ public final class SPELContextPropertyAccessor implements PropertyAccessor {
         if (target == null) {
             throw new AccessException("Cannot read property of null target");
         }
+
+        // Accessors are cached by SpEL nodes, so canRead() might not have been called for this evaluation
+        checkVariableAccess(evaluationContext, name);
 
         try {
 
