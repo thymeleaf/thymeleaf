@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Evaluated attribute names cannot contain characters not allowed in attribute names.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+name = 'x"y'
+# ------------------------------------------------------------
+%INPUT
+<div th:attr="${name}=${one}">..</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qinvalid attribute name\E(.*)

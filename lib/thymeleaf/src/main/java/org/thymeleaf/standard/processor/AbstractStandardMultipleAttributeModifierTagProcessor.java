@@ -139,6 +139,10 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             // In HTML mode, attributes whose name starts with "on" are event handlers (see the same check in
             // StandardDefaultAttributesTagProcessor), so text expression results are forbidden in their values
             final String checkedAttributeName = (newAttributeName == null? "" : newAttributeName.trim());
+            if (!isValidAttributeName(checkedAttributeName)) {
+                throw new TemplateProcessingException(
+                        "Attribute name expression evaluated as an invalid attribute name: \"" + leftExpr + "\"");
+            }
             final StandardExpressionExecutionContext valueExpCtx =
                     (getTemplateMode() == TemplateMode.HTML
                             && checkedAttributeName.length() > 2
@@ -210,6 +214,21 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
         }
 
+    }
+
+
+    // Characters that cannot be a part of an attribute name in HTML or XML markup
+    private static boolean isValidAttributeName(final String attributeName) {
+        final int attributeNameLen = attributeName.length();
+        char c;
+        for (int i = 0; i < attributeNameLen; i++) {
+            c = attributeName.charAt(i);
+            if (c <= ' ' || (c >= '\u007F' && c <= '\u009F')
+                    || c == '"' || c == '\'' || c == '/' || c == '=' || c == '<' || c == '>') {
+                return false;
+            }
+        }
+        return true;
     }
 
 

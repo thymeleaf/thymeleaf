@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+# Evaluated attribute names can contain characters usual in attribute names.
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+n1 = 'aria-label'
+n2 = 'xlink:href'
+n3 = '@click.prevent'
+n4 = ':class'
+n5 = 'data-x_y'
+# ------------------------------------------------------------
+%INPUT
+<div th:attr="${n1}=${one},${n2}=${one},${n3}=${one},${n4}=${one},${n5}=${one}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div aria-label="one!" xlink:href="one!" @click.prevent="one!" :class="one!" data-x_y="one!">..</div>
