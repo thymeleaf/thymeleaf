@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+name = 'v'
+key = new org.thymeleaf.templateengine.features.ognl.OgnlText('name')
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${[key]}">..</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>v</p>

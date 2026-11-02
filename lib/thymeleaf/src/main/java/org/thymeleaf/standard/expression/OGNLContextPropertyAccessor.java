@@ -72,15 +72,15 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
                     "in this case the target object is " + (target == null? "null" : ("of class " + target.getClass().getName())));
         }
 
-        if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name) && ognlContext != null && ognlContext.containsKey(RESTRICT_EXPRESSION_OBJECTS)) {
+        final String propertyName = (name == null? null : name.toString());
+
+        if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(propertyName) && ognlContext != null && ognlContext.containsKey(RESTRICT_EXPRESSION_OBJECTS)) {
             throw new OgnlException(
-                    "Access to variable \"" + name + "\" is forbidden in this context. Note some restrictions apply to " +
+                    "Access to variable \"" + propertyName + "\" is forbidden in this context. Note some restrictions apply to " +
                     "variable access. For example, direct access to request parameters is forbidden in preprocessing and " +
                     "unescaped expressions, in TEXT template mode, in fragment insertion specifications and " +
                     "in some specific attribute processors.");
         }
-
-        final String propertyName = (name == null? null : name.toString());
 
         /*
          * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.

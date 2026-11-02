@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+param.a = 'something'
+key = new org.thymeleaf.templateengine.features.ognl.OgnlText('param')
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${[key]}">..</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\Qis forbidden in this context\E(.*)
