@@ -131,10 +131,14 @@ public final class OGNLVariableExpressionEvaluator
             throw new TemplateProcessingException("Expression content is null, which is not allowed");
         }
 
-        final ComputedOGNLExpression parsedExpression;
+        ComputedOGNLExpression parsedExpression;
         try {
             parsedExpression =
                     obtainComputedOGNLExpression(configuration, expression, exp, expContext, applyOGNLShortcuts);
+            if (parsedExpression.isShortcut()
+                    && (expContext.getRestrictVariableAccess() || expContext.getRestrictExternalAccess())) {
+                parsedExpression = parsedExpression.getNonShortcutExpression(exp);
+            }
         } catch (final OgnlException e) {
             throw new TemplateProcessingException(
                     "Exception evaluating OGNL expression: \"" + expression.getExpression() + "\"", e);
@@ -420,11 +424,25 @@ public final class OGNLVariableExpressionEvaluator
 
         final Object expression;
         final boolean mightNeedExpressionObjects;
+        private volatile ComputedOGNLExpression nonShortcutExpression = null;
 
         ComputedOGNLExpression(final Object expression, final boolean mightNeedExpressionObjects) {
             super();
             this.expression = expression;
             this.mightNeedExpressionObjects = mightNeedExpressionObjects;
+        }
+
+        boolean isShortcut() {
+            return this.expression instanceof OGNLShortcutExpression;
+        }
+
+        ComputedOGNLExpression getNonShortcutExpression(final String exp) throws OgnlException {
+            ComputedOGNLExpression computedExpression = this.nonShortcutExpression;
+            if (computedExpression == null) {
+                computedExpression = parseExpression(exp, false);
+                this.nonShortcutExpression = computedExpression;
+            }
+            return computedExpression;
         }
 
 
