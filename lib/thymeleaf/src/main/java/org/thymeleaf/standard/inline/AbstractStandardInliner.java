@@ -36,6 +36,7 @@ import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -525,7 +526,11 @@ public abstract class AbstractStandardInliner implements IInliner {
             final Object expressionResult;
             if (unescapedExpression != null) {
                 final IStandardExpression expressionObj = expressionParser.parseExpression(context, unescapedExpression);
-                expressionResult = expressionObj.execute(context);
+                // Same execution modes as the th:text and th:utext processors
+                final StandardExpressionExecutionContext expContext =
+                        (escape && this.templateMode != TemplateMode.TEXT)?
+                                StandardExpressionExecutionContext.NORMAL : StandardExpressionExecutionContext.RESTRICTED;
+                expressionResult = expressionObj.execute(context, expContext);
             } else {
                 expressionResult = null;
             }
