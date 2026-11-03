@@ -226,7 +226,9 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
-    static Object executeLinkExpression(final IExpressionContext context, final LinkExpression expression) {
+    static Object executeLinkExpression(
+            final IExpressionContext context,
+            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
 
         /*
          *  DEVELOPMENT NOTE: Reasons why Spring's RequestDataValueProcessor#processUrl(...) is not applied here
@@ -278,11 +280,12 @@ public final class LinkExpression extends SimpleExpression {
          * Note the parameters variable might be null if there are no parameters
          *
          * Also note that link parameters, which should be correctly URL-encoded before being added to
-         * the query string of the URL, will always be executed using UNRESTRICTED mode, so that request
-         * params can be directly passed along to other generated URLs.
+         * the query string of the URL, will be executed using NORMAL mode in URL attributes (th:href, th:src)
+         * and in non-restricted contexts, so that request params can be directly passed along to other
+         * generated URLs.
          */
         final Map<String, Object> parameters =
-                resolveParameters(templateContext, expression, StandardExpressionExecutionContext.NORMAL);
+                resolveParameters(templateContext, expression, expContext.forLinkParameters());
 
 
         /*

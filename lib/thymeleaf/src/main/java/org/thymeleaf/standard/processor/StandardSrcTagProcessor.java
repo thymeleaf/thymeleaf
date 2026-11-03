@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -34,7 +35,8 @@ public final class StandardSrcTagProcessor extends AbstractStandardAttributeModi
     public static final String ATTR_NAME = "src";
 
     public StandardSrcTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false, true);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false,
+                StandardExpressionExecutionContext.RESTRICTED_WITH_NORMAL_LINK_PARAMETERS);
     }
 
 

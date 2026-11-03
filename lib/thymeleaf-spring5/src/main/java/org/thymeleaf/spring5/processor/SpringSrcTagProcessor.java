@@ -27,6 +27,7 @@ import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring5.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -55,7 +56,8 @@ public final class SpringSrcTagProcessor
 
 
     public SpringSrcTagProcessor(final String dialectPrefix) {
-        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false, true);
+        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false,
+                StandardExpressionExecutionContext.RESTRICTED_WITH_NORMAL_LINK_PARAMETERS);
     }
 
 
