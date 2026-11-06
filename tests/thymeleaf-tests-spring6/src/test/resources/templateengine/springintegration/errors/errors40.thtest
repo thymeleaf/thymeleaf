@@ -1,0 +1,39 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+bindingError01 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name must be <b>shorter</b> than <a href="/x">this</a>.'}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name <span class="hint">cannot</span> contain <img src="x.png"> images<script>a()</script>'}
+bindingError03 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name is <i>wrong'}
+
+bindingErrors = { bindingError01, bindingError02, bindingError03 }
+# ------------------------------------------------------------
+%INPUT
+<form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
+
+  <fieldset>
+
+    <div th:uerrors="*{name}"></div>
+    <div th:uerrors="*{date}"></div>
+
+  </fieldset>
+
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/process" method="post">
+
+  <fieldset>
+
+    <div>Name must be <b>shorter</b> than this.<br />Name <span class="hint">cannot</span> contain  images<br />Name is <i>wrong</i></div>
+    
+
+  </fieldset>
+
+</form>

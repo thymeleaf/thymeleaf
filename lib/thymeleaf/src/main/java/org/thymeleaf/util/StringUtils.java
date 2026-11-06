@@ -19,12 +19,22 @@
  */
 package org.thymeleaf.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.attoparser.AbstractMarkupHandler;
+import org.attoparser.MarkupParser;
+import org.attoparser.ParseException;
+import org.attoparser.config.ParseConfiguration;
 import org.unbescape.html.HtmlEscape;
 import org.unbescape.java.JavaEscape;
 import org.unbescape.javascript.JavaScriptEscape;
@@ -820,6 +830,42 @@ public final class StringUtils {
 
 
 
+    /**
+     * <p>
+     *   Sanitizes the specified HTML markup so that only a small set of inline text formatting elements
+     *   is kept: {@code b}, {@code strong}, {@code i}, {@code em}, {@code u}, {@code s}, {@code del},
+     *   {@code ins}, {@code mark}, {@code small}, {@code sub}, {@code sup}, {@code span} and {@code br}.
+     * </p>
+     * <p>
+     *   These elements are output without attributes, except for a {@code class} attribute in
+     *   {@code span} elements, which is kept only if it contains nothing but class names made of ASCII
+     *   letters, digits, {@code '-'} and {@code '_'}. Up to 10 levels of nested elements are output.
+     *   Other elements are removed but their text is kept, except for elements such as {@code script}
+     *   or {@code style}, which are removed together with their contents. Comments, CDATA sections,
+     *   DOCTYPE clauses, XML declarations and processing instructions are removed.
+     * </p>
+     * <p>
+     *   The output is built from the elements and texts found in the input, never copied from it: text
+     *   is unescaped and then HTML-escaped, and all elements are closed. Input that cannot be parsed as
+     *   markup is output entirely as (HTML-escaped) text.
+     * </p>
+     * <p>
+     *   This method is meant for keeping basic text formatting in texts such as messages.
+     * </p>
+     *
+     * @param target the markup to be sanitized
+     * @return the sanitized markup.
+     * @since 3.1.6
+     */
+    public static String sanitizeHtmlFormatting(final Object target) {
+        if (target == null) {
+            return null;
+        }
+        return HtmlFormattingSanitizer.sanitize(target.toString());
+    }
+
+
+
     public static String randomAlphanumeric(final int count) {
         final StringBuilder strBuilder = new StringBuilder(count);
         final int anLen = ALPHA_NUMERIC.length();
@@ -835,6 +881,314 @@ public final class StringUtils {
 
     private StringUtils() {
         super();
+    }
+
+
+
+
+    private static final class HtmlFormattingSanitizer extends AbstractMarkupHandler {
+
+        private static final int MAX_DEPTH = 10;
+
+        private static final Set<String> ALLOWED_ELEMENT_NAMES =
+                new HashSet<String>(Arrays.asList(
+                        "b", "strong", "i", "em", "u", "s", "del", "ins", "mark", "small", "sub", "sup", "span"));
+        private static final String BR_ELEMENT_NAME = "br";
+        private static final String SPAN_ELEMENT_NAME = "span";
+        private static final String CLASS_ATTRIBUTE_NAME = "class";
+
+        private static final Set<String> DROPPED_CONTENT_ELEMENT_NAMES =
+                new HashSet<String>(Arrays.asList(
+                        "script", "style", "textarea", "title", "template", "iframe", "object", "noscript",
+                        "nostyle", "noembed", "noframes", "frame", "frameset", "svg", "math", "xmp", "listing",
+                        "plaintext"));
+
+        private static final MarkupParser PARSER;
+
+        static {
+            final ParseConfiguration configuration = ParseConfiguration.htmlConfiguration();
+            configuration.setElementBalancing(ParseConfiguration.ElementBalancing.NO_BALANCING);
+            configuration.setNoUnmatchedCloseElementsRequired(false);
+            configuration.setUniqueAttributesInElementRequired(false);
+            configuration.setXmlWellFormedAttributeValuesRequired(false);
+            PARSER = new MarkupParser(configuration);
+        }
+
+
+        private final StringBuilder output;
+        private final StringBuilder pendingText;
+        private final List<String> openElementNames;
+        private final List<Boolean> openElementsOutput;
+        private final Map<String,int[]> openElementCounts;
+        private int outputDepth;
+
+        private String droppedContentElementName;
+        private int droppedContentDepth;
+
+        private String currentElementName;
+        private String currentClassValue;
+
+
+        static String sanitize(final String markup) {
+            final HtmlFormattingSanitizer sanitizer = new HtmlFormattingSanitizer(markup.length());
+            try {
+                PARSER.parse(markup, sanitizer);
+            } catch (final ParseException e) {
+                return HtmlEscape.escapeHtml4Xml(removeInvalidChars(HtmlEscape.unescapeHtml(markup)));
+            }
+            sanitizer.flushText();
+            sanitizer.closeElements(0);
+            return sanitizer.output.toString();
+        }
+
+
+        private HtmlFormattingSanitizer(final int length) {
+            super();
+            this.output = new StringBuilder(length + 16);
+            this.pendingText = new StringBuilder();
+            this.openElementNames = new ArrayList<String>(MAX_DEPTH);
+            this.openElementsOutput = new ArrayList<Boolean>(MAX_DEPTH);
+            this.openElementCounts = new HashMap<String,int[]>(ALLOWED_ELEMENT_NAMES.size() * 2);
+            this.outputDepth = 0;
+            this.droppedContentElementName = null;
+            this.droppedContentDepth = 0;
+        }
+
+
+        @Override
+        public void handleText(
+                final char[] buffer, final int offset, final int len, final int line, final int col) {
+            if (this.droppedContentDepth == 0) {
+                this.pendingText.append(buffer, offset, len);
+            }
+        }
+
+        @Override
+        public void handleOpenElementStart(
+                final char[] buffer, final int nameOffset, final int nameLen, final int line, final int col) {
+            startElement(buffer, nameOffset, nameLen);
+        }
+
+        @Override
+        public void handleStandaloneElementStart(
+                final char[] buffer, final int nameOffset, final int nameLen,
+                final boolean minimized, final int line, final int col) {
+            startElement(buffer, nameOffset, nameLen);
+        }
+
+        @Override
+        public void handleAttribute(
+                final char[] buffer,
+                final int nameOffset, final int nameLen, final int nameLine, final int nameCol,
+                final int operatorOffset, final int operatorLen, final int operatorLine, final int operatorCol,
+                final int valueContentOffset, final int valueContentLen,
+                final int valueOuterOffset, final int valueOuterLen, final int valueLine, final int valueCol) {
+            if (this.droppedContentDepth == 0
+                    && SPAN_ELEMENT_NAME.equals(this.currentElementName)
+                    && this.currentClassValue == null
+                    && CLASS_ATTRIBUTE_NAME.equals(toLowerCaseAscii(buffer, nameOffset, nameLen))) {
+                this.currentClassValue =
+                        computeClassValue(HtmlEscape.unescapeHtml(new String(buffer, valueContentOffset, valueContentLen)));
+            }
+        }
+
+        @Override
+        public void handleOpenElementEnd(
+                final char[] buffer, final int nameOffset, final int nameLen, final int line, final int col) {
+            endStartTag(false);
+        }
+
+        @Override
+        public void handleStandaloneElementEnd(
+                final char[] buffer, final int nameOffset, final int nameLen,
+                final boolean minimized, final int line, final int col) {
+            endStartTag(true);
+        }
+
+        @Override
+        public void handleCloseElementStart(
+                final char[] buffer, final int nameOffset, final int nameLen, final int line, final int col) {
+            closeElement(toLowerCaseAscii(buffer, nameOffset, nameLen));
+        }
+
+        @Override
+        public void handleUnmatchedCloseElementStart(
+                final char[] buffer, final int nameOffset, final int nameLen, final int line, final int col) {
+            closeElement(toLowerCaseAscii(buffer, nameOffset, nameLen));
+        }
+
+
+        private void startElement(final char[] buffer, final int nameOffset, final int nameLen) {
+            flushText();
+            this.currentElementName = toLowerCaseAscii(buffer, nameOffset, nameLen);
+            this.currentClassValue = null;
+        }
+
+        private void endStartTag(final boolean standalone) {
+
+            final String elementName = this.currentElementName;
+            final String classValue = this.currentClassValue;
+            this.currentElementName = null;
+            this.currentClassValue = null;
+
+            if (this.droppedContentDepth > 0) {
+                if (!standalone && this.droppedContentElementName.equals(elementName)) {
+                    this.droppedContentDepth++;
+                }
+                return;
+            }
+            if (elementName == null) {
+                return;
+            }
+            if (DROPPED_CONTENT_ELEMENT_NAMES.contains(elementName)) {
+                if (!standalone) {
+                    this.droppedContentElementName = elementName;
+                    this.droppedContentDepth = 1;
+                }
+                return;
+            }
+            if (BR_ELEMENT_NAME.equals(elementName)) {
+                this.output.append("<br />");
+                return;
+            }
+            if (!ALLOWED_ELEMENT_NAMES.contains(elementName)) {
+                return;
+            }
+
+            final boolean outputElement = (this.outputDepth < MAX_DEPTH);
+            if (outputElement) {
+                this.output.append('<').append(elementName);
+                if (classValue != null) {
+                    this.output.append(" class=\"").append(classValue).append('"');
+                }
+                this.output.append('>');
+            }
+            if (standalone) {
+                if (outputElement) {
+                    this.output.append("</").append(elementName).append('>');
+                }
+                return;
+            }
+            this.openElementNames.add(elementName);
+            this.openElementsOutput.add(Boolean.valueOf(outputElement));
+            final int[] count = this.openElementCounts.get(elementName);
+            if (count == null) {
+                this.openElementCounts.put(elementName, new int[] { 1 });
+            } else {
+                count[0]++;
+            }
+            if (outputElement) {
+                this.outputDepth++;
+            }
+
+        }
+
+        private void closeElement(final String elementName) {
+
+            if (this.droppedContentDepth > 0) {
+                if (this.droppedContentElementName.equals(elementName)) {
+                    this.droppedContentDepth--;
+                    if (this.droppedContentDepth == 0) {
+                        this.droppedContentElementName = null;
+                    }
+                }
+                return;
+            }
+
+            flushText();
+
+            if (elementName == null) {
+                return;
+            }
+            // Counting open elements avoids searching the stack for elements that are not open, so that the cost
+            // of searching it is limited to the elements that are closed as a result
+            final int[] count = this.openElementCounts.get(elementName);
+            if (count == null || count[0] == 0) {
+                return;
+            }
+            closeElements(this.openElementNames.lastIndexOf(elementName));
+
+        }
+
+        private void closeElements(final int index) {
+            for (int i = this.openElementNames.size() - 1; i >= index; i--) {
+                final String elementName = this.openElementNames.remove(i);
+                this.openElementCounts.get(elementName)[0]--;
+                if (this.openElementsOutput.remove(i).booleanValue()) {
+                    this.output.append("</").append(elementName).append('>');
+                    this.outputDepth--;
+                }
+            }
+        }
+
+        private void flushText() {
+            if (this.pendingText.length() > 0) {
+                this.output.append(
+                        HtmlEscape.escapeHtml4Xml(removeInvalidChars(HtmlEscape.unescapeHtml(this.pendingText.toString()))));
+                this.pendingText.setLength(0);
+            }
+        }
+
+
+        private static String toLowerCaseAscii(final char[] buffer, final int offset, final int len) {
+            final char[] name = new char[len];
+            for (int i = 0; i < len; i++) {
+                final char c = buffer[offset + i];
+                if (c >= 'A' && c <= 'Z') {
+                    name[i] = (char) (c + ('a' - 'A'));
+                } else if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                    name[i] = c;
+                } else {
+                    return null;
+                }
+            }
+            return new String(name);
+        }
+
+        private static String computeClassValue(final String value) {
+            final StringBuilder classValue = new StringBuilder(value.length());
+            final StringTokenizer tokenizer = new StringTokenizer(value, " \t\n\r\f");
+            while (tokenizer.hasMoreTokens()) {
+                final String className = tokenizer.nextToken();
+                for (int i = 0; i < className.length(); i++) {
+                    final char c = className.charAt(i);
+                    if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+                            || c == '-' || c == '_')) {
+                        return null;
+                    }
+                }
+                if (classValue.length() > 0) {
+                    classValue.append(' ');
+                }
+                classValue.append(className);
+            }
+            return (classValue.length() == 0 ? null : classValue.toString());
+        }
+
+        private static String removeInvalidChars(final String text) {
+            StringBuilder result = null;
+            final int textLen = text.length();
+            int i = 0;
+            while (i < textLen) {
+                final int codePoint = text.codePointAt(i);
+                final int codePointLen = Character.charCount(codePoint);
+                final boolean valid =
+                        (codePoint >= 0x20 || codePoint == '\t' || codePoint == '\n' || codePoint == '\r')
+                        && !(codePoint >= Character.MIN_SURROGATE && codePoint <= Character.MAX_SURROGATE)
+                        && !(codePoint >= 0xFDD0 && codePoint <= 0xFDEF)
+                        && (codePoint & 0xFFFE) != 0xFFFE;
+                if (!valid && result == null) {
+                    result = new StringBuilder(textLen);
+                    result.append(text, 0, i);
+                }
+                if (valid && result != null) {
+                    result.append(text, i, i + codePointLen);
+                }
+                i += codePointLen;
+            }
+            return (result == null ? text : result.toString());
+        }
+
     }
 
 

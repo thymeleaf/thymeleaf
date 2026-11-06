@@ -33,8 +33,8 @@ bindingErrors = { bindingError01, bindingError02 }
 
   <fieldset>
       
-    <div>Name has to be < than 'aa'<br />Name has to be >= than 'ab'</div>
-    <div>Name has to be < than 'aa'</div>
+    <div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
+    <div>Name has to be &lt; than &#39;aa&#39;</div>
     
     <div>
       Name: <input type="text" id="name" name="name" value="Mark Lettuce" />

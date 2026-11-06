@@ -29,10 +29,12 @@ import org.thymeleaf.spring6.naming.SpringContextVariableNames;
 import org.thymeleaf.spring6.util.FieldUtils;
 import org.thymeleaf.spring6.util.SpringValueFormatter;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.StringUtils;
 
 /**
  * Works in a similar way to <b>#fields.errors()</b>, but lists all errors for
- * the given field name, <i>unescaped</i> and separated by a &lt;br/&gt;.
+ * the given field name separated by a &lt;br/&gt;, keeping basic text formatting
+ * markup in them (see {@link StringUtils#sanitizeHtmlFormatting(Object)}).
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.8
@@ -73,7 +75,7 @@ public final class SpringUErrorsTagProcessor extends AbstractAttributeTagProcess
                     strBuilder.append(ERROR_DELIMITER);
                 }
                 final String displayString = SpringValueFormatter.getDisplayString(errorMsgs[i], false);
-                strBuilder.append(displayString);
+                strBuilder.append(StringUtils.sanitizeHtmlFormatting(displayString));
             }
 
             structureHandler.setBody(strBuilder.toString(), false);
