@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+v = 'V'
+# ------------------------------------------------------------
+%INPUT
+<div th:fragment="f">1<2 <span th:text="${v}">s</span></div><p th:replace="~{::f}">r</p>
+<div>a <1 <div th:fragment="g">G</div></div><p th:insert="~{::g}">r</p>
+# ------------------------------------------------------------
+%OUTPUT
+<div>1<2 <span>V</span></div><div>1<2 <span>V</span></div>
+<div>a <1 <div>G</div></div><p><div>G</div></p>

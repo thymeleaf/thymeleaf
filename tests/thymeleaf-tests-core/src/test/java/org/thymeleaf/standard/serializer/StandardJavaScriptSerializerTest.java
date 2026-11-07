@@ -124,7 +124,7 @@ public class StandardJavaScriptSerializerTest {
 
         final StringWriter stringWriter = new StringWriter();
         serializer.serializeValue(VALUE0, stringWriter);
-        Assertions.assertEquals("\"<\\/script>\\u0026#22;\"", stringWriter.toString());
+        Assertions.assertEquals("\"\\u003C\\/script\\u003E\\u0026#22;\"", stringWriter.toString());
 
     }
 
@@ -148,7 +148,7 @@ public class StandardJavaScriptSerializerTest {
 
         final StringWriter stringWriter = new StringWriter();
         serializer.serializeValue(VALUE0, stringWriter);
-        Assertions.assertEquals("\"<\\/script>\\u0026#22;\"", stringWriter.toString());
+        Assertions.assertEquals("\"\\u003C\\/script\\u003E\\u0026#22;\"", stringWriter.toString());
 
     }
 
@@ -198,7 +198,7 @@ public class StandardJavaScriptSerializerTest {
 
         final StringWriter stringWriter = new StringWriter();
         serializer.serializeValue(new PersonRecord("</script>&", 0), stringWriter);
-        Assertions.assertEquals("{\"name\":\"<\\/script>\\u0026\",\"age\":0}", stringWriter.toString());
+        Assertions.assertEquals("{\"name\":\"\\u003C\\/script\\u003E\\u0026\",\"age\":0}", stringWriter.toString());
 
     }
 
