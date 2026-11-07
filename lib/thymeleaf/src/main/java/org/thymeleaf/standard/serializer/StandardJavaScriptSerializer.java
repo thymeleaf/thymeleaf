@@ -172,6 +172,38 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
 
+    /*
+     * Applied on JSON-escaped output: escapes '`', and '$' when followed by '{'. JSON syntax outside string
+     * literals contains neither of these characters, so this can be applied on complete serialized values.
+     */
+    private static String escapeTemplateLiteralChars(final String text) {
+        StringBuilder strBuilder = null;
+        final int textLen = text.length();
+        for (int i = 0; i < textLen; i++) {
+            final char c = text.charAt(i);
+            final String escape;
+            if (c == '`') {
+                escape = "\\u0060";
+            } else if (c == '$' && i + 1 < textLen && text.charAt(i + 1) == '{') {
+                escape = "\\u0024";
+            } else {
+                if (strBuilder != null) {
+                    strBuilder.append(c);
+                }
+                continue;
+            }
+            if (strBuilder == null) {
+                strBuilder = new StringBuilder(textLen + 16);
+                strBuilder.append(text, 0, i);
+            }
+            strBuilder.append(escape);
+        }
+        return (strBuilder == null ? text : strBuilder.toString());
+    }
+
+
+
+
 
 
 
@@ -238,8 +270,8 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
      * approach, which lets us call defaultDateFormat(...) on the builder), and falls back to direct
      * ObjectMapper instantiation for any Jackson 3 build that still supports mutable setters.
      *
-     * The output is post-processed to escape '/' as '\/' and '&' as '\u0026', providing the same XSS safety
-     * guarantees as the Jackson 2 serializer (which achieves this via JacksonThymeleafCharacterEscapes).
+     * The output is post-processed by escapeOutput(...), providing the same escaping as the Jackson 2 serializer
+     * (which achieves this via JacksonThymeleafCharacterEscapes and the ESCAPE_NON_ASCII feature).
      * Using a StringWriter intermediate buffer also avoids the need to configure AUTO_CLOSE_TARGET on
      * the Jackson 3 ObjectMapper, since closing a StringWriter is a no-op.
      */
@@ -336,12 +368,10 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
         public void serializeValue(final Object object, final Writer writer) {
             try {
                 // Buffer to a StringWriter so that Jackson closing the writer is harmless,
-                // and to allow post-processing for XSS-safe escaping of '/' and '&'.
+                // and to allow post-processing of the escaped output.
                 final StringWriter sw = new StringWriter(256);
                 this.writeValueMethod.invoke(this.mapper, sw, object);
-                final String json = sw.toString();
-                // Escape '&' -> '\u0026' and '/' -> '\/' for the same XSS safety as the Jackson 2 path.
-                writer.write(json.replace("&", "\\u0026").replace("/", "\\/"));
+                writer.write(escapeOutput(sw.toString()));
             } catch (final InvocationTargetException e) {
                 final Throwable cause = e.getCause() != null ? e.getCause() : e;
                 throw new TemplateProcessingException(
@@ -351,6 +381,32 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                 throw new TemplateProcessingException(
                         "An exception was raised while trying to serialize object to JavaScript using Jackson 3", e);
             }
+        }
+
+
+        /*
+         * Applied on the complete Jackson output: '/', '&', '<', '>' and chars >= 0x7F only appear inside string
+         * literals, where they are escaped in the same way as the Jackson 2 serializer does.
+         */
+        private static String escapeOutput(final String json) {
+            final StringBuilder strBuilder = new StringBuilder(json.length() + 16);
+            final int jsonLen = json.length();
+            for (int i = 0; i < jsonLen; i++) {
+                final char c = json.charAt(i);
+                if (c == '/') {
+                    strBuilder.append("\\/");
+                } else if (c == '&' || c == '<' || c == '>' || c >= 0x7F) {
+                    strBuilder.append("\\u");
+                    final String hex = Integer.toHexString(c).toUpperCase();
+                    for (int j = hex.length(); j < 4; j++) {
+                        strBuilder.append('0');
+                    }
+                    strBuilder.append(hex);
+                } else {
+                    strBuilder.append(c);
+                }
+            }
+            return escapeTemplateLiteralChars(strBuilder.toString());
         }
 
 
@@ -498,8 +554,9 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
     /*
-     * This CharacterEscapes implementation makes sure that the slash ('/') and ampersand ('&') characters
-     * are also escaped, which is not standard Jackson behaviour.
+     * This CharacterEscapes implementation makes sure that the slash ('/'), ampersand ('&'), less-than ('<'),
+     * greater-than ('>'), grave accent ('`'), dollar ('$') and delete (0x7F) characters are also escaped, which is
+     * not standard Jackson behaviour.
      *
      * Escaping '/' covers against the possible premature closing of <script> tags inside inlined JavaScript
      * literals, thus preventing code injection in templates being processed by browsers as HTML.
@@ -510,22 +567,38 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
      *
      * Note that, unfortunately Jackson's escape customization mechanism offers no way to only escape '/' when it
      * is preceded by '<', so that only '</' is escaped. Therefore, all '/' need to be escaped. Which is a
-     * difference with the default Unbescape-based mechanism.
+     * difference with the default Unbescape-based mechanism. The same applies to '$', which is always escaped instead
+     * of only when it is followed by '{'.
      */
     private static final class JacksonThymeleafCharacterEscapes extends CharacterEscapes {
 
         private static final int[] CHARACTER_ESCAPES;
         private static final SerializableString SLASH_ESCAPE;
         private static final SerializableString AMPERSAND_ESCAPE;
+        private static final SerializableString LESS_THAN_ESCAPE;
+        private static final SerializableString GREATER_THAN_ESCAPE;
+        private static final SerializableString GRAVE_ACCENT_ESCAPE;
+        private static final SerializableString DOLLAR_ESCAPE;
+        private static final SerializableString DELETE_ESCAPE;
 
         static {
 
             CHARACTER_ESCAPES = CharacterEscapes.standardAsciiEscapesForJSON();
             CHARACTER_ESCAPES['/'] = CharacterEscapes.ESCAPE_CUSTOM;
             CHARACTER_ESCAPES['&'] = CharacterEscapes.ESCAPE_CUSTOM;
+            CHARACTER_ESCAPES['<'] = CharacterEscapes.ESCAPE_CUSTOM;
+            CHARACTER_ESCAPES['>'] = CharacterEscapes.ESCAPE_CUSTOM;
+            CHARACTER_ESCAPES['`'] = CharacterEscapes.ESCAPE_CUSTOM;
+            CHARACTER_ESCAPES['$'] = CharacterEscapes.ESCAPE_CUSTOM;
+            CHARACTER_ESCAPES[0x7F] = CharacterEscapes.ESCAPE_CUSTOM;
 
             SLASH_ESCAPE = new SerializedString("\\/");
             AMPERSAND_ESCAPE = new SerializedString("\\u0026");
+            LESS_THAN_ESCAPE = new SerializedString("\\u003C");
+            GREATER_THAN_ESCAPE = new SerializedString("\\u003E");
+            GRAVE_ACCENT_ESCAPE = new SerializedString("\\u0060");
+            DOLLAR_ESCAPE = new SerializedString("\\u0024");
+            DELETE_ESCAPE = new SerializedString("\\u007F");
 
         }
 
@@ -545,6 +618,21 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
             }
             if (ch == '&') {
                 return AMPERSAND_ESCAPE;
+            }
+            if (ch == '<') {
+                return LESS_THAN_ESCAPE;
+            }
+            if (ch == '>') {
+                return GREATER_THAN_ESCAPE;
+            }
+            if (ch == '`') {
+                return GRAVE_ACCENT_ESCAPE;
+            }
+            if (ch == '$') {
+                return DOLLAR_ESCAPE;
+            }
+            if (ch == 0x7F) {
+                return DELETE_ESCAPE;
             }
             return null;
         }
@@ -636,7 +724,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
          * is obviously JSON-based.
          */
             writer.write('"');
-            writer.write(JsonEscape.escapeJson(str, JsonEscapeType.SINGLE_ESCAPE_CHARS_DEFAULT_TO_UHEXA, JsonEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_BASIC_ESCAPE_SET));
+            writer.write(escapeTemplateLiteralChars(JsonEscape.escapeJson(str, JsonEscapeType.SINGLE_ESCAPE_CHARS_DEFAULT_TO_UHEXA, JsonEscapeLevel.LEVEL_2_ALL_NON_ASCII_PLUS_BASIC_ESCAPE_SET)));
             writer.write('"');
         }
 

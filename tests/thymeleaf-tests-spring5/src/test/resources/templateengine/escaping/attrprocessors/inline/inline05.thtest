@@ -10,5 +10,5 @@ text = 'A value</script>. With some other value'
 # ------------------------------------------------------------
 %OUTPUT
 <script>
-  var a = "A value<\/script>. With some other value";
+  var a = "A value\\u003C\/script\\u003E. With some other value";
 </script>

@@ -14,6 +14,6 @@ size = 123
 # The second line is valid escaping in JavaScript
 "0012300"
 "0012300"
-"00__${size}00"
+"00__\\u0024{size}00"
 "00something00"
 "00something00"
