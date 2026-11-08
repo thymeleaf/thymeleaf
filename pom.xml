@@ -149,7 +149,7 @@
     <spring-webflow3.version>3.0.2</spring-webflow3.version>
     <jackson.version>2.22.4</jackson.version>
     <reactor.version>2024.0.18</reactor.version>
-    <netty.version>4.1.139.Final</netty.version>
+    <netty.version>4.1.140.Final</netty.version>
     <commons-lang3.version>3.21.0</commons-lang3.version>
     <commons-io.version>2.22.0</commons-io.version>
     <commons-fileupload.version>1.6.0</commons-fileupload.version>
