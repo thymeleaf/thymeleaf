@@ -164,4 +164,21 @@ public class SpringUErrorsBindingTest {
                 output);
     }
 
+
+    @Test
+    public void testNoRequestContext() {
+        final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(new StringTemplateResolver());
+        for (final String attribute : new String[] { "th:errors", "th:uerrors" }) {
+            final String template = "<p " + attribute + "=\"${form.age}\">..</p>";
+            final Exception e = Assertions.assertThrows(Exception.class, () ->
+                    templateEngine.process(template, new org.thymeleaf.context.Context(Locale.US)));
+            Throwable t = e;
+            while (t != null && (t.getMessage() == null || !t.getMessage().contains("Could not bind form errors"))) {
+                t = t.getCause();
+            }
+            Assertions.assertNotNull(t, "Unexpected exception for " + attribute + ": " + e);
+        }
+    }
+
 }

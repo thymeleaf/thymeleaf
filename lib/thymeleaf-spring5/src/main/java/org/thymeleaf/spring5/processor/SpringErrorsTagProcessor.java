@@ -21,6 +21,7 @@ package org.thymeleaf.spring5.processor;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -63,6 +64,13 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
             final IElementTagStructureHandler structureHandler) {
 
         final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
+
+        if (bindStatus == null) {
+            throw new TemplateProcessingException(
+                    "Could not bind form errors using expression \"" + attributeValue + "\". Please check this " +
+                    "expression is being executed inside the adequate context (e.g. a <form> with a th:object " +
+                    "attribute)");
+        }
 
         if (bindStatus.isError()) {
 
