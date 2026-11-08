@@ -1054,17 +1054,17 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
-    public final String process(final String template, final IContext context) {
+    public String process(final String template, final IContext context) {
         return process(new TemplateSpec(template, null, null, null,null), context);
     }
 
 
-    public final String process(final String template, final Set<String> templateSelectors, final IContext context) {
+    public String process(final String template, final Set<String> templateSelectors, final IContext context) {
         return process(new TemplateSpec(template, templateSelectors, null, null,null), context);
     }
 
 
-    public final String process(final TemplateSpec templateSpec, final IContext context) {
+    public String process(final TemplateSpec templateSpec, final IContext context) {
         final Writer stringWriter = new FastStringWriter(100);
         process(templateSpec, context, stringWriter);
         return stringWriter.toString();
@@ -1073,17 +1073,17 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
-    public final void process(final String template, final IContext context, final Writer writer) {
+    public void process(final String template, final IContext context, final Writer writer) {
         process(new TemplateSpec(template, null, null, null,null), context, writer);
     }
 
 
-    public final void process(final String template, final Set<String> templateSelectors, final IContext context, final Writer writer) {
+    public void process(final String template, final Set<String> templateSelectors, final IContext context, final Writer writer) {
         process(new TemplateSpec(template, templateSelectors, null,  null,null), context, writer);
     }
 
 
-    public final void process(final TemplateSpec templateSpec, final IContext context, final Writer writer) {
+    public void process(final TemplateSpec templateSpec, final IContext context, final Writer writer) {
 
         if (!this.initialized) {
             initialize();
@@ -1159,17 +1159,17 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
-    public final IThrottledTemplateProcessor processThrottled(final String template, final IContext context) {
+    public IThrottledTemplateProcessor processThrottled(final String template, final IContext context) {
         return processThrottled(new TemplateSpec(template, null, null, null, null), context);
     }
 
 
-    public final IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context) {
+    public IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context) {
         return processThrottled(new TemplateSpec(template, templateSelectors, null, null, null), context);
     }
 
 
-    public final IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context) {
+    public IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context) {
 
         if (!this.initialized) {
             initialize();
