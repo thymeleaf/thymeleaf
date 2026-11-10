@@ -25,7 +25,7 @@ import org.thymeleaf.standard.inline.IInlinePreProcessorHandler;
 import org.thymeleaf.standard.inline.OutputExpressionInlinePreProcessorHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
-/*
+/**
  * This class converts inlined output expressions into their equivalent element events, which makes it possible
  * to cache parsed inlined expressions.
  *
