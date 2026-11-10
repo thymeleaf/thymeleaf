@@ -19,13 +19,21 @@
  */
 package org.thymeleaf.spring.messageresolver;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
+import org.thymeleaf.TemplateSpec;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.messageresolver.SpringMessageResolver;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -34,80 +42,262 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
 
 public class SpringMessageResolverTest {
 
+    private static final java.util.Map<String,Object> KEY_ARRAY =
+            Collections.<String,Object>singletonMap("keyArray", new String[] { "greeting", "missing.key" });
 
-    /*
-     * A message key that exists in the MessageSource resolves to the configured message.
-     */
+
     @Test
-    public void testExistingKeyResolvesSuccessfully() throws Exception {
+    public void testExistingKey() throws Exception {
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        Assertions.assertEquals("Hello World", process(engine, "[[#{greeting}]]"));
+        Assertions.assertEquals("Hello World", process(engine, "[[${#messages.msg('greeting')}]]"));
+        Assertions.assertEquals("Hello World", process(engine, "[[${#messages.msgOrNull('greeting')}]]"));
+        Assertions.assertEquals("<p>Hello World</p>", processHtml(engine, "<p th:text=\"#{greeting}\">...</p>"));
+    }
 
+
+    @Test
+    public void testExistingKeyWithParameters() throws Exception {
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        Assertions.assertEquals("Hello, John", process(engine, "[[#{welcome('John')}]]"));
+        Assertions.assertEquals("Hello, John", process(engine, "[[${#messages.msg('welcome', 'John')}]]"));
+        Assertions.assertEquals("Hello, John", process(engine, "[[${#messages.msgOrNull('welcome', 'John')}]]"));
+        Assertions.assertEquals("Hello, John", process(engine, "[[${#messages.msgOrNullWithParams('welcome', {'John'})}]]"));
+    }
+
+
+    @Test
+    public void testMissingKeyAbsentMessageRepresentation() throws Exception {
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[#{missing.key}]]"));
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[#{missing.key('John')}]]"));
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[${#messages.msg('missing.key')}]]"));
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[${#messages.msgWithParams('missing.key', {'John'})}]]"));
+        Assertions.assertEquals("<p>??missing.key_en??</p>", processHtml(engine, "<p th:text=\"#{missing.key}\">...</p>"));
+        Assertions.assertEquals("[Hello World, ??missing.key_en??]",
+                process(engine, "[[${#messages.listMsg({'greeting', 'missing.key'})}]]"));
+        Assertions.assertEquals("??missing.key_en??",
+                process(engine, "[[${#messages.arrayMsg(keyArray)[1]}]]", KEY_ARRAY));
+    }
+
+
+    @Test
+    public void testMissingKeyOrNull() throws Exception {
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key', 'John') ?: 'fallback'}]]"));
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key', 'a', 'b', 'c') ?: 'fallback'}]]"));
+        Assertions.assertEquals("fallback",
+                process(engine, "[[${#messages.msgOrNullWithParams('missing.key', {'John'}) ?: 'fallback'}]]"));
+        Assertions.assertEquals("Hello World",
+                process(engine, "[[${#messages.msgOrNull('missing.key') ?: #messages.msg('greeting')}]]"));
+        Assertions.assertEquals("<p>fallback</p>",
+                processHtml(engine, "<p th:text=\"${#messages.msgOrNull('missing.key')} ?: 'fallback'\">...</p>"));
+        Assertions.assertEquals("[Hello World, null]",
+                process(engine, "[[${#messages.listMsgOrNull({'greeting', 'missing.key'})}]]"));
+        Assertions.assertEquals("true",
+                process(engine, "[[${#messages.arrayMsgOrNull(keyArray)[1] == null}]]", KEY_ARRAY));
+        Assertions.assertEquals("true",
+                process(engine, "[[${#messages.setMsgOrNull(keys).contains(null)}]]",
+                        Collections.<String,Object>singletonMap("keys", new LinkedHashSet<String>(Arrays.asList("greeting", "missing.key")))));
+    }
+
+
+    @Test
+    public void testMissingKeyWithUseCodeAsDefaultMessage() throws Exception {
+        final StaticMessageSource messageSource = buildMessageSource();
+        messageSource.setUseCodeAsDefaultMessage(true);
+        final SpringTemplateEngine engine = buildEngine(messageSource);
+        Assertions.assertEquals("missing.key", process(engine, "[[#{missing.key}]]"));
+        Assertions.assertEquals("missing.key", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+        Assertions.assertEquals("Hello World", process(engine, "[[#{greeting}]]"));
+    }
+
+
+    @Test
+    public void testApplicationContextWithoutMessageSourceBean() throws Exception {
+        final GenericApplicationContext applicationContext = new GenericApplicationContext();
+        applicationContext.refresh();
+        try {
+            final SpringTemplateEngine engine = buildEngine(applicationContext);
+            Assertions.assertEquals("??missing.key_en??", process(engine, "[[#{missing.key}]]"));
+            Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+        } finally {
+            applicationContext.close();
+        }
+    }
+
+
+    @Test
+    public void testExplicitSpringMessageResolver() throws Exception {
+        final SpringMessageResolver messageResolver = new SpringMessageResolver();
+        messageResolver.setMessageSource(buildMessageSource());
+        final SpringTemplateEngine engine = buildEngine(null);
+        engine.setMessageResolver(messageResolver);
+        Assertions.assertEquals("Hello World", process(engine, "[[#{greeting}]]"));
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[#{missing.key}]]"));
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+    }
+
+
+    @Test
+    public void testFollowingMessageResolvers() throws Exception {
+
+        final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
+        springMessageResolver.setMessageSource(buildMessageSource());
+        springMessageResolver.setOrder(Integer.valueOf(1));
+
+        final Properties defaultMessages = new Properties();
+        defaultMessages.setProperty("other.key", "Other message");
+        final StandardMessageResolver standardMessageResolver = new StandardMessageResolver();
+        standardMessageResolver.setDefaultMessages(defaultMessages);
+        standardMessageResolver.setOrder(Integer.valueOf(2));
+
+        final SpringTemplateEngine engine = buildEngine(null);
+        engine.addMessageResolver(springMessageResolver);
+        engine.addMessageResolver(standardMessageResolver);
+
+        Assertions.assertEquals("Hello World", process(engine, "[[#{greeting}]]"));
+        Assertions.assertEquals("Other message", process(engine, "[[#{other.key}]]"));
+        Assertions.assertEquals("Other message", process(engine, "[[${#messages.msgOrNull('other.key')}]]"));
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[#{missing.key}]]"));
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+
+    }
+
+
+    @Test
+    public void testOriginBasedResolution() throws Exception {
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        engine.addDialect(new OriginMessageDialect());
+        Assertions.assertEquals("<p>Hello World</p>", processHtml(engine, "<p ori:msg=\"greeting\">...</p>"));
+        Assertions.assertEquals("<p>Origin message</p>", processHtml(engine, "<p ori:msg=\"origin.key\">...</p>"));
+        Assertions.assertEquals("<p>(null)</p>", processHtml(engine, "<p ori:msg=\"missing.key\">...</p>"));
+        Assertions.assertEquals("<p>??missing.key_en??</p>", processHtml(engine, "<p ori:msgabsent=\"missing.key\">...</p>"));
+    }
+
+
+
+
+    @Test
+    public void testFailOnMissingMessageDefault() throws Exception {
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        Assertions.assertFalse(engine.isFailOnMissingMessage());
+        Assertions.assertEquals("??missing.key_en??", process(engine, "[[#{missing.key}]]"));
+    }
+
+
+    @Test
+    public void testFailOnMissingMessage() throws Exception {
+
+        final SpringTemplateEngine engine = buildEngine(buildMessageSource());
+        engine.setFailOnMissingMessage(true);
+
+        assertMissingMessageFails(engine, "[[#{missing.key}]]");
+        assertMissingMessageFails(engine, "[[#{missing.key('John')}]]");
+        assertMissingMessageFails(engine, "[[${#messages.msg('missing.key')}]]");
+        assertMissingMessageFails(engine, "[[${#messages.listMsg({'greeting', 'missing.key'})}]]");
+        Assertions.assertEquals("Hello World", process(engine, "[[#{greeting}]]"));
+        Assertions.assertEquals("Hello, John", process(engine, "[[#{welcome('John')}]]"));
+        // The "OrNull" methods still return null
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key', 'John') ?: 'fallback'}]]"));
+        Assertions.assertEquals("[Hello World, null]", process(engine, "[[${#messages.listMsgOrNull({'greeting', 'missing.key'})}]]"));
+        Assertions.assertEquals("true", process(engine, "[[${#messages.arrayMsgOrNull(keyArray)[1] == null}]]", KEY_ARRAY));
+
+    }
+
+
+    @Test
+    public void testFailOnMissingMessageWithoutMessageSource() throws Exception {
+        // The engine creates a StandardMessageResolver when there is no MessageSource
+        final SpringTemplateEngine engine = buildEngine(null);
+        engine.setFailOnMissingMessage(true);
+        assertMissingMessageFails(engine, "[[#{missing.key}]]");
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+    }
+
+
+    @Test
+    public void testFailOnMissingMessageExplicitResolver() throws Exception {
+
+        final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
+        springMessageResolver.setMessageSource(buildMessageSource());
+        springMessageResolver.setFailOnMissingMessage(true);
+        springMessageResolver.setOrder(Integer.valueOf(1));
+
+        final Properties defaultMessages = new Properties();
+        defaultMessages.setProperty("other.key", "Other message");
+        final StandardMessageResolver standardMessageResolver = new StandardMessageResolver();
+        standardMessageResolver.setDefaultMessages(defaultMessages);
+        standardMessageResolver.setOrder(Integer.valueOf(2));
+
+        final SpringTemplateEngine engine = buildEngine(null);
+        engine.addMessageResolver(springMessageResolver);
+        engine.addMessageResolver(standardMessageResolver);
+
+        // All resolvers are tried before a message is considered missing
+        Assertions.assertEquals("Hello World", process(engine, "[[#{greeting}]]"));
+        Assertions.assertEquals("Other message", process(engine, "[[#{other.key}]]"));
+        assertMissingMessageFails(engine, "[[#{missing.key}]]");
+        Assertions.assertEquals("fallback", process(engine, "[[${#messages.msgOrNull('missing.key') ?: 'fallback'}]]"));
+
+    }
+
+
+    @Test
+    public void testFailOnMissingMessageWithUseCodeAsDefaultMessage() throws Exception {
+        final StaticMessageSource messageSource = buildMessageSource();
+        messageSource.setUseCodeAsDefaultMessage(true);
+        final SpringTemplateEngine engine = buildEngine(messageSource);
+        engine.setFailOnMissingMessage(true);
+        Assertions.assertEquals("missing.key", process(engine, "[[#{missing.key}]]"));
+    }
+
+
+    private static void assertMissingMessageFails(final SpringTemplateEngine engine, final String template) {
+        final Exception e = Assertions.assertThrows(Exception.class, () -> process(engine, template), template);
+        Throwable t = e;
+        while (t != null && !(t instanceof TemplateProcessingException
+                                && String.valueOf(t.getMessage()).startsWith("Could not resolve message with key \"missing.key\" for locale \"en\""))) {
+            t = t.getCause();
+        }
+        Assertions.assertNotNull(t, template + " -> " + e);
+    }
+
+
+    private static StaticMessageSource buildMessageSource() {
         final StaticMessageSource messageSource = new StaticMessageSource();
         messageSource.addMessage("greeting", Locale.ENGLISH, "Hello World");
-
-        final SpringTemplateEngine engine = buildEngine(messageSource);
-
-        final Context context = new Context(Locale.ENGLISH);
-        final String result = engine.process("[[#{greeting}]]", context);
-
-        Assertions.assertEquals("Hello World", result);
+        messageSource.addMessage("welcome", Locale.ENGLISH, "Hello, {0}");
+        return messageSource;
     }
 
 
-    /*
-     * When the MessageSource is configured with useCodeAsDefaultMessage=false (the default),
-     * a missing key causes NoSuchMessageException to be thrown by the MessageSource.
-     * Before the fix, this was silently swallowed and the template output ??key??.
-     * After the fix, a TemplateProcessingException is thrown.
-     */
-    @Test
-    public void testMissingKeyWithUseCodeAsDefaultMessageFalseThrows() throws Exception {
-
-        final StaticMessageSource messageSource = new StaticMessageSource();
-        // useCodeAsDefaultMessage defaults to false
-
-        final SpringTemplateEngine engine = buildEngine(messageSource);
-
-        final Context context = new Context(Locale.ENGLISH);
-
-        Assertions.assertThrows(TemplateProcessingException.class, () ->
-                engine.process("[[#{missing.key}]]", context));
-    }
-
-
-    /*
-     * When the MessageSource is configured with useCodeAsDefaultMessage=true,
-     * a missing key causes the MessageSource to return the key itself as the message.
-     * No exception should be thrown; the key code is returned as-is.
-     */
-    @Test
-    public void testMissingKeyWithUseCodeAsDefaultMessageTrueReturnsCode() throws Exception {
-
-        final StaticMessageSource messageSource = new StaticMessageSource();
-        messageSource.setUseCodeAsDefaultMessage(true);
-
-        final SpringTemplateEngine engine = buildEngine(messageSource);
-
-        final Context context = new Context(Locale.ENGLISH);
-        final String result = engine.process("[[#{missing.key}]]", context);
-
-        Assertions.assertEquals("missing.key", result);
-    }
-
-
-    private static SpringTemplateEngine buildEngine(final StaticMessageSource messageSource) {
-
+    private static SpringTemplateEngine buildEngine(final MessageSource messageSource) {
         final StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.TEXT);
-
-        final SpringMessageResolver messageResolver = new SpringMessageResolver();
-        messageResolver.setMessageSource(messageSource);
-
         final SpringTemplateEngine engine = new SpringTemplateEngine();
         engine.setTemplateResolver(templateResolver);
-        engine.setMessageResolver(messageResolver);
-
+        if (messageSource != null) {
+            engine.setTemplateEngineMessageSource(messageSource);
+        }
         return engine;
     }
 
+
+    private static String process(final SpringTemplateEngine engine, final String template) {
+        return process(engine, template, Collections.<String,Object>emptyMap());
+    }
+
+
+    private static String process(final SpringTemplateEngine engine, final String template, final java.util.Map<String,Object> variables) {
+        return engine.process(template, new Context(Locale.ENGLISH, variables));
+    }
+
+
+    private static String processHtml(final SpringTemplateEngine engine, final String template) {
+        return engine.process(new TemplateSpec(template, TemplateMode.HTML), new Context(Locale.ENGLISH));
+    }
 
 }

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.TemplateData;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.Validate;
 
@@ -154,6 +155,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
     private final ConcurrentHashMap<Class<?>,ConcurrentHashMap<Locale,Map<String,String>>> messagesByLocaleByOrigin =
             new ConcurrentHashMap<Class<?>,ConcurrentHashMap<Locale,Map<String,String>>>(20, 0.9f, 2);
     private final Properties defaultMessages;
+    private boolean failOnMissingMessage = false;
 
 
     public StandardMessageResolver() {
@@ -214,6 +216,41 @@ public class StandardMessageResolver extends AbstractMessageResolver {
      */
     public final void clearDefaultMessages() {
         this.defaultMessages.clear();
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether an exception will be raised when a message cannot be resolved and an
+     *   <em>absent message representation</em> (like {@code ??key_locale??}) would be returned instead.
+     *   Default is {@code false}.
+     * </p>
+     *
+     * @return whether missing messages raise an exception.
+     * @since 3.1.7
+     */
+    public final boolean isFailOnMissingMessage() {
+        return this.failOnMissingMessage;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether an exception will be raised when a message cannot be resolved and an
+     *   <em>absent message representation</em> (like {@code ??key_locale??}) would be returned instead.
+     *   Default is {@code false}.
+     * </p>
+     * <p>
+     *   This applies to message expressions ({@code #{...}}) and to the {@code #messages.msg(...)} family of
+     *   methods, but not to the {@code #messages.msgOrNull(...)} family, which will still return {@code null}
+     *   for messages that cannot be resolved.
+     * </p>
+     *
+     * @param failOnMissingMessage whether missing messages should raise an exception.
+     * @since 3.1.7
+     */
+    public final void setFailOnMissingMessage(final boolean failOnMissingMessage) {
+        this.failOnMissingMessage = failOnMissingMessage;
     }
 
 
@@ -434,6 +471,10 @@ public class StandardMessageResolver extends AbstractMessageResolver {
     public String createAbsentMessageRepresentation(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters) {
         Validate.notNull(key, "Message key cannot be null");
+        if (this.failOnMissingMessage) {
+            throw new TemplateProcessingException(
+                    "Could not resolve message with key \"" + key + "\" for locale \"" + context.getLocale() + "\"");
+        }
         if (context.getLocale() != null) {
             return "??"+key+"_" + context.getLocale().toString() + "??";
         }
