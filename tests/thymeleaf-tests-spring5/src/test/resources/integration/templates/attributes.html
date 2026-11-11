@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <p id="session" th:text="${session.s}">...</p>
+  <p id="param" th:text="${param.p}">...</p>
+  <p id="request" th:text="${requestAttr}">...</p>
+  <p id="url" th:text="${#mvc.url('helloMapping').build()}">...</p>
+  <p id="urlarg" th:text="${#mvc.url('linkMapping').arg(0, 'a b').build()}">...</p>
+</body>
+</html>

@@ -1,0 +1,3 @@
+Hello [(${name})]!
+[# th:each="i : ${items}"]- [(${i})]
+[/]Done.

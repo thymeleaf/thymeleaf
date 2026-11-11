@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p id="greeting" th:text="#{greeting(${name})}">.</p>
+<p id="date" th:text="${#temporals.format(date, 'd MMMM yyyy')}">.</p>
+<a id="link" th:href="@{https://example.test/x(p=${name})}">.</a>
+</body>
+</html>

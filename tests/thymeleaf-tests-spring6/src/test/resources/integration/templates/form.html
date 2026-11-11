@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<form id="f" th:action="@{/form}" th:object="${formBean}" method="post">
+<input type="text" th:field="*{name}">
+<input type="text" th:field="*{age}">
+<input type="text" th:field="*{code}">
+<input type="checkbox" th:field="*{active}">
+<select th:field="*{color}"><option th:each="c : ${colors}" th:value="${c}" th:text="${c}">c</option></select>
+<p id="haserrors" th:text="${#fields.hasAnyErrors()}">...</p>
+<ul id="errors"><li th:each="e : ${#fields.allDetailedErrors()}" th:text="|${e.fieldName}:${e.code}:${e.message}|">...</li></ul>
+<p id="ageerrors" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">...</p>
+<p id="nameerrors" class="e" th:errorclass="err" th:errors="*{name}">...</p>
+<span id="idfromname" th:text="${#fields.idFromName('items[0].name')}">...</span>
+</form>
+</body>
+</html>

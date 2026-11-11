@@ -143,6 +143,10 @@
     <unbescape.version>1.1.8.RELEASE</unbescape.version>
     <spring-framework5.version>5.3.39</spring-framework5.version>
     <spring-framework6.version>6.2.19</spring-framework6.version>
+    <spring-boot2.version>2.7.18</spring-boot2.version>
+    <spring-boot3.version>3.5.16</spring-boot3.version>
+    <thymeleaf-layout-dialect-boot2.version>3.0.0</thymeleaf-layout-dialect-boot2.version>
+    <thymeleaf-layout-dialect-boot3.version>3.4.0</thymeleaf-layout-dialect-boot3.version>
     <spring-security5.version>5.8.16</spring-security5.version>
     <spring-security6.version>6.5.11</spring-security6.version>
     <spring-webflow2.version>2.5.1.RELEASE</spring-webflow2.version>

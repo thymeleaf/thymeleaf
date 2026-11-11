@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -222,6 +224,30 @@ public class ThymeleafReactiveViewTest {
                 TemplateProcessingException.class,
                 () -> view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block());
         Assertions.assertTrue(e.getMessage() != null && e.getMessage().contains("View name contains an expression"));
+
+    }
+
+
+    @Test
+    public void testViewNameInRequestHeaderForbidden() throws Exception {
+
+        final ThymeleafReactiveViewResolver resolver = fragmentTestViewResolver();
+
+        final Map<String,Object> model = new ModelMap();
+        model.put("one", "one");
+
+        final MockServerWebExchange exchange =
+                MockServerWebExchange.from(MockServerHttpRequest.get("/testing").header("X-Test", "${one}").build());
+        final Mono<View> view = resolver.resolveViewName("testSeveralConversionServices :: ${one}", Locale.US);
+        final TemplateProcessingException e = Assertions.assertThrows(
+                TemplateProcessingException.class,
+                () -> view.flatMap(v -> v.render(model, MediaType.TEXT_HTML, exchange)).block());
+        Assertions.assertTrue(e.getMessage() != null && e.getMessage().contains("View name contains an expression"));
+
+        final MockServerWebExchange otherExchange =
+                MockServerWebExchange.from(MockServerHttpRequest.get("/testing").header("X-Test", "${two}").build());
+        final Mono<View> otherView = resolver.resolveViewName("testSeveralConversionServices :: ${one}", Locale.US);
+        Assertions.assertDoesNotThrow(() -> otherView.flatMap(v -> v.render(model, MediaType.TEXT_HTML, otherExchange)).block());
 
     }
 

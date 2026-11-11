@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<form id="f" th:action="@{/order}" th:object="${orderForm}" method="post">
+<div th:each="item, stat : *{items}"><input type="text" th:field="*{items[__${stat.index}__].name}"><input type="text" th:field="*{items[__${stat.index}__].quantity}"></div>
+<span th:each="f : ${allFeatures}"><input type="checkbox" th:field="*{features}" th:value="${f}"><label th:for="${#ids.prev('features')}" th:text="${f}">f</label></span>
+<span th:each="s : ${allSizes}"><input type="radio" th:field="*{size}" th:value="${s}"></span>
+<ul id="allerrors"><li th:each="e : ${#fields.errors('*')}" th:text="${e}">e</li></ul>
+<ul id="globalerrors" th:if="${#fields.hasGlobalErrors()}"><li th:each="e : ${#fields.globalErrors()}" th:text="${e}">e</li></ul>
+<p id="itemerrors" th:errors="*{items[0].quantity}">e</p>
+</form>
+</body>
+</html>

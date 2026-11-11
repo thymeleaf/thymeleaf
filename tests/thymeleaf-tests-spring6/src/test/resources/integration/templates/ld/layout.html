@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">Site</title>
+</head>
+<body>
+<header>Header</header>
+<section layout:fragment="content"><p>Layout default</p></section>
+<footer th:text="#{greeting('footer')}">Footer</footer>
+</body>
+</html>

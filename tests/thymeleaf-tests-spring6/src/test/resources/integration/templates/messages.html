@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <p id="m1" th:text="#{greeting('Messages')}">...</p>
+  <p id="m2" th:text="#{missing.key}">...</p>
+  <p id="m3" th:text="${#messages.msgOrNull('missing.key')} ?: 'NULL'">...</p>
+  <p id="m4" th:text="${#messages.msgOrNull('greeting', 'X')}">...</p>
+  <p id="m5" th:text="${#messages.msg('missing.key')}">...</p>
+  <p id="m6" th:text="#{${dynamicKey}('Y')}">...</p>
+  <p id="m7" th:text="#{origin.key}">...</p>
+  <p id="m8" th:utext="#{html.key}">...</p>
+</body>
+</html>

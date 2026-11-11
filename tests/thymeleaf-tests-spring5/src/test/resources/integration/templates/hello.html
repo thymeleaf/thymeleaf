@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <p id="greeting" th:text="#{greeting(${name})}">...</p>
+  <p id="locale" th:text="${#locale}">...</p>
+  <p id="code" th:text="${{code}}">...</p>
+  <p id="bean" th:text="${@integrationBean.value}">...</p>
+  <a id="link" th:href="@{/form(p=${name})}">link</a>
+  <a id="marked" th:href="@{/marked}">marked</a>
+  <ul><li th:each="item : ${items}" th:text="${item}">...</li></ul>
+  <p id="static" th:text="${staticVar} ?: 'none'">...</p>
+</body>
+</html>

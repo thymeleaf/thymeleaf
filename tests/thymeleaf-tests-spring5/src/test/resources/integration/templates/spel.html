@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p id="selection" th:text="${numbers.?[#this > 3]}">.</p>
+<p id="projection" th:text="${people.![name]}">.</p>
+<p id="first" th:text="${numbers.^[#this > 2]}">.</p>
+<p id="safe" th:text="${missing?.length()} ?: 'none'">.</p>
+<p id="elvis" th:text="${missing ?: 'default'}">.</p>
+<p id="method" th:text="${@integrationBean.upper(people[0].name)}">.</p>
+<p id="ternary" th:text="${people.size() > 1 ? 'many' : 'one'}">.</p>
+<p id="convert" th:text="${#conversions.convert('42', 'java.lang.Integer') + 1}">.</p>
+<p id="map" th:text="|${map['k']} ${map.k}|">.</p>
+<p id="lists" th:text="${#lists.size(numbers)}">.</p>
+<p id="temporals" th:text="${#temporals.format(date, 'yyyy-MM-dd')}">.</p>
+<p id="strings" th:text="${#strings.toUpperCase(people[1].name)}">.</p>
+<p id="aggregates" th:text="${#aggregates.sum(numbers)}">.</p>
+</body>
+</html>

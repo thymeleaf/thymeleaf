@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <p id="auth" sec:authorize="isAuthenticated()">Authenticated</p>
+  <p id="anon" sec:authorize="isAnonymous()">Anonymous</p>
+  <p id="admin" sec:authorize="hasRole('ADMIN')">Admin</p>
+  <p id="url" sec:authorize-url="/admin">Admin page</p>
+  <p id="name" sec:authentication="name">...</p>
+  <p id="user" th:text="${#authorization.expression('hasRole(''USER'')')}">...</p>
+  <p id="authname" th:text="${#authentication.name}">...</p>
+  <form id="f" th:action="@{/save}" method="post"><input type="text" name="x"></form>
+</body>
+</html>

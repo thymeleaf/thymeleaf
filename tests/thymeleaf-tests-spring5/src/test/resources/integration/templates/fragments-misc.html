@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+<section id="s1" th:insert="~{common/header :: plain}"></section>
+<section id="s2" th:insert="~{common/header :: #byid}"></section>
+<section id="s3" th:insert="~{common/header :: .byclass}"></section>
+<section id="s4" th:insert="~{:: local}"></section>
+<section id="s5" th:insert="~{this :: local}"></section>
+<section id="s6" th:insert="~{common/snippet}"></section>
+<section id="s7"><div th:replace="~{common/header :: plain}">replaced</div></section>
+<section id="s8"><div th:insert="~{common/header :: plain}" th:remove="tag">x</div></section>
+<section id="s9" th:insert="${cond} ? ~{common/header :: plain} : ~{}">x</section>
+<section id="s10" th:insert="${!cond} ? ~{common/header :: plain} : ~{}">x</section>
+<section id="s11" th:insert="${!cond} ? ~{common/header :: plain} : _"><p>kept</p></section>
+<section id="s12" th:insert="~{common/header :: header(title=${name})}"></section>
+<div th:fragment="local"><span>local</span></div>
+</body>
+</html>
