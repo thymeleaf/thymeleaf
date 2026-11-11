@@ -1,0 +1,1 @@
+var names = [[${people.{name}}]];

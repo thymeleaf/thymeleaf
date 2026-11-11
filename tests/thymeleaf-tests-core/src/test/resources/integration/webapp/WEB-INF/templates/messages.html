@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p id="greeting" th:text="#{greeting(${user})}">...</p>
+<p id="pageonly" th:text="#{page.only}">...</p>
+<p id="missing" th:text="#{missing.key}">...</p>
+<p id="ornull" th:text="${#messages.msgOrNull('missing.key') == null}">...</p>
+<p id="locale" th:text="${#locale}">...</p>
+<div id="frag" th:insert="~{common/header :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html th:fragment="layout(title, content, aside)">
+<head>
+<title th:replace="${title}">Layout title</title>
+</head>
+<body>
+<div th:replace="~{common/header :: header('Site')}">header</div>
+<main th:replace="${content}">default content</main>
+<aside th:replace="${aside}"><p>default aside</p></aside>
+<div th:replace="~{common/header :: footer}">footer</div>
+</body>
+</html>

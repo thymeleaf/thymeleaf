@@ -160,6 +160,8 @@
     <hibernate-validator-jakarta.version>9.1.5.Final</hibernate-validator-jakarta.version>
     <hibernate-validator-javax.version>6.2.6.Final</hibernate-validator-javax.version>
     <mockito.version>5.24.0</mockito.version>
+    <tomcat10.version>10.1.61</tomcat10.version>
+    <tomcat9.version>9.0.123</tomcat9.version>
     <slf4j.version>2.0.20</slf4j.version>
     <log4j.version>2.26.1</log4j.version>
     <junit.version>5.14.4</junit.version>

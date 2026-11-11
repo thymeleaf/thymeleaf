@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p id="reqattr" th:text="${reqAttr}">...</p>
+<p id="ctxvar" th:text="${ctxVar}">...</p>
+<p id="param" th:text="${param.p}">...</p>
+<p id="paramnone" th:text="${param.none == null}">...</p>
+<p id="parammulti" th:text="${param.m}">...</p>
+<p id="parammultifirst" th:text="${param.m[0]}">...</p>
+<ul id="parameach"><li th:each="v : ${param.m}" th:text="${v}">...</li></ul>
+<p id="session" th:text="${session.user == null}">...</p>
+<p id="application" th:text="${application.appName}">...</p>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<body>
+<header th:fragment="header(title)"><h1 th:text="${title}">t</h1></header>
+<div th:fragment="plain"><p>plain</p></div>
+<div id="byid"><p>by id</p></div>
+<div class="byclass"><p>by class</p></div>
+<footer th:fragment="footer"><p class="own" th:text="#{footer.text}">f</p><p class="shared" th:text="#{shared}">s</p></footer>
+</body>
+</html>

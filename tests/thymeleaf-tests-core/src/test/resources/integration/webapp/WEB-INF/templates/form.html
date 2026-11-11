@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<body>
+<form id="form" th:action="@{/form}" method="post">
+<input id="name" type="text" name="name" th:value="${param.name}">
+</form>
+<p id="echo" th:text="${param.name}">...</p>
+<ul id="tags"><li th:each="t : ${param.tags}" th:text="${t}">...</li></ul>
+</body>
+</html>

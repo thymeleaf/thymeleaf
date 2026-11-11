@@ -64,6 +64,15 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Declared before jakarta.servlet-api so that the Servlet API classes bundled
+         with Tomcat (the version it implements) come first in the test classpath -->
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+      <version>${tomcat10.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>

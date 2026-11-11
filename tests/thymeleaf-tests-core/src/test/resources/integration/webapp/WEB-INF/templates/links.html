@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <a id="context" th:href="@{/x}">.</a>
+  <a id="page" th:href="@{x/y}">.</a>
+  <a id="server" th:href="@{~/other/x}">.</a>
+  <a id="absolute" th:href="@{http://example.test/a(q=${v})}">.</a>
+  <a id="protocol" th:href="@{//cdn.example.test/lib.js}">.</a>
+  <a id="pathvar" th:href="@{/o/{id}/d(id=12,q=${v})}">.</a>
+  <a id="pathvarescaped" th:href="@{/o/{seg}(seg=${v})}">.</a>
+  <a id="anchor" th:href="@{/x#sec(p=1)}">.</a>
+  <a id="dynamic" th:href="@{${url}(p=1)}">.</a>
+  <a id="multi" th:href="@{/x(a=1,a=2,b=${null},c=${list})}">.</a>
+  <img id="img" th:src="@{/img/a.png}">
+  <form id="form" th:action="@{/save}" method="post"><button id="formaction" th:formaction="@{/other}">b</button></form>
+  <p id="inlined">[[@{/x(p=${v})}]]</p>
+  <script id="js" th:inline="javascript">var u = [[@{/x(p=${v})}]];</script>
+</body>
+</html>

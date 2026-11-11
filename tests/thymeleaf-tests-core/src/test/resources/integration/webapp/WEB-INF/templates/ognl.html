@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p id="property" th:text="${person.name}">...</p>
+<p id="nested" th:text="${person.address.city}">...</p>
+<p id="safe" th:text="${nobody.address?.city == null}">...</p>
+<p id="elvis" th:text="${nobody.address} ?: 'none'">...</p>
+<p id="method" th:text="${person.greet('Hi')}">...</p>
+<p id="projection" th:text="${people.{name}}">...</p>
+<p id="selection" th:text="${people.{? #this.age > 30}.size()}">...</p>
+<p id="aggregate" th:text="${#aggregates.sum(people.{age})}">...</p>
+<p id="logic" th:text="${person.age > 30 and person.name == 'Ana'}">...</p>
+<p id="map" th:text="${map['key']}">...</p>
+<p id="temporals" th:text="${#temporals.format(date, 'yyyy-MM-dd')}">...</p>
+<p id="numbers" th:text="${#numbers.formatDecimal(1234.5, 1, 'COMMA', 2, 'POINT')}">...</p>
+<p id="strings" th:text="${#strings.toUpperCase(person.name)}">...</p>
+<div id="object" th:object="${person}"><span th:text="*{name}">...</span></div>
+<ul id="each"><li th:each="p, s : ${people}" th:text="|${s.count}:${p.name}|">...</li></ul>
+</body>
+</html>
