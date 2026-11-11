@@ -36,7 +36,7 @@ public class TestWebFilter implements WebFilter {
         if (exchange.getRequest().getPath().value().startsWith("/app/")) {
             filtered = exchange.mutate().request(request -> request.contextPath("/app")).build();
         }
-        if (exchange.getRequest().getHeaders().containsKey(TRANSFORM_HEADER)) {
+        if (exchange.getRequest().getHeaders().getFirst(TRANSFORM_HEADER) != null) {
             filtered.addUrlTransformer(url -> url + "~tx");
         }
         return chain.filter(filtered);

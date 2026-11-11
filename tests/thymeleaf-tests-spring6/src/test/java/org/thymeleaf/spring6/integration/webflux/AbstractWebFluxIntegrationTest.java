@@ -243,6 +243,20 @@ public abstract class AbstractWebFluxIntegrationTest extends AbstractWebFluxTest
 
 
     @Test
+    public void testFragmentViewNameFromRequestHeader() {
+
+        final WebTestClient client = client();
+        final EntityExchangeResult<String> refused = client.get().uri("/fragment-expression")
+                .header("X-Test", "first", "${fragName}").exchange().expectBody(String.class).returnResult();
+        assertFailure(refused, "View name contains an expression");
+        final EntityExchangeResult<String> allowed = client.get().uri("/fragment-expression")
+                .header("X-Test", "${other}").exchange().expectBody(String.class).returnResult();
+        Assertions.assertEquals(200, allowed.getStatus().value(), allowed.getResponseBody());
+
+    }
+
+
+    @Test
     public void testWebAttributes() {
 
         final String html = render(client(), "/attributes?p=param-value");

@@ -21,9 +21,13 @@
 package org.thymeleaf.spring6.web.webflux;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Locale;
 
 import org.springframework.http.HttpCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.util.MultiValueMap;
 import org.thymeleaf.util.Validate;
 
@@ -69,7 +73,13 @@ final class SpringWebFluxWebRequest implements ISpringWebFluxWebRequest {
 
     @Override
     public MultiValueMap<String, String> getHeaderMultiValueMap() {
-        return this.request.getHeaders();
+        // HttpHeaders does not implement MultiValueMap in all Spring versions this class can run on (it no longer
+        // does since Spring 7), so all headers are copied into a case-insensitive MultiValueMap. Values are added
+        // (not replaced), so names differing only in case keep all their values.
+        final MultiValueMap<String, String> headers =
+                CollectionUtils.toMultiValueMap(new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH));
+        this.request.getHeaders().forEach(headers::addAll);
+        return CollectionUtils.unmodifiableMultiValueMap(headers);
     }
 
 

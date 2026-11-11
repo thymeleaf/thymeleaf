@@ -226,6 +226,10 @@ public class SpringWebFluxWebExchangeTest {
 
         // Each request part containing the expression of the view name must cause it to be refused
         assertViewNameInRequest(viewName, MockServerHttpRequest.get("/one").header("X-Test", "${one}").build());
+        assertViewNameInRequest(viewName, MockServerHttpRequest.get("/one").header("X-Test", "a", "${one}").build());
+        assertViewNameInRequest(viewName, MockServerHttpRequest.get("/one").header("x-test", "a").header("X-TEST", "${one}").build());
+        assertViewNameInRequest(viewName,
+                MockServerHttpRequest.get("/one").header("A", "x").header("B", "y", "z").header("X-Last", "${one}").build());
         assertViewNameInRequest(viewName, MockServerHttpRequest.get("/one").cookie(new HttpCookie("c", "${one}")).build());
         assertViewNameInRequest(viewName, MockServerHttpRequest.get("/one?p={p}", "${one}").build());
         assertViewNameInRequest(viewName, MockServerHttpRequest.get("/one/{p}", "${one}").build());
