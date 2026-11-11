@@ -1,0 +1,10 @@
+%TEMPLATE_MODE TEXT
+# ------------------------------------------------------------
+%CONTEXT
+somevar = 'somevalue'
+# ------------------------------------------------------------
+%INPUT
+[[${ 'a new ' + @java.lang.Math@abs(1) }]]
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QInstantiation of new objects and access to static classes or parameters is forbidden in this context\E(.*)

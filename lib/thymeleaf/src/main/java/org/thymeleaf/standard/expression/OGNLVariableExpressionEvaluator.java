@@ -246,7 +246,8 @@ public final class OGNLVariableExpressionEvaluator
                         !expContext.getRestrictVariableAccess() && !expContext.getRestrictExternalAccess();
 
         if (expContext.getRestrictExternalAccess()
-                && StandardExpressionUtils.containsExternalAccess(exp)) {
+                && StandardExpressionUtils.containsExternalAccess(exp)
+                && OGNLExpressionRestrictions.containsExternalAccessOutsideStringLiterals(exp)) {
             throw new TemplateProcessingException(
                 "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
         }

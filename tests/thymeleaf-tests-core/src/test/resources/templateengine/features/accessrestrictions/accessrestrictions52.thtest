@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+somevar = 'somevalue'
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="~{::hdr(${ {'New promotion', 'Search param'} })}"></div>
+<p th:utext="${'Add a new item'}">...</p>
+<p th:utext="${'T (x) and @y, param or new'}">...</p>
+<div th:data-title="${'New ' + somevar}">...</div>
+<h1 th:fragment="hdr(c)" th:text="${c}">x</h1>
+# ------------------------------------------------------------
+%OUTPUT
+<h1>[New promotion, Search param]</h1>
+<p>Add a new item</p>
+<p>T (x) and @y, param or new</p>
+<div data-title="New somevalue">...</div>
+<h1></h1>

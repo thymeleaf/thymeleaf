@@ -187,6 +187,25 @@ public final class ExpressionUtils {
 
 
     public static String normalize(final String expression, boolean normalizeCase) {
+        return normalize(expression, normalizeCase, false);
+    }
+
+
+    /**
+     * <p>
+     *   Normalizes an expression for its text-based checks: removes control characters (except line feeds),
+     *   converts all other whitespace into regular whitespace and optionally converts the expression to
+     *   lower case. NUL characters can be either removed (like other control characters) or converted into
+     *   regular whitespace, for expression languages that consider them token separators.
+     * </p>
+     *
+     * @param expression the expression to be normalized.
+     * @param normalizeCase whether the expression should be converted to lower case.
+     * @param nulAsWhitespace whether NUL characters should be converted into whitespace instead of removed.
+     * @return the normalized expression.
+     * @since 3.1.7
+     */
+    public static String normalize(final String expression, boolean normalizeCase, boolean nulAsWhitespace) {
         if (expression == null) {
             return null;
         }
@@ -201,7 +220,7 @@ public final class ExpressionUtils {
                     strBuilder = new StringBuilder(expLen);
                     strBuilder.append(exp, 0, i);
                 }
-                if (Character.isWhitespace(c)) {
+                if (Character.isWhitespace(c) || (nulAsWhitespace && c == (char) 0)) {
                     // For whitespaces (non-linefeed), we are simplifying to a regular whitespace char
                     strBuilder.append(' ');
                 }

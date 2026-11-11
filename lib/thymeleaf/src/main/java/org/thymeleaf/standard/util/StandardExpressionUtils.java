@@ -94,7 +94,7 @@ public final class StandardExpressionUtils {
             // identifier.
             if (pi < PARAM_LEN
                     && c == PARAM_ARRAY[pi]
-                    && (pi > 0 || ((n + 1 < explen) && !isSafeIdentifierChar(exp.charAt(n + 1))))) {
+                    && (pi > 0 || n + 1 == explen || !isSafeIdentifierChar(exp.charAt(n + 1)))) {
                 pi++;
                 if (pi == PARAM_LEN && (n == 0 || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
                     return true; // we found a param access

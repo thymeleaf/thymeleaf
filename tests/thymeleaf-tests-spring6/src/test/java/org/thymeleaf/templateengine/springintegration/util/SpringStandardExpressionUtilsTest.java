@@ -110,4 +110,26 @@ public final class SpringStandardExpressionUtilsTest {
 
     }
 
+
+    @Test
+    public void testcontainsExternalAccessTokenForms() {
+
+        final String[] matches = {
+                "new.java.util.ArrayList()", "new\u0000java.util.ArrayList()", "x + new\u0000\u0000java.util.ArrayList()",
+                "@someBean", "@'someBean'", "@ someBean", "@$someBean", "@\u00AAsomeBean", "x + @someBean",
+                "&someBean", "& someBean", "&'someBean'", "x + &someBean", "&&&someBean", "true && &someBean",
+                "param", "1 + param", "x.param", "#param", "param\u0000", "x.\u0000param" };
+        for (final String expression : matches) {
+            Assertions.assertTrue(SpringStandardExpressionUtils.containsExternalAccess(expression), expression);
+        }
+
+        final String[] nonMatches = {
+                "a && b", "a&&b && c", "renew x", "news.x", "newx", "x.renew", "paramx", "x.params", "x.myparam",
+                "#vars.paramValue", "x.new_" };
+        for (final String expression : nonMatches) {
+            Assertions.assertFalse(SpringStandardExpressionUtils.containsExternalAccess(expression), expression);
+        }
+
+    }
+
 }

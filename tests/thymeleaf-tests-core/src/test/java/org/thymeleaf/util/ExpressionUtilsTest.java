@@ -268,6 +268,20 @@ public final class ExpressionUtilsTest {
     }
 
 
+    @Test
+    public void testNormalizeExpressionNulAsWhitespace() {
+        Assertions.assertNull(normalize(null, false, true));
+        Assertions.assertEquals("${some  thing}", normalize("${some \0thing}", false, true));
+        Assertions.assertEquals("${some thing}", normalize("${some \0thing}", false, false));
+        Assertions.assertEquals(" ${some t  hing} ", normalize("\0${some t\0\0hing}\0", false, true));
+        Assertions.assertEquals("new java", normalize("NEW\0java", true, true));
+        Assertions.assertEquals("newjava", normalize("NEW\0java", true, false));
+        // Other control characters are still removed
+        Assertions.assertEquals("${something}", normalize("${some\u0001thing}", false, true));
+        Assertions.assertEquals("${some \nthing}", normalize("${some \nthing}", false, true));
+    }
+
+
 
 
     static TestProxied createTestProxy() {

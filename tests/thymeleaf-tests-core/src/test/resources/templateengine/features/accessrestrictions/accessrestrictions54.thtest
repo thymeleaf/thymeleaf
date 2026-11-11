@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+param.p = 'value'
+somevar = 'somevalue'
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="~{::hdr(${ {'Search param', param.p} })}"></div>
+<h1 th:fragment="hdr(c)" th:text="${c}">x</h1>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QInstantiation of new objects and access to static classes or parameters is forbidden in this context\E(.*)

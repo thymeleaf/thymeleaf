@@ -1,0 +1,10 @@
+%TEMPLATE_MODE HTML
+# ------------------------------------------------------------
+%CONTEXT
+somevar = 'somevalue'
+# ------------------------------------------------------------
+%INPUT
+<p th:utext="${'New ' + new java.util.ArrayList()}">...</p>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN (.*)\QInstantiation of new objects and access to static classes or parameters is forbidden in this context\E(.*)

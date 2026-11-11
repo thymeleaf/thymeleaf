@@ -44,7 +44,12 @@ public final class SpringStandardExpressionUtils {
          * static methods ("T(SomeClass)") as both are forbidden in certain contexts in restricted mode.
          */
 
-        final String exp = ExpressionUtils.normalize(expression, true);
+        // NUL is a token separator for SpEL (like whitespace), so it is not removed by normalization
+        final String exp = ExpressionUtils.normalize(expression, true, true);
+
+        if (containsBeanReferenceSymbol(exp)) {
+            return true;
+        }
 
         final int explen = exp.length();
         int n = explen;
@@ -60,7 +65,7 @@ public final class SpringStandardExpressionUtils {
             // identifier before it.
             if (ni < NEW_LEN
                     && c == NEW_ARRAY[ni]
-                    && (ni > 0 || ((n + 1 < explen) && Character.isWhitespace(exp.charAt(n + 1))))) {
+                    && (ni > 0 || ((n + 1 < explen) && (Character.isWhitespace(exp.charAt(n + 1)) || exp.charAt(n + 1) == '.')))) {
                 ni++;
                 if (ni == NEW_LEN && (n == 0 || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
                     return true; // we found an object instantiation
@@ -81,7 +86,7 @@ public final class SpringStandardExpressionUtils {
             // identifier.
             if (pi < PARAM_LEN
                     && c == PARAM_ARRAY[pi]
-                    && (pi > 0 || ((n + 1 < explen) && !isSafeIdentifierChar(exp.charAt(n + 1))))) {
+                    && (pi > 0 || n + 1 == explen || !isSafeIdentifierChar(exp.charAt(n + 1)))) {
                 pi++;
                 if (pi == PARAM_LEN && (n == 0 || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
                     return true; // we found a param access
@@ -102,16 +107,33 @@ public final class SpringStandardExpressionUtils {
                 return true;
             }
 
-            if (c == '@' &&
-                    ((n + 1 < explen) && isSafeIdentifierChar(exp.charAt(n + 1))) &&
-                    (n == 0  || !isSafeIdentifierChar(exp.charAt(n - 1)))) {
-                return true;
-            }
-
         }
 
         return false;
 
+    }
+
+
+    private static boolean containsBeanReferenceSymbol(final String exp) {
+        // '@' is always a bean reference token, and a single '&' (not part of an '&&' pair) a factory bean reference.
+        // Like all the other checks here, this also matches symbols in string literals.
+        final int explen = exp.length();
+        int ampersands = 0;
+        for (int i = 0; i < explen; i++) {
+            final char c = exp.charAt(i);
+            if (c == '@') {
+                return true;
+            }
+            if (c == '&') {
+                ampersands++;
+            } else {
+                if (ampersands % 2 != 0) {
+                    return true;
+                }
+                ampersands = 0;
+            }
+        }
+        return ampersands % 2 != 0;
     }
 
 

@@ -92,6 +92,13 @@ public final class StandardExpressionUtilsTest {
         Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess(" param['a']"));
         Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("_param['a']"));
         Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess(" param_a"));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("param"));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("x.param"));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("#param"));
+        Assertions.assertTrue(StandardExpressionUtils.containsExternalAccess("1 + param"));
+        Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("x.params"));
+        Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("x.myparam"));
+        Assertions.assertFalse(StandardExpressionUtils.containsExternalAccess("paramx"));
 
     }
 

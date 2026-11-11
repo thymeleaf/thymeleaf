@@ -316,7 +316,9 @@ public class SPELVariableExpressionEvaluator
             final StandardExpressionExecutionContext expContext) {
 
         if (expContext.getRestrictExternalAccess()
-                && SpringStandardExpressionUtils.containsExternalAccess(spelExpression)) {
+                && SpringStandardExpressionUtils.containsExternalAccess(spelExpression)
+                && SPELExpressionRestrictions.containsExternalAccessOutsideStringLiterals(
+                        PARSER_WITHOUT_COMPILED_SPEL, spelExpression)) {
             throw new TemplateProcessingException(
                 "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
         }
