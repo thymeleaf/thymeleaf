@@ -12,7 +12,7 @@
   <a id="dynamic" th:href="@{${url}(p=1)}">.</a>
   <a id="multi" th:href="@{/x(a=1,a=2,b=${null},c=${list})}">.</a>
   <img id="img" th:src="@{/img/marked.png}">
-  <form id="form" th:action="@{/marked}" method="post"><button id="formaction" th:formaction="@{/marked/other}">b</button></form>
+  <form id="form" th:action="@{/marked}" method="post"><button id="formaction" th:formaction="@{/marked/other}">b</button><button id="formactionpost" formmethod="post" th:formaction="@{/marked/other}">b</button><button id="formactionempty" th:formaction="${null}">b</button><button id="formactionthmethod1" th:formmethod="${'post'}" th:formaction="@{/marked/other}">b</button><button id="formactionthmethod2" th:formaction="@{/marked/other}" th:formmethod="${'post'}">b</button></form>
   <p id="inlined">[[@{/marked(p=${v})}]]</p>
   <p id="text" th:text="@{/marked}">.</p>
   <script id="js" th:inline="javascript">var u = [[@{/marked(p=${v})}]];</script>

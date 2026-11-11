@@ -69,11 +69,15 @@ public abstract class AbstractWebFluxFeaturesTest extends AbstractWebFluxTest {
         Assertions.assertEquals("<a id=\"anchor\" href=\"/app/x?p=1#sec\">", tag(html, "anchor"));
         Assertions.assertEquals("<a id=\"dynamic\" href=\"/app/dyn/path?p=1\">", tag(html, "dynamic"));
         Assertions.assertEquals("<a id=\"multi\" href=\"/app/x?a=1&amp;a=2&amp;b=&amp;c=1&amp;c=2\">", tag(html, "multi"));
-        // th:action goes through processAction (as Spring's form tag does), th:href and th:src through processUrl,
-        // th:formaction through neither
+        // th:action and th:formaction go through processAction (as Spring's form tag does), th:href and th:src
+        // through processUrl
         Assertions.assertEquals("<img id=\"img\" src=\"/app/img/processed.png\">", tag(html, "img"));
         Assertions.assertEquals("<form id=\"form\" action=\"/app/marked?rdvp=post\" method=\"post\">", tag(html, "form"));
-        Assertions.assertEquals("<button id=\"formaction\" formaction=\"/app/marked/other\">", tag(html, "formaction"));
+        Assertions.assertEquals("<button id=\"formaction\" formaction=\"/app/marked/other?rdvp=GET\">", tag(html, "formaction"));
+        Assertions.assertEquals("<button id=\"formactionpost\" formmethod=\"post\" formaction=\"/app/marked/other?rdvp=post\">", tag(html, "formactionpost"));
+        Assertions.assertEquals("<button id=\"formactionempty\">", tag(html, "formactionempty"));
+        Assertions.assertEquals("<button id=\"formactionthmethod1\" formmethod=\"post\" formaction=\"/app/marked/other?rdvp=post\">", tag(html, "formactionthmethod1"));
+        Assertions.assertEquals("<button id=\"formactionthmethod2\" formaction=\"/app/marked/other?rdvp=post\" formmethod=\"post\">", tag(html, "formactionthmethod2"));
         Assertions.assertEquals("/app/marked?p=a%20b%26c", text(html, "inlined"));
         Assertions.assertEquals("/app/marked", text(html, "text"));
         Assertions.assertEquals("var u = \"\\/app\\/marked?p=a%20b%26c\";", text(html, "js"));

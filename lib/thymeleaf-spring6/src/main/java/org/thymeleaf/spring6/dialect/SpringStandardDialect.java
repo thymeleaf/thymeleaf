@@ -38,6 +38,7 @@ import org.thymeleaf.spring6.expression.SpringStandardExpressions;
 import org.thymeleaf.spring6.processor.SpringActionTagProcessor;
 import org.thymeleaf.spring6.processor.SpringErrorClassTagProcessor;
 import org.thymeleaf.spring6.processor.SpringErrorsTagProcessor;
+import org.thymeleaf.spring6.processor.SpringFormActionTagProcessor;
 import org.thymeleaf.spring6.processor.SpringHrefTagProcessor;
 import org.thymeleaf.spring6.processor.SpringInputCheckboxFieldTagProcessor;
 import org.thymeleaf.spring6.processor.SpringInputFileFieldTagProcessor;
@@ -62,6 +63,7 @@ import org.thymeleaf.standard.processor.StandardActionTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
 import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
+import org.thymeleaf.standard.processor.StandardRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -385,7 +387,8 @@ public class SpringStandardDialect extends StandardDialect {
                     !(standardProcessor instanceof StandardHrefTagProcessor) &&
                     !(standardProcessor instanceof StandardMethodTagProcessor) &&
                     !(standardProcessor instanceof StandardSrcTagProcessor) &&
-                    !(standardProcessor instanceof StandardValueTagProcessor)) {
+                    !(standardProcessor instanceof StandardValueTagProcessor) &&
+                    !isFormActionProcessor(standardProcessor)) {
 
                 processors.add(standardProcessor);
 
@@ -400,6 +403,7 @@ public class SpringStandardDialect extends StandardDialect {
          * ATTRIBUTE TAG PROCESSORS
          */
         processors.add(new SpringActionTagProcessor(dialectPrefix));
+        processors.add(new SpringFormActionTagProcessor(dialectPrefix));
         processors.add(new SpringHrefTagProcessor(dialectPrefix));
         processors.add(new SpringMethodTagProcessor(dialectPrefix));
         processors.add(new SpringSrcTagProcessor(dialectPrefix));
@@ -421,6 +425,14 @@ public class SpringStandardDialect extends StandardDialect {
         return processors;
 
     }
+
+
+    private static boolean isFormActionProcessor(final IProcessor processor) {
+        return processor instanceof StandardRemovableAttributeTagProcessor &&
+                SpringFormActionTagProcessor.TARGET_ATTR_NAME.equals(
+                        ((StandardRemovableAttributeTagProcessor) processor).getMatchingAttributeName().getMatchingAttributeName().getAttributeName());
+    }
+
 
 
 }
