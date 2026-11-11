@@ -278,8 +278,9 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   interface.
      * </p>
      * <p>
-     *   Note this flag can only be {@code true} for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
-     *   template modes. Also, note that setting this flag to {@code true} does not mean that a resource with
+     *   Note this flag only applies to templates resolved in the {@link TemplateMode#HTML} and
+     *   {@link TemplateMode#XML} template modes, and is ignored for templates resolved in any other template
+     *   modes (since 3.1.7). Also, note that setting this flag to {@code true} does not mean that a resource with
      *   decoupled logic must exist for the resolved template, only that it can exist.
      * </p>
      * <p>
@@ -313,8 +314,9 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   interface.
      * </p>
      * <p>
-     *   Note this flag can only be {@code true} for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
-     *   template modes. Also, note that setting this flag to {@code true} does not mean that a resource with
+     *   Note this flag only applies to templates resolved in the {@link TemplateMode#HTML} and
+     *   {@link TemplateMode#XML} template modes, and is ignored for templates resolved in any other template
+     *   modes (since 3.1.7). Also, note that setting this flag to {@code true} does not mean that a resource with
      *   decoupled logic must exist for the resolved template, only that it can exist and therefore it should be
      *   checked.
      * </p>
@@ -362,11 +364,16 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
             return null;
         }
 
+        final TemplateMode templateMode = computeTemplateMode(configuration, ownerTemplate, template, templateResolutionAttributes);
+
+        // Decoupled logic only applies to markup template modes, so it is ignored for any other modes
+        final boolean useDecoupledLogic = this.useDecoupledLogic && templateMode != null && templateMode.isMarkup();
+
         return new TemplateResolution(
                 templateResource,
                 this.checkExistence,
-                computeTemplateMode(configuration, ownerTemplate, template, templateResolutionAttributes),
-                this.useDecoupledLogic,
+                templateMode,
+                useDecoupledLogic,
                 computeValidity(configuration, ownerTemplate, template, templateResolutionAttributes));
         
     }

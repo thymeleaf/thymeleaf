@@ -168,14 +168,15 @@ public class WebSetupIntegrationTest {
 
     @Test
     public void testDecoupledLogicWithTextTemplateModes() throws Exception {
-        // The flag applies to every template of the resolver, and the TEXT/JAVASCRIPT parsers refuse it
+        // The flag is ignored for templates that are not resolved in a markup template mode
         try (final EmbeddedTomcat server = EmbeddedTomcat.start(engine(r -> r.setUseDecoupledLogic(true), e -> {}))) {
             final HttpTestClient.Result text = get(server, "/report.txt");
-            Assertions.assertEquals(500, text.status, text.body);
-            Assertions.assertTrue(text.body.contains("Cannot use decoupled logic in template mode TEXT"), text.body);
+            Assertions.assertEquals(200, text.status, text.body);
+            Assertions.assertEquals("Ana=34\nBea=28\nCarl=45\n", text.body);
             final HttpTestClient.Result js = get(server, "/app.js");
-            Assertions.assertEquals(500, js.status, js.body);
-            Assertions.assertTrue(js.body.contains("Cannot use decoupled logic in template mode JAVASCRIPT"), js.body);
+            Assertions.assertEquals(200, js.status, js.body);
+            Assertions.assertEquals("var names = [\"Ana\",\"Bea\",\"Carl\"];\n", js.body);
+            Assertions.assertEquals("Ana", text(get(server, "/decoupled").body, "d"));
         }
     }
 
