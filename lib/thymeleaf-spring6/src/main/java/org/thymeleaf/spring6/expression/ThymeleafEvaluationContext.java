@@ -113,6 +113,7 @@ public final class ThymeleafEvaluationContext
 
     private final ApplicationContext applicationContext;
     private final Set<Class<?>> allowedClassOverridesForViews;
+    private final String allowedClassOverridesKey;
     private final SimpleEvaluationContext restrictedModeContext;
 
     private IExpressionObjects expressionObjects = null;
@@ -138,6 +139,10 @@ public final class ThymeleafEvaluationContext
         this.allowedClassOverridesForViews =
                 (allowedClassOverridesForViews != null && !allowedClassOverridesForViews.isEmpty()) ?
                         Collections.unmodifiableSet(new HashSet<>(allowedClassOverridesForViews)) : Collections.emptySet();
+        this.allowedClassOverridesKey =
+                (this.allowedClassOverridesForViews.isEmpty() ?
+                        null :
+                        this.allowedClassOverridesForViews.stream().map(Class::getName).sorted().collect(Collectors.joining(",")));
 
         this.setBeanResolver(new BeanFactoryResolver(applicationContext));
         if (conversionService != null) {
@@ -191,6 +196,15 @@ public final class ThymeleafEvaluationContext
      */
     public Collection<Class<?>> getAllowedClassOverridesForViews() {
         return this.allowedClassOverridesForViews;
+    }
+
+
+    /*
+     * Identifies the set of allowed class overrides (null if none), so that parsed expressions are only shared
+     * between evaluation contexts that allow the same classes.
+     */
+    String getAllowedClassOverridesKey() {
+        return this.allowedClassOverridesKey;
     }
 
 

@@ -152,12 +152,14 @@ public class SPELVariableExpressionEvaluator
 
         final IEngineConfiguration configuration = context.getConfiguration();
 
+        final String allowedClassOverridesKey = computeAllowedClassOverridesKey(context);
+
 
         /*
          * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
          */
         final ComputedSpelExpression exp =
-                obtainComputedSpelExpression(configuration, expression, spelExpression, expContext);
+                obtainComputedSpelExpression(configuration, expression, spelExpression, expContext, allowedClassOverridesKey);
 
 
         if (expContext.getRestrictVariableAccess()) {
@@ -313,7 +315,7 @@ public class SPELVariableExpressionEvaluator
     private static ComputedSpelExpression obtainComputedSpelExpression(
             final IEngineConfiguration configuration,
             final IStandardVariableExpression expression, final String spelExpression,
-            final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext, final String allowedClassOverridesKey) {
 
         if (expContext.getRestrictExternalAccess()
                 && SpringStandardExpressionUtils.containsExternalAccess(spelExpression)
@@ -325,7 +327,8 @@ public class SPELVariableExpressionEvaluator
 
         // SpEL nodes cache the executors and accessors resolved during evaluation, and compiled expressions do
         // not use the evaluation context for some operations, so restricted executions use their own
-        // (never compiled) SpelExpression objects.
+        // (never compiled) SpelExpression objects, and evaluation contexts allowing different class overrides
+        // use different SpelExpression objects too.
         final boolean restricted = expContext.getRestrictVariableAccess();
 
         if (expression instanceof VariableExpression) {
@@ -334,10 +337,10 @@ public class SPELVariableExpressionEvaluator
 
             Object cachedExpression = vexpression.getCachedExpression();
             if (cachedExpression instanceof ComputedSpelExpression
-                    && ((ComputedSpelExpression) cachedExpression).restricted == restricted) {
+                    && ((ComputedSpelExpression) cachedExpression).isFor(restricted, allowedClassOverridesKey)) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression, restricted);
+            cachedExpression = getExpression(configuration, spelExpression, restricted, allowedClassOverridesKey);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -351,10 +354,10 @@ public class SPELVariableExpressionEvaluator
 
             Object cachedExpression = vexpression.getCachedExpression();
             if (cachedExpression instanceof ComputedSpelExpression
-                    && ((ComputedSpelExpression) cachedExpression).restricted == restricted) {
+                    && ((ComputedSpelExpression) cachedExpression).isFor(restricted, allowedClassOverridesKey)) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression, restricted);
+            cachedExpression = getExpression(configuration, spelExpression, restricted, allowedClassOverridesKey);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -362,13 +365,14 @@ public class SPELVariableExpressionEvaluator
 
         }
 
-        return getExpression(configuration, spelExpression, restricted);
+        return getExpression(configuration, spelExpression, restricted, allowedClassOverridesKey);
 
     }
 
 
     private static ComputedSpelExpression getExpression(
-            final IEngineConfiguration configuration, final String spelExpression, final boolean restricted) {
+            final IEngineConfiguration configuration, final String spelExpression, final boolean restricted,
+            final String allowedClassOverridesKey) {
 
         final String cacheType = (restricted ? EXPRESSION_CACHE_TYPE_SPEL_RESTRICTED : EXPRESSION_CACHE_TYPE_SPEL);
 
@@ -379,7 +383,7 @@ public class SPELVariableExpressionEvaluator
         if (cacheManager != null) {
             cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                exp = (ComputedSpelExpression) cache.get(new ExpressionCacheKey(cacheType, spelExpression));
+                exp = (ComputedSpelExpression) cache.get(new ExpressionCacheKey(cacheType, spelExpression, allowedClassOverridesKey));
             }
         }
 
@@ -394,16 +398,25 @@ public class SPELVariableExpressionEvaluator
 
             final SpelExpression spelExpressionObject = (SpelExpression) spelExpressionParser.parseExpression(spelExpression);
 
-            exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects, restricted);
+            exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects, restricted, allowedClassOverridesKey);
 
             if (cache != null && null != exp) {
-                cache.put(new ExpressionCacheKey(cacheType, spelExpression), exp);
+                cache.put(new ExpressionCacheKey(cacheType, spelExpression, allowedClassOverridesKey), exp);
             }
 
         }
 
         return exp;
         
+    }
+
+
+
+    private static String computeAllowedClassOverridesKey(final IExpressionContext context) {
+        final Object evaluationContext =
+                context.getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
+        return (evaluationContext instanceof ThymeleafEvaluationContext ?
+                    ((ThymeleafEvaluationContext) evaluationContext).getAllowedClassOverridesKey() : null);
     }
 
 
@@ -460,13 +473,22 @@ public class SPELVariableExpressionEvaluator
         final SpelExpression expression;
         final boolean mightNeedExpressionObjects;
         final boolean restricted;
+        final String allowedClassOverridesKey;
 
         ComputedSpelExpression(
-                final SpelExpression expression, final boolean mightNeedExpressionObjects, final boolean restricted) {
+                final SpelExpression expression, final boolean mightNeedExpressionObjects, final boolean restricted,
+                final String allowedClassOverridesKey) {
             super();
             this.expression = expression;
             this.mightNeedExpressionObjects = mightNeedExpressionObjects;
             this.restricted = restricted;
+            this.allowedClassOverridesKey = allowedClassOverridesKey;
+        }
+
+        boolean isFor(final boolean restricted, final String allowedClassOverridesKey) {
+            return this.restricted == restricted
+                    && (this.allowedClassOverridesKey == null ?
+                            allowedClassOverridesKey == null : this.allowedClassOverridesKey.equals(allowedClassOverridesKey));
         }
 
 
