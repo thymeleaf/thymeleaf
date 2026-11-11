@@ -95,14 +95,16 @@ public final class Conversions {
             final Class<?> clazz = ClassLoaderUtils.loadClass(className);
             return convert(target, clazz);
         } catch (final ClassNotFoundException e) {
-            final String javaLangClassName = "java.lang." + className;
-            checkConversionAllowed(javaLangClassName);
-            try {
-                final Class<?> clazz = ClassLoaderUtils.loadClass(javaLangClassName);
-                return convert(target, clazz);
-            } catch (final ClassNotFoundException ex) {
-                throw new IllegalArgumentException("Cannot convert to class '" + className + "'", e);
+            // Only simple names can be java.lang.* classes. The loaded class is checked by convert(Object, Class)
+            if (className.indexOf('.') < 0) {
+                try {
+                    final Class<?> clazz = ClassLoaderUtils.loadClass("java.lang." + className);
+                    return convert(target, clazz);
+                } catch (final ClassNotFoundException ex) {
+                    // Not a java.lang.* class either
+                }
             }
+            throw new IllegalArgumentException("Cannot convert to class '" + className + "'", e);
         }
 
     }
