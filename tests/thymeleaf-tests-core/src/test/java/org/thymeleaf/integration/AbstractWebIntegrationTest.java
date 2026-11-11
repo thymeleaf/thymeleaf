@@ -215,6 +215,25 @@ public abstract class AbstractWebIntegrationTest {
 
 
     @Test
+    public void testSessionChangedThroughNativeRequest() throws Exception {
+
+        final HttpTestClient.Result created = get(this.server, "/session/native?user=bea");
+        Assertions.assertEquals(200, created.status, created.body);
+        final String sessionId = created.sessionId();
+        Assertions.assertNotNull(sessionId, String.valueOf(created.setCookie));
+        Assertions.assertEquals("bea", text(created.body, "user"));
+        Assertions.assertEquals(
+                "<a id=\"link\" href=\"/app/x;jsessionid=" + sessionId + "?p=1\">", tag(created.body, "link"));
+
+        final String invalidated = html("/session/invalidate", "Cookie", "JSESSIONID=" + sessionId);
+        Assertions.assertEquals("", text(invalidated, "user"));
+        Assertions.assertEquals("<a id=\"link\" href=\"/app/x?p=1\">", tag(invalidated, "link"));
+        Assertions.assertEquals("", text(html("/session/show", "Cookie", "JSESSIONID=" + sessionId), "user"));
+
+    }
+
+
+    @Test
     public void testFormPost() throws Exception {
         final Map<String, String[]> form = new LinkedHashMap<>();
         form.put("name", new String[] { "Jos\u00E9 <b>" });

@@ -156,6 +156,26 @@ public class WebSetupIntegrationTest {
         try (final EmbeddedTomcat server = EmbeddedTomcat.start(engine(r -> r.setUseDecoupledLogic(true), e -> {}))) {
             Assertions.assertEquals("Ana", text(get(server, "/decoupled").body, "d"));
             Assertions.assertEquals("Hello, World!", text(get(server, "/hello").body, "hello"));
+            // Decoupled logic can add th:inline to a script block, which is then processed in JAVASCRIPT mode
+            final HttpTestClient.Result js = get(server, "/decoupled-js");
+            Assertions.assertEquals(200, js.status, js.body);
+            Assertions.assertEquals("Ana", text(js.body, "d"));
+            Assertions.assertEquals("\nvar name = \"Ana\";\n\nvar v1 = 1;\nvar v2 = 2;\n\n", text(js.body, "s"));
+            Assertions.assertEquals("var coupled = \"Ana\";", text(js.body, "c"));
+        }
+    }
+
+
+    @Test
+    public void testDecoupledLogicWithTextTemplateModes() throws Exception {
+        // The flag applies to every template of the resolver, and the TEXT/JAVASCRIPT parsers refuse it
+        try (final EmbeddedTomcat server = EmbeddedTomcat.start(engine(r -> r.setUseDecoupledLogic(true), e -> {}))) {
+            final HttpTestClient.Result text = get(server, "/report.txt");
+            Assertions.assertEquals(500, text.status, text.body);
+            Assertions.assertTrue(text.body.contains("Cannot use decoupled logic in template mode TEXT"), text.body);
+            final HttpTestClient.Result js = get(server, "/app.js");
+            Assertions.assertEquals(500, js.status, js.body);
+            Assertions.assertTrue(js.body.contains("Cannot use decoupled logic in template mode JAVASCRIPT"), js.body);
         }
     }
 

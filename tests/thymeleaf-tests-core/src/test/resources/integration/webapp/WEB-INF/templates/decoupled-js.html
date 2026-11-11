@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p id="d">static</p>
+<script id="s">
+var name = /*[[${name}]]*/ "static";
+/*[# th:each="i : ${#numbers.sequence(1, 2)}"]*/
+var v[(${i})] = [(${i})];
+/*[/]*/
+</script>
+<script id="c" th:inline="javascript">var coupled = [[${name}]];</script>
+</body>
+</html>

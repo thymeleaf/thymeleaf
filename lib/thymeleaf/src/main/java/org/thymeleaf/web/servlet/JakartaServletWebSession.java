@@ -38,53 +38,57 @@ import org.thymeleaf.util.Validate;
 final class JakartaServletWebSession implements IServletWebSession {
 
     private final HttpServletRequest request;
-    private HttpSession session;
 
 
     JakartaServletWebSession(final HttpServletRequest request) {
         super();
         Validate.notNull(request, "Request cannot be null");
         this.request = request;
-        this.session = this.request.getSession(false); // Might initialize property as null
+    }
+
+
+    // The session is obtained from the request at each call, as it can be created or invalidated by the application
+    // after the exchange has been built
+    private HttpSession getSession() {
+        return this.request.getSession(false);
     }
 
 
     @Override
     public boolean exists() {
-        return this.session != null;
+        return getSession() != null;
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        if (this.session == null) {
+        final HttpSession session = getSession();
+        if (session == null) {
             return Collections.emptyEnumeration();
         }
-        return this.session.getAttributeNames();
+        return session.getAttributeNames();
     }
 
     @Override
     public Object getAttributeValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        if (this.session == null) {
+        final HttpSession session = getSession();
+        if (session == null) {
             return null;
         }
-        return this.session.getAttribute(name);
+        return session.getAttribute(name);
     }
 
     @Override
     public void setAttributeValue(final String name, final Object value) {
         Validate.notNull(name, "Name cannot be null");
-        if (this.session == null) {
-            // Setting an attribute will actually create a new session
-            this.session = this.request.getSession(true);
-        }
-        this.session.setAttribute(name, value);
+        // Setting an attribute will create a new session if needed
+        this.request.getSession(true).setAttribute(name, value);
     }
 
 
     @Override
     public Object getNativeSessionObject() {
-        return this.session;
+        return getSession();
     }
 
 }

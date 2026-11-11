@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<thlogic>
+  <attr sel="#d" th:text="${name}"/>
+  <attr sel="#s" th:inline="javascript"/>
+</thlogic>

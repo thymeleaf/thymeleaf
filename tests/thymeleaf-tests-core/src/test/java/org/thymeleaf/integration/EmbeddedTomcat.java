@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import org.apache.catalina.Context;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.StandardRoot;
@@ -79,7 +79,10 @@ public final class EmbeddedTomcat implements AutoCloseable {
         this.tomcat.setPort(0);
         this.tomcat.getConnector();
 
-        final Context context = this.tomcat.addContext(CONTEXT_PATH, this.docBase.toString());
+        final StandardContext context = (StandardContext) this.tomcat.addContext(CONTEXT_PATH, this.docBase.toString());
+        // Leak detection on stop needs --add-opens and only produces warnings here
+        context.setClearReferencesThreadLocals(false);
+        context.setClearReferencesRmiTargets(false);
         final StandardRoot resources = new StandardRoot(context);
         resources.setCachingAllowed(false); // template changes must be visible immediately
         context.setResources(resources);

@@ -68,6 +68,9 @@ final class IntegrationRoutes {
             case "/decoupled":
                 context.setVariable("name", "Ana");
                 return "decoupled";
+            case "/decoupled-js":
+                context.setVariable("name", "Ana");
+                return "decoupled-js";
             case "/links":
                 context.setVariable("url", "/dyn/path");
                 context.setVariable("v", "a b&c");
@@ -79,6 +82,14 @@ final class IntegrationRoutes {
                 return "variables";
             case "/session/set":
                 context.getExchange().getSession().setAttributeValue("user", request.getParameter("user"));
+                return "session";
+            case "/session/native":
+                // Session created through the native request after the exchange has been built
+                request.getSession(true).setAttribute("user", request.getParameter("user"));
+                return "session";
+            case "/session/invalidate":
+                // Session invalidated through the native request after the exchange has been built
+                request.getSession(true).invalidate();
                 return "session";
             case "/session/show":
                 return "session";
